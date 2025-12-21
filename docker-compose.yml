@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  dragons:
+    image: dragons:dev
+    container_name: dragons
+    restart: unless-stopped
+
+    ports:
+      - "8083:8083"
+
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SERVER_PORT: 8083
+
+    command: >
+      java -jar app.jar
