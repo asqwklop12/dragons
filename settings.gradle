@@ -1,5 +1,6 @@
 rootProject.name = 'dragons'
 
 include(
-        ":apps:dragons_api"
+        ":apps:dragons_api",
+        ":supports:logging"
 )

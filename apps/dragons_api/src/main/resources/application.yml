@@ -1,8 +1,9 @@
 spring:
   application:
     name: dragons
-  hello: ????
-server:
+  config:
+    import:
+      - logging.yml
   port: 8080
 ---
 spring:
