@@ -1,1 +1,5 @@
 rootProject.name = 'dragons'
+
+include(
+        ":apps:dragons_api"
+)
