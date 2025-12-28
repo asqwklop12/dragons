@@ -4,6 +4,7 @@ spring:
   config:
     import:
       - logging.yml
+      - redis.yml
   port: 8080
 ---
 spring:
