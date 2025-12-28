@@ -16,7 +16,6 @@
         <springProperty scope="context" name="USE_FILE" source="log.use-file" defaultValue="Y"/>
     </springProfile>
 
-    <property name="LOG_PATH" value="./logs" />
 
     <!-- Appenders -->
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
@@ -32,7 +31,7 @@
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
-        <file>${LOG_PATH}/dragons.${HOSTNAME}.log</file>
+        <file>${LOG_DIR}/dragons.${HOSTNAME}.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_DIR}/dragons.%d.${HOSTNAME}.gz</fileNamePattern>
