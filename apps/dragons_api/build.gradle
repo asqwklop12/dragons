@@ -8,12 +8,16 @@ description = 'dragons_api'
 
 dependencies {
     implementation project(":supports:logging")
+    implementation project(":supports:jackson")
     implementation project(":modules:redis")
 
+    testImplementation project(":supports:jackson")
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
