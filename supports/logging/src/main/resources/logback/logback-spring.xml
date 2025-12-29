@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
 
+    <property name="LOG_DIR" value="../../logs"/>
+
     <springProfile name="local">
-        <springProperty scope="context" name="LOG_DIR" source="dragons.log.dir" defaultValue="./logs"/>
+        <springProperty scope="context" name="LOG_DIR" source="dragons.log.dir" defaultValue="../../logs"/>
         <springProperty scope="context" name="LOG_LEVEL" source="dragons.log.level" defaultValue="INFO"/>
         <springProperty scope="context" name="USE_FILE" source="dragons.log.use-file" defaultValue="Y"/>
         <springProperty scope="context" name="USE_CONSOLE" source="dragons.log.use-console" defaultValue="Y"/>
