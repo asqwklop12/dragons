@@ -1,6 +1,7 @@
 package com.dragons.interfaces.api.post;
 
 import com.dragons.interfaces.api.ApiResponse;
+import com.dragons.interfaces.api.post.dto.PostV1Dto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

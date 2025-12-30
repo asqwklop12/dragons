@@ -1,11 +1,12 @@
 package com.dragons.interfaces.api.post;
 
 import com.dragons.interfaces.api.ApiResponse;
-import com.dragons.interfaces.api.post.PostV1Dto.Create;
-import com.dragons.interfaces.api.post.PostV1Dto.Delete.Response;
-import com.dragons.interfaces.api.post.PostV1Dto.Get;
-import com.dragons.interfaces.api.post.PostV1Dto.Search;
-import com.dragons.interfaces.api.post.PostV1Dto.Update;
+import com.dragons.interfaces.api.post.dto.PostV1Dto;
+import com.dragons.interfaces.api.post.dto.PostV1Dto.Create;
+import com.dragons.interfaces.api.post.dto.PostV1Dto.Delete.Response;
+import com.dragons.interfaces.api.post.dto.PostV1Dto.Get;
+import com.dragons.interfaces.api.post.dto.PostV1Dto.Search;
+import com.dragons.interfaces.api.post.dto.PostV1Dto.Update;
 import java.util.List;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
