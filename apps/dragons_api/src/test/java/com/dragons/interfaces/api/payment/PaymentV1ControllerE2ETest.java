@@ -1,4 +1,4 @@
-package com.dragons.dragons_api.interfaces.payment;
+package com.dragons.interfaces.api.payment;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -50,9 +50,11 @@ class PaymentV1ControllerE2ETest {
             .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.cardNumber").value("123456******5678"))
-        .andExpect(jsonPath("$.amount").value(100))
-        .andExpect(jsonPath("$.planType").value("premium"));
+        // ApiResponse 래핑 반영: 본문은 $.data 하위에 위치
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.cardNumber").value("123456******5678"))
+        .andExpect(jsonPath("$.data.amount").value(100))
+        .andExpect(jsonPath("$.data.planType").value("premium"));
   }
 
   @Test
@@ -123,10 +125,11 @@ class PaymentV1ControllerE2ETest {
             .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.accountNumber").value("1234567890"))
-        .andExpect(jsonPath("$.depositorName").value("홍길동"))
-        .andExpect(jsonPath("$.amount").value(100))
-        .andExpect(jsonPath("$.planType").value("premium"));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.accountNumber").value("1234567890"))
+        .andExpect(jsonPath("$.data.depositorName").value("홍길동"))
+        .andExpect(jsonPath("$.data.amount").value(100))
+        .andExpect(jsonPath("$.data.planType").value("premium"));
   }
 
   @Test

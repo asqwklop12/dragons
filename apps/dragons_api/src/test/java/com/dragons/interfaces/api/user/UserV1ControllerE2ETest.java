@@ -1,6 +1,6 @@
-package com.dragons.dragons_api.interfaces.user;
+package com.dragons.interfaces.api.user;
 
-import com.dragons.dragons_api.interfaces.user.dto.UserV1Dto;
+import com.dragons.interfaces.api.user.dto.UserV1Dto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,8 +53,9 @@ class UserV1ControllerE2ETest {
             .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.name").value("홍길동"))
-        .andExpect(jsonPath("$.email").value("user@example.com"));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.name").value("홍길동"))
+        .andExpect(jsonPath("$.data.email").value("user@example.com"));
   }
 
   @Test
@@ -174,6 +175,7 @@ class UserV1ControllerE2ETest {
             .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.token").value("아무튼 토큰"));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.token").value("아무튼 토큰"));
   }
 }
