@@ -59,14 +59,14 @@ public class PostV1Dto {
     }
 
     public record Response(
-        List<Boards> boards,
+        List<Posts> boards,
         int page,
         int size,
         int total
 
     ) {
 
-      record Boards(
+      public record Posts(
           long id,      //아이디
           String title, // 제목
           String category, // 카테고리
