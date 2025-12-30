@@ -1,7 +1,10 @@
 version: "3.8"
 
 services:
-  dragons:
+  dragons-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: dragons:dev
     container_name: dragons
     restart: unless-stopped
@@ -12,6 +15,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: dev
       SERVER_PORT: 8083
+      # Spring relaxed binding: DATASOURCE_REDIS_ENABLED -> datasource.redis.enabled
+      DATASOURCE_REDIS_ENABLED: "false"
+      # Optional JVM tuning
+      JAVA_OPTS: "-XX:+UseContainerSupport -Xms256m -Xmx512m"
 
-    command: >
-      java -jar app.jar
+    # Rely on Dockerfile ENTRYPOINT (java -jar /app/app.jar)
