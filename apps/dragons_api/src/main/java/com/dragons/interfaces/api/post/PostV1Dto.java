@@ -1,4 +1,4 @@
-package com.dragons.dragons_api.interfaces.post;
+package com.dragons.interfaces.api.post;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

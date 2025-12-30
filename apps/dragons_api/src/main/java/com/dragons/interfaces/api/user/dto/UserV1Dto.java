@@ -1,4 +1,4 @@
-package com.dragons.dragons_api.interfaces.user.dto;
+package com.dragons.interfaces.api.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
