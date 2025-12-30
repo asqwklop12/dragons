@@ -1,4 +1,4 @@
-package com.dragons.dragons_api.interfaces.payment;
+package com.dragons.interfaces.api.payment;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

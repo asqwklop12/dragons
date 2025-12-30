@@ -1,4 +1,4 @@
-package com.dragons.dragons_api;
+package com.dragons;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

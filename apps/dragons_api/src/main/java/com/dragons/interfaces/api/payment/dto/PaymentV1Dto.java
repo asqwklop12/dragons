@@ -1,4 +1,4 @@
-package com.dragons.dragons_api.interfaces.payment.dto;
+package com.dragons.interfaces.api.payment.dto;
 
 import jakarta.validation.constraints.*;
 
