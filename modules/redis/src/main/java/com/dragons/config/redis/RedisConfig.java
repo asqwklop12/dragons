@@ -16,6 +16,12 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
 @EnableConfigurationProperties(RedisProperties.class)
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(
+    prefix = "datasource.redis",
+    name = "enabled",
+    havingValue = "true",
+    matchIfMissing = false
+)
 public class RedisConfig {
   private static final String CONNECTION_MASTER = "redisConnectionMaster";
   public static final String REDIS_TEMPLATE_MASTER = "redisTemplateMaster";
