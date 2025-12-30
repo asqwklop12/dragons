@@ -1,4 +1,4 @@
-package com.dragons.dragons_api.interfaces.post;
+package com.dragons.interfaces.api.post;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,11 +47,12 @@ class PostV1ControllerE2ETest {
             .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.title").value("Spring Boot에서 JWT 인증 구현하기"))
-        .andExpect(jsonPath("$.content").value("Spring Security와 JWT를 활용한..."))
-        .andExpect(jsonPath("$.category").value("backend"))
-        .andExpect(jsonPath("$.author").value("yonghun"))
-        .andExpect(jsonPath("$.isPublic").value(true));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.title").value("Spring Boot에서 JWT 인증 구현하기"))
+        .andExpect(jsonPath("$.data.content").value("Spring Security와 JWT를 활용한..."))
+        .andExpect(jsonPath("$.data.category").value("backend"))
+        .andExpect(jsonPath("$.data.author").value("yonghun"))
+        .andExpect(jsonPath("$.data.isPublic").value(true));
   }
 
   @Test
@@ -61,14 +62,15 @@ class PostV1ControllerE2ETest {
             .header("X-TOKEN", "dummy-token"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.boards").isArray())
-        .andExpect(jsonPath("$.boards.length()").value(2))
-        .andExpect(jsonPath("$.page").value(1))
-        .andExpect(jsonPath("$.size").value(10))
-        .andExpect(jsonPath("$.total").value(2))
-        .andExpect(jsonPath("$.boards[0].title").value("Spring Boot에서 JWT 인증 구현하기"))
-        .andExpect(jsonPath("$.boards[0].category").value("backend"))
-        .andExpect(jsonPath("$.boards[0].author").value("yonghun"));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.boards").isArray())
+        .andExpect(jsonPath("$.data.boards.length()").value(2))
+        .andExpect(jsonPath("$.data.page").value(1))
+        .andExpect(jsonPath("$.data.size").value(10))
+        .andExpect(jsonPath("$.data.total").value(2))
+        .andExpect(jsonPath("$.data.boards[0].title").value("Spring Boot에서 JWT 인증 구현하기"))
+        .andExpect(jsonPath("$.data.boards[0].category").value("backend"))
+        .andExpect(jsonPath("$.data.boards[0].author").value("yonghun"));
   }
 
   @Test
@@ -139,11 +141,12 @@ class PostV1ControllerE2ETest {
             .header("X-TOKEN", "dummy-token"))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
-        .andExpect(jsonPath("$.title").value("Spring Boot에서 JWT 인증 구현하기"))
-        .andExpect(jsonPath("$.content").value("Spring Security와 JWT를 활용한..."))
-        .andExpect(jsonPath("$.category").value("backend"))
-        .andExpect(jsonPath("$.author").value("yonghun"));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.id").value(1))
+        .andExpect(jsonPath("$.data.title").value("Spring Boot에서 JWT 인증 구현하기"))
+        .andExpect(jsonPath("$.data.content").value("Spring Security와 JWT를 활용한..."))
+        .andExpect(jsonPath("$.data.category").value("backend"))
+        .andExpect(jsonPath("$.data.author").value("yonghun"));
   }
 
   @Test
@@ -162,9 +165,10 @@ class PostV1ControllerE2ETest {
             .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
-        .andExpect(jsonPath("$.title").value("Spring Boot에서 JWT 인증 구현하기"))
-        .andExpect(jsonPath("$.author").value("yonghun"));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.id").value(1))
+        .andExpect(jsonPath("$.data.title").value("Spring Boot에서 JWT 인증 구현하기"))
+        .andExpect(jsonPath("$.data.author").value("yonghun"));
   }
 
   @Test
