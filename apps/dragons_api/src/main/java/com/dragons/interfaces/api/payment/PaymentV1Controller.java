@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/payments")
-public class PaymentV1Controller {
+public class PaymentV1Controller implements PaymentV1Spec {
   // 카드
+  @Override
   @PostMapping("/card")
   public ApiResponse<PaymentV1Dto.Card.Response> card(@Validated @RequestBody PaymentV1Dto.Card.Request request) {
     return ApiResponse.success(new Card.Response(
@@ -24,6 +25,7 @@ public class PaymentV1Controller {
   }
 
   // 계좌이체
+  @Override
   @PostMapping("/bank-transfer")
   public ApiResponse<PaymentV1Dto.Bank.Response> bankTransfer(@Validated @RequestBody PaymentV1Dto.Bank.Request request) {
     return ApiResponse.success(new Bank.Response(

@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
-public class UserV1Controller {
+public class UserV1Controller implements UserV1Spec{
+
   // 회원가입
+  @Override
   @PostMapping("/register")
   public ApiResponse<UserV1Dto.Register.Response> register(@RequestBody @Validated UserV1Dto.Register.Request request) {
 
@@ -24,6 +26,7 @@ public class UserV1Controller {
   }
 
   // 로그인
+  @Override
   @PostMapping("/login")
   public ApiResponse<UserV1Dto.Login.Response> login(@RequestBody UserV1Dto.Login.Request request) {
     return ApiResponse.success(new Login.Response(

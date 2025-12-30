@@ -7,18 +7,21 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/payments/toss")
-public class TossPaymentV1Controller {
+public class TossPaymentV1Controller implements TossPaymentV1Spec {
 
+  @Override
   @PostMapping
   public void request() {
 
   }
 
+  @Override
   @GetMapping("/success")
   public void success() {
 
   }
 
+  @Override
   @GetMapping("/fail")
   public void fail() {
 

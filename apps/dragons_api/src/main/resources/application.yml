@@ -9,6 +9,10 @@ spring:
 datasource:
   redis:
     enabled: false
+springdoc:
+  use-fqn: true
+  swagger-ui:
+    path: /swagger-ui.html
 ---
 spring:
   config:
