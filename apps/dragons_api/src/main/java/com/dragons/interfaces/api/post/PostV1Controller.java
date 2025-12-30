@@ -41,13 +41,13 @@ public class PostV1Controller implements PostV1Spec {
 
     return ApiResponse.success(new Search.Response(
         List.of(
-            new Search.Response.Boards(
+            new Search.Response.Posts(
                 1L,
                 "Spring Boot에서 JWT 인증 구현하기",
                 "backend",
                 "yonghun"
             ),
-            new Search.Response.Boards(
+            new Search.Response.Posts(
                 2L,
                 "Spring Boot에서 JWT 인증 구현하기2",
                 "backend",
