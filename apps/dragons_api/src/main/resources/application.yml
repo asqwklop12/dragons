@@ -5,6 +5,7 @@ spring:
     import:
       - logging.yml
       - optional:redis.yml
+      - jpa.yml
   port: 8080
 datasource:
   redis:
