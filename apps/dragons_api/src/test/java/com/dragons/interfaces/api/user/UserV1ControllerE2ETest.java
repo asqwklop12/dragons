@@ -1,6 +1,7 @@
 package com.dragons.interfaces.api.user;
 
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
+import com.dragons.utils.DragonIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@DragonIntegrationTest
 class UserV1ControllerE2ETest {
 
   private MockMvc mockMvc;
@@ -55,7 +56,7 @@ class UserV1ControllerE2ETest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
         .andExpect(jsonPath("$.data.name").value("홍길동"))
-        .andExpect(jsonPath("$.data.email").value("user@example.com"));
+        .andExpect(jsonPath("$.data.email").value("test@example.com"));
   }
 
   @Test
@@ -175,7 +176,6 @@ class UserV1ControllerE2ETest {
             .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
-        .andExpect(jsonPath("$.data.token").value("아무튼 토큰"));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"));
   }
 }

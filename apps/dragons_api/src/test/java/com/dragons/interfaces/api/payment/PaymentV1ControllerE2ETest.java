@@ -1,5 +1,6 @@
 package com.dragons.interfaces.api.payment;
 
+import com.dragons.utils.DragonIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@DragonIntegrationTest
 class PaymentV1ControllerE2ETest {
 
   private MockMvc mockMvc;

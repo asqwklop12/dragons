@@ -11,14 +11,12 @@ import com.dragons.domain.user.UserRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.utils.DatabaseCleanUp;
 import com.dragons.utils.DragonIntegrationTest;
-import com.dragons.utils.DragonIntegrationJwt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DragonIntegrationTest
-@DragonIntegrationJwt
 class UserServiceIntegrationTest {
 
   @Autowired
