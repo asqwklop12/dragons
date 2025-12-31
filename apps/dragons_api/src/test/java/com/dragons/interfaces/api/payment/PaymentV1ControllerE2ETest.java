@@ -34,7 +34,7 @@ class PaymentV1ControllerE2ETest {
     // given
     String requestBody = """
         {
-          "cardNumber": "1234123412341234",
+          "cardNumber": "4242424242424242",
           "expiryMonth": 12,
           "expiryYear": 2025,
           "cvc": "123",
@@ -46,14 +46,14 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/card")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
         // ApiResponse 래핑 반영: 본문은 $.data 하위에 위치
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
-        .andExpect(jsonPath("$.data.cardNumber").value("123456******5678"))
-        .andExpect(jsonPath("$.data.amount").value(100))
+        .andExpect(jsonPath("$.data.cardNumber").value("424242******4242"))
+        .andExpect(jsonPath("$.data.amount").value(10000))
         .andExpect(jsonPath("$.data.planType").value("premium"));
   }
 
@@ -75,8 +75,8 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/card")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -99,8 +99,8 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/card")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -121,8 +121,8 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/bank-transfer")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
@@ -148,8 +148,8 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/bank-transfer")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }

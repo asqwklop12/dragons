@@ -24,6 +24,17 @@ public class Payment extends BaseEntity {
   @Column(name = "holder_name", nullable = false, length = 100)
   private String holderName;
 
+  public static Payment use(String holderName, int amount, String planType, String paymentType) {
+    return new Payment(holderName, amount, planType, paymentType);
+  }
+
+  private Payment(String holderName, int amount, String planType, String paymentType) {
+    this.holderName = holderName;
+    this.paymentType = paymentType;
+    this.amount = amount;
+    this.planType = planType;
+  }
+
   public String paymentType() {
     return paymentType;
   }
