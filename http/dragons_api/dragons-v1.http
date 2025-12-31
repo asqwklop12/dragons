@@ -16,3 +16,29 @@ Content-Type: application/json
   "email": "test@example.com",
   "password": "password123!"
 }
+
+### 카드 결제
+POST {{dragons-api}}/api/payments/card
+Content-Type: application/json
+
+{
+  "cardNumber": "5105105105105100",
+  "expiryMonth": 12,
+  "expiryYear": 2025,
+  "cvc": "123",
+  "cardholderName": "홍길동",
+  "amount": 10000,
+  "planType": "premium"
+}
+
+### 계좌이체 결제
+POST {{dragons-api}}/api/payments/bank-transfer
+Content-Type: application/json
+
+{
+  "bankCode": "004",
+  "accountNumber": "123456789012",
+  "depositorName": "홍길동",
+  "amount": 10000,
+  "planType": "premium"
+}
