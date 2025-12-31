@@ -40,7 +40,7 @@ public class UserV1Controller implements UserV1Spec{
   // 로그인
   @Override
   @PostMapping("/login")
-  public ApiResponse<UserV1Dto.Login.Response> login(@RequestBody UserV1Dto.Login.Request request) {
+  public ApiResponse<UserV1Dto.Login.Response> login(@RequestBody @Validated UserV1Dto.Login.Request request) {
 
     UserLoginResult result = userService.login(new UserLoginCommand(
         request.email(),

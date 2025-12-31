@@ -6,9 +6,9 @@ import com.dragons.support.error.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.util.regex.Pattern;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import java.util.regex.Pattern;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,6 +29,8 @@ public class User extends BaseEntity {
     return new User(name, email, password);
   }
 
+  private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+
   private static void validate(String name, String email, String password) {
     if (name == null || name.isBlank()) {
       throw new CoreException(ErrorType.BAD_REQUEST, "이름은 비어 있을 수 없습니다.");
@@ -41,8 +43,7 @@ public class User extends BaseEntity {
       throw new CoreException(ErrorType.BAD_REQUEST, "이메일은 비어 있을 수 없습니다.");
     }
     // 간단한 이메일 형식 검증 (RFC 완전 준수 아님)
-    Pattern emailPattern = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    if (!emailPattern.matcher(email).matches()) {
+    if (!EMAIL_PATTERN.matcher(email).matches()) {
       throw new CoreException(ErrorType.BAD_REQUEST, "유효한 이메일 형식이 아닙니다.");
     }
 
