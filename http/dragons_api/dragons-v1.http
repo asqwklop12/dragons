@@ -36,7 +36,7 @@ POST {{dragons-api}}/api/payments/bank-transfer
 Content-Type: application/json
 
 {
-  "bankCode": "004",
+  "bankCode": "998",
   "accountNumber": "123456789012",
   "depositorName": "홍길동",
   "amount": 10000,

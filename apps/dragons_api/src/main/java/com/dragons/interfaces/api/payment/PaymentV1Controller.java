@@ -34,12 +34,12 @@ public class PaymentV1Controller implements PaymentV1Spec {
         request.cardholderName(),
         request.amount(),
         request.planType());
-    var result = paymentService.card(command);
+    var response = paymentService.card(command);
 
     return ApiResponse.success(new Card.Response(
-        result.cardNumber(),
-        result.amount(),
-        result.planType()));
+        response.cardNumber(),
+        response.amount(),
+        response.planType()));
   }
 
   // 계좌이체
@@ -54,13 +54,13 @@ public class PaymentV1Controller implements PaymentV1Spec {
         request.depositorName(),
         request.amount(),
         request.planType());
-    var result = paymentService.bankTransfer(command);
+    var response = paymentService.bankTransfer(command);
 
     return ApiResponse.success(new Bank.Response(
-        result.bankCode(),
-        result.accountNumber(),
-        request.depositorName(),
-        request.amount(),
-        request.planType()));
+        response.bankCode(),
+        response.accountNumber(),
+        response.depositorName(),
+        response.amount(),
+        response.planType()));
   }
 }
