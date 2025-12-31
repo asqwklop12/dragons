@@ -22,6 +22,8 @@ dependencies {
 
 
     testImplementation project(":supports:jackson")
+
+    testImplementation(testFixtures(project(":modules:jpa")))
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
