@@ -126,9 +126,9 @@ class PaymentV1ControllerE2ETest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
-        .andExpect(jsonPath("$.data.accountNumber").value("1234567890"))
+        .andExpect(jsonPath("$.data.accountNumber").value("123456789012"))
         .andExpect(jsonPath("$.data.depositorName").value("홍길동"))
-        .andExpect(jsonPath("$.data.amount").value(100))
+        .andExpect(jsonPath("$.data.amount").value(10000))
         .andExpect(jsonPath("$.data.planType").value("premium"));
   }
 

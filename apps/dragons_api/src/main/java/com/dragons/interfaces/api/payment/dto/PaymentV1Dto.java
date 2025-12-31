@@ -108,6 +108,9 @@ public class PaymentV1Dto {
 
     @Schema(name = "PaymentBankResponse", description = "계좌이체 결제 응답")
     public record Response(
+        // 은행코드: 3자리 숫자
+        @Schema(description = "은행 코드(3자리)", example = "004")
+        String bankCode,
         @Schema(description = "마스킹된 계좌번호", example = "1234567890")
         String accountNumber, //계좌번호
         @Schema(description = "예금주명", example = "홍길동")
