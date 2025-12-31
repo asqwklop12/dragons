@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.LuhnCheck;
 
 @Schema(name = "PaymentV1Dto", description = "결제 API v1 DTO 집합")
 public class PaymentV1Dto {
@@ -20,6 +21,7 @@ public class PaymentV1Dto {
         @Schema(description = "카드 번호(16자리)", example = "1234123412341234")
         @NotBlank
         @Pattern(regexp = "\\d{16}", message = "카드 번호는 16자리를 입력해야 합니다.")
+        @LuhnCheck(message = "카드 번호가 유효하지 않습니다.")
         String cardNumber,
 
         // month 1-12
@@ -54,6 +56,11 @@ public class PaymentV1Dto {
         String planType
 
     ) {
+      public Request {
+        if(planType == null) {
+          planType = "premium"; //임시 플랜이 정해지면 제거
+        }
+      }
     }
 
     @Schema(name = "PaymentCardResponse", description = "카드 결제 응답")
