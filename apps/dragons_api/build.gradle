@@ -6,15 +6,16 @@ plugins {
 description = 'dragons_api'
 
 
+
 dependencies {
     implementation project(":supports:logging")
     implementation project(":supports:jackson")
     implementation project(":modules:redis")
+    implementation project(":modules:jpa")
 
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+
 
     // swagger
     implementation"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0"
