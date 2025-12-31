@@ -4,6 +4,7 @@ spring:
   config:
     import:
       - logging.yml
+      - jwt.yml
       - optional:redis.yml
       - jpa.yml
   port: 8080
