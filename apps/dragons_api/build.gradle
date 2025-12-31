@@ -24,7 +24,6 @@ dependencies {
 
     testImplementation project(":supports:jackson")
     testImplementation(testFixtures(project(":modules:jpa")))
-    testImplementation(testFixtures(project(":supports:jwt")))
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc'
