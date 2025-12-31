@@ -16,5 +16,6 @@ include(
         ':supports:logging',
         ":supports:jackson",
         ':modules:redis',
-        ':modules:jpa'
+        ':modules:jpa',
+        ':supports:jwt'
 )
