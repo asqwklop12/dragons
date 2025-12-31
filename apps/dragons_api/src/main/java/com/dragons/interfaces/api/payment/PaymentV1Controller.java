@@ -1,6 +1,7 @@
 package com.dragons.interfaces.api.payment;
 
 import com.dragons.application.payment.PaymentService;
+import com.dragons.application.payment.dto.PaymentBankTransferCommand;
 import com.dragons.application.payment.dto.PaymentCardCommand;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.payment.dto.PaymentV1Dto;
@@ -46,10 +47,20 @@ public class PaymentV1Controller implements PaymentV1Spec {
   @PostMapping("/bank-transfer")
   public ApiResponse<PaymentV1Dto.Bank.Response> bankTransfer(
       @Validated @RequestBody PaymentV1Dto.Bank.Request request) {
+
+    var command = new PaymentBankTransferCommand(
+        request.bankCode(),
+        request.accountNumber(),
+        request.depositorName(),
+        request.amount(),
+        request.planType());
+    var result = paymentService.bankTransfer(command);
+
     return ApiResponse.success(new Bank.Response(
-        "1234567890",
-        "홍길동",
-        100,
-        "premium"));
+        result.bankCode(),
+        result.accountNumber(),
+        request.depositorName(),
+        request.amount(),
+        request.planType()));
   }
 }
