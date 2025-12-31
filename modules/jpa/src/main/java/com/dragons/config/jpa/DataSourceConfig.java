@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 @Configuration
-public class DataSourceConfig {
+class DataSourceConfig {
   @Bean
   @ConfigurationProperties(prefix = "datasource.mysql-jpa.main")
   HikariConfig mySqlMainHikariConfig() {

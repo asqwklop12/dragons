@@ -43,7 +43,9 @@ subprojects {
 configure(subprojects) {
     plugins.withId('io.spring.dependency-management') {
         dependencyManagement {
-
+            imports {
+                mavenBom "org.testcontainers:testcontainers-bom:1.20.4"
+            }
         }
     }
 }

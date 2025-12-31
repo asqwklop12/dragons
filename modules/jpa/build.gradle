@@ -25,8 +25,11 @@ dependencies {
 
     testImplementation "org.testcontainers:mysql"
     testImplementation "org.testcontainers:junit-jupiter"
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
     testFixturesImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testFixturesImplementation "org.testcontainers:mysql"
+    testFixturesImplementation "org.testcontainers:junit-jupiter"
+    testFixturesImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
