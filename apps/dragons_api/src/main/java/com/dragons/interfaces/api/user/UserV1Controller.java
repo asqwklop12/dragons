@@ -1,6 +1,8 @@
 package com.dragons.interfaces.api.user;
 
 import com.dragons.application.user.UserService;
+import com.dragons.application.user.dto.UserLoginCommand;
+import com.dragons.application.user.dto.UserLoginResult;
 import com.dragons.application.user.dto.UserRegisterCommand;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
@@ -39,8 +41,14 @@ public class UserV1Controller implements UserV1Spec{
   @Override
   @PostMapping("/login")
   public ApiResponse<UserV1Dto.Login.Response> login(@RequestBody UserV1Dto.Login.Request request) {
+
+    UserLoginResult result = userService.login(new UserLoginCommand(
+        request.email(),
+        request.password()
+    ));
+
     return ApiResponse.success(new Login.Response(
-        "아무튼 토큰"
+        result.token()
     ));
   }
 
