@@ -4,9 +4,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "jwt")
 public record JwtProperties(
-                String header,
-                String issuer,
-                String clientSecret,
-                long accessTokenValidityInSeconds,
-                long refreshTokenValidityInSeconds) {
+        String header,
+        String issuer,
+        String clientSecret,
+        long accessTokenValidityInSeconds,
+        long refreshTokenValidityInSeconds) {
 }

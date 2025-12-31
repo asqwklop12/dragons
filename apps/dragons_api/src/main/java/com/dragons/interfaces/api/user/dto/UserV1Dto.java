@@ -58,8 +58,19 @@ public class UserV1Dto {
 
     @Schema(name = "UserLoginRequest", description = "로그인 요청")
     public record Request(
-        @Schema(description = "이메일", example = "test@example.com") String email,
-        @Schema(description = "비밀번호", example = "password123!") String password
+        @Schema(description = "이메일", example = "test@example.com")
+        @NotBlank(message = "이메일은 필수입니다.")
+        @Email(message = "유효한 이메일 형식이 아닙니다.")
+        String email,
+
+        @Schema(description = "비밀번호", example = "password123!")
+        @NotBlank(message = "비밀번호는 필수입니다.")
+        @Size(min = 8, message = "비밀번호는 최소 8자 이상이어야 합니다.")
+        @Pattern(
+            regexp = "^(?:(?=.*[A-Za-z])(?=.*\\d)|(?=.*[A-Za-z])(?=.*[^A-Za-z0-9])|(?=.*\\d)(?=.*[^A-Za-z0-9]))[A-Za-z\\d[^A-Za-z0-9]]+$",
+            message = "비밀번호는 영문, 숫자, 특수문자 중 2가지 이상을 포함해야 합니다."
+        )
+        String password
     ) {
 
     }

@@ -65,20 +65,6 @@ class UserServiceIntegrationTest {
   }
 
   @Test
-  @DisplayName("로그인 성공")
-  void login_success_2() {
-    // given
-    userRepository.save(com.dragons.domain.user.User.register("홍길동", "test@example.com", "password123!"));
-    UserLoginCommand command = new UserLoginCommand("test@example.com", "password123!");
-
-    // when
-    UserLoginResult result = userService.login(command);
-
-    // then
-    assertThat(result.token()).isNotNull();
-  }
-
-  @Test
   @DisplayName("회원가입 실패 - 이름 누락")
   void register_fail_nameBlank() {
     // given
