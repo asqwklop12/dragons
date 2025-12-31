@@ -3,9 +3,7 @@ package com.dragons.testcontainers;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 public class MysqlTestContainersConfig implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
