@@ -1,8 +1,6 @@
 package com.dragons.domain.user;
 
 import com.dragons.domain.BaseEntity;
-import com.dragons.support.error.CoreException;
-import com.dragons.support.error.ErrorType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
