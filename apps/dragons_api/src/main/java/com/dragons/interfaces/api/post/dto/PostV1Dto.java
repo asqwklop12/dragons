@@ -65,7 +65,7 @@ public class PostV1Dto {
 
     @Schema(name = "PostSearchResponse", description = "게시글 목록 조회 응답")
     public record Response(
-        @Schema(description = "게시글 목록") List<Posts> boards,
+        @Schema(description = "게시글 목록") List<Posts> posts,
         @Schema(description = "현재 페이지", example = "1") int page,
         @Schema(description = "페이지 크기", example = "10") int size,
         @Schema(description = "총 건수", example = "2") int total
@@ -131,7 +131,7 @@ public class PostV1Dto {
 
   @Schema(name = "PostCategory", description = "게시글 카테고리")
   public enum Category {
-    BACKEND("backend"), FRONTEND("frontend"), DEVOPS("devops"), ECT("ect");
+    BACKEND("backend"), FRONTEND("frontend"), DEVOPS("devops"), ETC("etc");
 
     private final String name;
 
