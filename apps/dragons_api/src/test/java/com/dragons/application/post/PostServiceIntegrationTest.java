@@ -19,7 +19,6 @@ import com.dragons.infrastructure.post.PostJpaRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.utils.DatabaseCleanUp;
 import com.dragons.utils.DragonIntegrationTest;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
