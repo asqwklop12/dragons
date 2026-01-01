@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -78,39 +79,36 @@ public class PostService {
   public PostGetResult get(PostGetCommand command) {
     Long postId = command.postId();
     Post post = postRepository.findById(postId).orElseThrow(
-        () -> new CoreException(ErrorType.NOT_FOUND,"게시글이 존재하지 않습니다.")
-    );
+        () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
     return new PostGetResult(
-      post.getId(),
-      post.title(),
-      post.content(),
-      post.category(),
-      post.author()
-    );
+        post.getId(),
+        post.title(),
+        post.content(),
+        post.category(),
+        post.author());
   }
 
   // 수정
+  @Transactional
   public PostUpdateResult update(PostUpdateCommand command) {
     Long postId = command.postId();
     Post post = postRepository.findById(postId).orElseThrow(
-        () -> new CoreException(ErrorType.NOT_FOUND,"게시글이 존재하지 않습니다.")
-    );
+        () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
-    post.reWrite(command.title(),command.content());
+    post.reWrite(command.title(), command.content());
 
     return new PostUpdateResult(
         post.getId(),
         post.title(),
-        post.author()
-    );
+        post.author());
   }
 
   // 삭제
+  @Transactional
   public PostDeleteResult delete(PostDeleteCommand command) {
     Long postId = command.postId();
     Post post = postRepository.findById(postId).orElseThrow(
-        () -> new CoreException(ErrorType.NOT_FOUND,"게시글이 존재하지 않습니다.")
-    );
+        () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
     post.delete();
 
