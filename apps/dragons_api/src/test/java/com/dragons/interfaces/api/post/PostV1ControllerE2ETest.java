@@ -86,8 +86,8 @@ class PostV1ControllerE2ETest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
-        .andExpect(jsonPath("$.data.boards").isArray())
-        .andExpect(jsonPath("$.data.boards.length()").value(2))
+        .andExpect(jsonPath("$.data.posts").isArray())
+        .andExpect(jsonPath("$.data.posts.length()").value(2))
         .andExpect(jsonPath("$.data.page").value(1))
         .andExpect(jsonPath("$.data.size").value(10))
         .andExpect(jsonPath("$.data.total").value(2));
