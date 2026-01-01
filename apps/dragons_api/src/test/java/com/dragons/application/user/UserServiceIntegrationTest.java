@@ -1,14 +1,12 @@
 package com.dragons.application.user;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.dragons.application.user.dto.UserLoginCommand;
 import com.dragons.application.user.dto.UserLoginResult;
 import com.dragons.application.user.dto.UserRegisterCommand;
 import com.dragons.application.user.dto.UserRegisterResult;
 import com.dragons.domain.user.UserRepository;
-import com.dragons.support.error.CoreException;
 import com.dragons.utils.DatabaseCleanUp;
 import com.dragons.utils.DragonIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
