@@ -44,10 +44,10 @@ public class PostService {
     return new PostWriteResult(
         post.getId(),
         post.title(),
-        command.content(),
-        command.category(),
-        command.isPublic(),
-        author);
+        post.content(),
+        post.category(),
+        post.isPublic(),
+        post.author());
   }
 
   // 목록 조회

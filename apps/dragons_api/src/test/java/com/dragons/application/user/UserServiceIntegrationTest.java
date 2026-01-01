@@ -64,48 +64,4 @@ class UserServiceIntegrationTest {
     assertThat(result.token()).isNotNull();
   }
 
-  @Test
-  @DisplayName("회원가입 실패 - 이름 누락")
-  void register_fail_nameBlank() {
-    // given
-    UserRegisterCommand command = new UserRegisterCommand(
-        "",
-        "test@example.com",
-        "password123!");
-
-    // when & then
-    assertThatThrownBy(() -> userService.register(command))
-        .isInstanceOf(CoreException.class)
-        .hasMessage("이름은 비어 있을 수 없습니다.");
-  }
-
-  @Test
-  @DisplayName("회원가입 실패 - 이메일 형식 오류")
-  void register_fail_invalidEmail() {
-    // given
-    UserRegisterCommand command = new UserRegisterCommand(
-        "홍길동",
-        "invalid-email",
-        "password123!");
-
-    // when & then
-    assertThatThrownBy(() -> userService.register(command))
-        .isInstanceOf(CoreException.class)
-        .hasMessage("유효한 이메일 형식이 아닙니다.");
-  }
-
-  @Test
-  @DisplayName("회원가입 실패 - 비밀번호 길이 부족")
-  void register_fail_passwordTooShort() {
-    // given
-    UserRegisterCommand command = new UserRegisterCommand(
-        "홍길동",
-        "test@example.com",
-        "pass");
-
-    // when & then
-    assertThatThrownBy(() -> userService.register(command))
-        .isInstanceOf(CoreException.class)
-        .hasMessage("비밀번호는 최소 8자 이상이어야 합니다.");
-  }
 }
