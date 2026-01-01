@@ -150,11 +150,7 @@ class PostServiceIntegrationTest {
     void search_default_sort() {
         // given
         postRepository.save(Post.write("Old", "Content", "backend", true, "yonghun"));
-        // 조금 늦게 저장
-        try {
-            Thread.sleep(10);
-        } catch (InterruptedException e) {
-        }
+
         postRepository.save(Post.write("New", "Content", "backend", true, "yonghun"));
 
         PostSearchCondition condition = new PostSearchCondition(1, 10, null);
