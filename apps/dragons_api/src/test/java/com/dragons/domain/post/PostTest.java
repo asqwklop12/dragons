@@ -3,7 +3,11 @@ package com.dragons.domain.post;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.dragons.domain.user.User;
+import com.dragons.support.error.CoreException;
+import com.dragons.support.error.ErrorType;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 class PostTest {
@@ -108,5 +112,49 @@ class PostTest {
 
         // then
         assertThat(post.getDeletedAt()).isNull();
+    }
+
+
+    @Nested
+    @DisplayName("실패: 공백 검증")
+    class Validate {
+
+        @Test
+        @DisplayName("제목이 비어있으면 IllegalArgumentException")
+        void notNull_title() {
+            assertThatThrownBy(() -> Post.write(" \t\n", "내용", "backend", true, "author"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("제목은 필수입니다");
+        }
+
+        @Test
+        @DisplayName("내용이 비어있으면 IllegalArgumentException")
+        void notNull_content() {
+            assertThatThrownBy(() -> Post.write("제목1", "\t\n", "backend", true, "author"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("내용은 필수입니다");
+        }
+
+        @Test
+        @DisplayName("카테고리가 비어있으면 IllegalArgumentException")
+        void notNull_category() {
+            assertThatThrownBy(() -> Post.write("제목1", "내용", "\t\n", true, "author"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("카테고리는 필수입니다");
+        }
+
+        @Test
+        @DisplayName("작성자가 비어있으면 IllegalArgumentException")
+        void notNull_author() {
+            assertThatThrownBy(() -> Post.write("제목1", "내용", "backend", true, "\t\n"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("작성자는 필수입니다");
+        }
+
+
+
+
+
+
     }
 }

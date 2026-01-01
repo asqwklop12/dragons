@@ -34,11 +34,27 @@ public class Post extends BaseEntity {
   }
 
   private Post(String title, String content, String category, boolean isPublic, String author) {
+    validate(title, content, category, author);
     this.title = title;
     this.content = content;
     this.category = category;
     this.author = author;
     this.isPublic = isPublic;
+  }
+
+  private void validate(String title, String content, String category, String author) {
+    if (title == null || title.isBlank()) {
+      throw new IllegalArgumentException("제목은 필수입니다");
+    }
+    if (content == null || content.isBlank()) {
+      throw new IllegalArgumentException("내용은 필수입니다");
+    }
+    if (category == null || category.isBlank()) {
+      throw new IllegalArgumentException("카테고리는 필수입니다");
+    }
+    if (author == null || author.isBlank()) {
+      throw new IllegalArgumentException("작성자는 필수입니다");
+    }
   }
 
   public String title() {
@@ -58,17 +74,17 @@ public class Post extends BaseEntity {
   }
 
   public void reWrite(String title, String content) {
-    if(title != null) {
+    if (title != null) {
       this.title = title;
     }
 
-    if(content != null) {
+    if (content != null) {
       this.content = content;
     }
   }
 
   public void checkAuthor(String author) {
-    if(!this.author.equals(author)) {
+    if (!this.author.equals(author)) {
       throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
     }
   }

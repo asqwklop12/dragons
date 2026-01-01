@@ -33,25 +33,25 @@ public class User extends BaseEntity {
 
   private static void validate(String name, String email, String password) {
     if (name == null || name.isBlank()) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "이름은 비어 있을 수 없습니다.");
+      throw new IllegalArgumentException( "이름은 비어 있을 수 없습니다.");
     }
     if (name.length() > 100) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "이름은 100자를 초과할 수 없습니다.");
+      throw new IllegalArgumentException("이름은 100자를 초과할 수 없습니다.");
     }
 
     if (email == null || email.isBlank()) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "이메일은 비어 있을 수 없습니다.");
+      throw new IllegalArgumentException( "이메일은 비어 있을 수 없습니다.");
     }
     // 간단한 이메일 형식 검증 (RFC 완전 준수 아님)
     if (!EMAIL_PATTERN.matcher(email).matches()) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "유효한 이메일 형식이 아닙니다.");
+      throw new IllegalArgumentException( "유효한 이메일 형식이 아닙니다.");
     }
 
     if (password == null || password.isBlank()) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "비밀번호는 비어 있을 수 없습니다.");
+      throw new IllegalArgumentException( "비밀번호는 비어 있을 수 없습니다.");
     }
     if (password.length() < 8) {
-      throw new CoreException(ErrorType.BAD_REQUEST, "비밀번호는 최소 8자 이상이어야 합니다.");
+      throw new IllegalArgumentException( "비밀번호는 최소 8자 이상이어야 합니다.");
     }
   }
 
