@@ -15,7 +15,6 @@ import com.dragons.application.post.dto.PostWriteResult;
 import com.dragons.config.jwt.JwtTokenProvider;
 import com.dragons.domain.post.Post;
 import com.dragons.domain.post.PostRepository;
-import com.dragons.infrastructure.post.PostJpaRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.utils.DatabaseCleanUp;
 import com.dragons.utils.DragonIntegrationTest;
@@ -44,7 +43,7 @@ class PostServiceIntegrationTest {
     @BeforeEach
     void setUp() {
         databaseCleanUp.truncateAllTables();
-        token = jwtTokenProvider.createAccessToken("yonghun");
+        token = jwtTokenProvider.createAccessToken("test@example.com");
     }
 
     @Test
@@ -62,21 +61,21 @@ class PostServiceIntegrationTest {
         PostWriteResult result = postService.write(command);
 
         // then
-        Post post = ((PostJpaRepository) postRepository).findAll().get(0);
+        Post post = postRepository.findAll().get(0);
         assertThat(post.title()).isEqualTo("제목");
         assertThat(post.content()).isEqualTo("내용");
         assertThat(post.category()).isEqualTo("backend");
-        assertThat(post.author()).isEqualTo("yonghun");
+        assertThat(post.author()).isEqualTo("test@example.com");
 
         assertThat(result.title()).isEqualTo("제목");
-        assertThat(result.author()).isEqualTo("yonghun");
+        assertThat(result.author()).isEqualTo("test@example.com");
     }
 
     @Test
     @DisplayName("게시글 단건 조회")
     void get_success() {
         // given
-        Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "yonghun"));
+        Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
         PostGetCommand command = new PostGetCommand(saved.getId());
 
         // when
@@ -85,22 +84,52 @@ class PostServiceIntegrationTest {
         // then
         assertThat(result.title()).isEqualTo("Title");
         assertThat(result.content()).isEqualTo("Content");
-        assertThat(result.author()).isEqualTo("yonghun");
+        assertThat(result.author()).isEqualTo("test@example.com");
         assertThat(result.category()).isEqualTo("backend");
     }
+
+    @Test
+    @DisplayName("존재하지 않는 게시글 단건 조회 시 예외")
+    void get_notFound() {
+        // given
+        Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
+        PostGetCommand command = new PostGetCommand(saved.getId()+1);
+
+
+        // when&then
+        assertThatThrownBy(() -> postService.get(command))
+            .isInstanceOf(CoreException.class)
+            .hasMessage("게시글이 존재하지 않습니다.");
+    }
+
+    @Test
+    @DisplayName("삭제된 게시글은 조회 시 예외")
+    void get_delete_post() {
+        // given
+        Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
+        postService.delete(new PostDeleteCommand(saved.getId()));
+        PostGetCommand command = new PostGetCommand(saved.getId());
+
+
+        // when&then
+        assertThatThrownBy(() -> postService.get(command))
+            .isInstanceOf(CoreException.class)
+            .hasMessage("게시글이 존재하지 않습니다.");
+    }
+
 
     @Test
     @DisplayName("게시글 수정")
     void update_success() {
         // given
-        Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "yonghun"));
+        Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
         PostUpdateCommand command = new PostUpdateCommand(saved.getId(), "Updated Title", "Updated Content");
 
         // when
         PostUpdateResult result = postService.update(command);
 
         // then
-        Post updated = postRepository.findById(saved.getId()).orElseThrow();
+        Post updated = postRepository.findByIdAndDeletedAtIsNull(saved.getId()).orElseThrow();
         assertThat(updated.title()).isEqualTo("Updated Title");
         assertThat(updated.content()).isEqualTo("Updated Content");
 
@@ -111,7 +140,7 @@ class PostServiceIntegrationTest {
     @DisplayName("게시글 삭제 - Soft Delete")
     void delete_success() {
         // given
-        Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "yonghun"));
+        Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
         PostDeleteCommand command = new PostDeleteCommand(saved.getId());
 
         // when
@@ -127,7 +156,7 @@ class PostServiceIntegrationTest {
     void search_paging() {
         // given
         for (int i = 1; i <= 20; i++) {
-            postRepository.save(Post.write("Title " + i, "Content " + i, "backend", true, "yonghun"));
+            postRepository.save(Post.write("Title " + i, "Content " + i, "backend", true, "test@example.com"));
         }
 
         PostSearchCondition condition = new PostSearchCondition(1, 10, "createdAt,desc");
@@ -149,9 +178,9 @@ class PostServiceIntegrationTest {
     @DisplayName("게시글 검색 - 정렬 조건 없음 (기본값)")
     void search_default_sort() {
         // given
-        postRepository.save(Post.write("Old", "Content", "backend", true, "yonghun"));
+        postRepository.save(Post.write("Old", "Content", "backend", true, "test@example.com"));
 
-        postRepository.save(Post.write("New", "Content", "backend", true, "yonghun"));
+        postRepository.save(Post.write("New", "Content", "backend", true, "test@example.com"));
 
         PostSearchCondition condition = new PostSearchCondition(1, 10, null);
 
