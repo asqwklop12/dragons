@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 public interface PostRepository {
   Post save(Post post);
 
-  Page<Post> findAll(Pageable pageable);
+  Page<Post> findAllByDeletedAtIsNull(Pageable pageable);
 
   List<Post> findAll();
 

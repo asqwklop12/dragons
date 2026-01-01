@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class PostV1Controller implements PostV1Spec {
 
-         private final PostService postService;
+  private final PostService postService;
 
   // 작성
   @Override
@@ -49,7 +49,7 @@ public class PostV1Controller implements PostV1Spec {
     PostWriteResult result = postService.write(new PostWriteCommand(
         request.title(),
         request.content(),
-        request.category().getValue(),
+        request.category().category(),
         request.isPublic(),
         token));
 
@@ -128,15 +128,15 @@ public class PostV1Controller implements PostV1Spec {
   // 삭제
   @Override
   @DeleteMapping("/{postId}")
-  public PostV1Dto.Delete.Response delete(
+  public ApiResponse<PostV1Dto.Delete.Response> delete(
       @RequestHeader("X-TOKEN") String token,
       @PathVariable Long postId) {
 
     PostDeleteResult result = postService.delete(new PostDeleteCommand(postId));
 
-    return new Response(
+    return ApiResponse.success(new Response(
         result.id(),
         result.title(),
-        result.author());
+        result.author()));
   }
 }

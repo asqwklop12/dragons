@@ -143,9 +143,6 @@ public class PostV1Dto {
       return name;
     }
 
-    public String getValue() {
-      return name;
-    }
 
   }
 }
