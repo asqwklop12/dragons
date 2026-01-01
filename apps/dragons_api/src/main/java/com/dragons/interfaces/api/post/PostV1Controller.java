@@ -117,7 +117,8 @@ public class PostV1Controller implements PostV1Spec {
     PostUpdateResult result = postService.update(new PostUpdateCommand(
         postId,
         request.title(),
-        request.content()));
+        request.content(),
+        token));
 
     return ApiResponse.success(new Update.Response(
         result.id(),
@@ -132,7 +133,7 @@ public class PostV1Controller implements PostV1Spec {
       @RequestHeader("X-TOKEN") String token,
       @PathVariable Long postId) {
 
-    PostDeleteResult result = postService.delete(new PostDeleteCommand(postId));
+    PostDeleteResult result = postService.delete(new PostDeleteCommand(postId,token));
 
     return ApiResponse.success(new Response(
         result.id(),

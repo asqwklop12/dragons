@@ -1,6 +1,7 @@
 package com.dragons.application.post.dto;
 
 public record PostDeleteCommand(
-    Long postId
+    Long postId,
+    String token
 ) {
 }

@@ -66,4 +66,10 @@ public class Post extends BaseEntity {
       this.content = content;
     }
   }
+
+  public void checkAuthor(String author) {
+    if(!this.author.equals(author)) {
+      throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
+    }
+  }
 }
