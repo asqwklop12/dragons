@@ -42,6 +42,7 @@ public class PostService {
             author));
 
     return new PostWriteResult(
+        post.getId(),
         post.title(),
         command.content(),
         command.category(),
@@ -64,6 +65,7 @@ public class PostService {
 
     return new PostSearchResult(
         result.getContent().stream()
+            .filter(p -> p.getDeletedAt() == null)
             .map(post -> new PostSearchResult.PostSummary(
                 post.getId(),
                 post.title(),

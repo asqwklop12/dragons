@@ -23,16 +23,21 @@ X-TOKEN: {{auth_token}}
   "isPublic": true
 }
 
+
+> {%
+    client.global.set("post_id", response.body.data.id);
+%}
+
 ### 게시글 목록 조회
 GET {{dragons-api}}/api/posts?page=1&limit=10&sort=createdAt,desc
 X-TOKEN: {{auth_token}}
 
 ### 게시글 단건 조회
-GET {{dragons-api}}/api/posts/1
+GET {{dragons-api}}/api/posts/{{post_id}}
 X-TOKEN: {{auth_token}}
 
 ### 게시글 수정
-PUT {{dragons-api}}/api/posts/1
+PUT {{dragons-api}}/api/posts/{{post_id}}
 Content-Type: application/json
 X-TOKEN: {{auth_token}}
 
@@ -42,5 +47,5 @@ X-TOKEN: {{auth_token}}
 }
 
 ### 게시글 삭제
-DELETE {{dragons-api}}/api/posts/1
+DELETE {{dragons-api}}/api/posts/{{post_id}}
 X-TOKEN: {{auth_token}}
