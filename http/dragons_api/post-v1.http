@@ -1,0 +1,46 @@
+### 로그인 및 토큰 획득
+POST {{dragons-api}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "password123!"
+}
+
+> {%
+client.global.set("auth_token", response.body.data.token);
+%}
+
+### 게시글 작성
+POST {{dragons-api}}/api/posts
+Content-Type: application/json
+X-TOKEN: {{auth_token}}
+
+{
+  "title": "HTTP Client로 게시글 작성하기",
+  "content": "IntelliJ HTTP Client를 사용하면 API 테스트가 매우 간편합니다.",
+  "category": "BACKEND",
+  "isPublic": true
+}
+
+### 게시글 목록 조회
+GET {{dragons-api}}/api/posts?page=1&limit=10&sort=createdAt,desc
+X-TOKEN: {{auth_token}}
+
+### 게시글 단건 조회
+GET {{dragons-api}}/api/posts/1
+X-TOKEN: {{auth_token}}
+
+### 게시글 수정
+PUT {{dragons-api}}/api/posts/1
+Content-Type: application/json
+X-TOKEN: {{auth_token}}
+
+{
+  "title": "HTTP Client로 게시글 수정하기",
+  "content": "수정된 내용입니다."
+}
+
+### 게시글 삭제
+DELETE {{dragons-api}}/api/posts/1
+X-TOKEN: {{auth_token}}
