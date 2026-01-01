@@ -32,7 +32,7 @@ public class PostV1Dto {
 
     @Schema(name = "PostCreateResponse", description = "게시글 작성 응답")
     public record Response(
-        @Schema(description = "게시글 아이디", example = "1") long id, // 제목
+        @Schema(description = "게시글 아이디", example = "1") long id, // 게시글 아이디
         @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") String title, // 제목
         @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...") String content, // 내용
         @Schema(description = "카테고리", example = "backend") String category, // 카테고리
