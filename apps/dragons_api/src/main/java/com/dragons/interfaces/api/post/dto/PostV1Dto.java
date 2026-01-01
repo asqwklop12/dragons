@@ -3,6 +3,7 @@ package com.dragons.interfaces.api.post.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
@@ -48,8 +49,8 @@ public class PostV1Dto {
 
     @Schema(name = "PostSearchCondition", description = "게시글 목록 조회 조건")
     public record Condition(
-        @Schema(description = "페이지 번호(1부터)", example = "1") Integer page,
-        @Schema(description = "페이지 크기", example = "10") Integer limit,
+        @Schema(description = "페이지 번호(1부터)", example = "1") @Positive Integer page,
+        @Schema(description = "페이지 크기", example = "10") @Positive Integer limit,
         @Schema(description = "정렬 필드", example = "createdAt,desc") String sort) {
       public Condition {
         if (page == null) {
