@@ -1,0 +1,5 @@
+jwt.header: Authorization
+jwt.issuer: dragons
+jwt.client-secret: test-secret-key-that-is-long-enough-for-hs512-algorithm-minimum-64-bytes
+jwt.access-token-validity-in-seconds: 3600
+jwt.refresh-token-validity-in-seconds: 86400

@@ -1,5 +1,16 @@
 package com.dragons.interfaces.api.post;
 
+import com.dragons.application.post.PostService;
+import com.dragons.application.post.dto.PostDeleteCommand;
+import com.dragons.application.post.dto.PostDeleteResult;
+import com.dragons.application.post.dto.PostGetCommand;
+import com.dragons.application.post.dto.PostGetResult;
+import com.dragons.application.post.dto.PostSearchCondition;
+import com.dragons.application.post.dto.PostSearchResult;
+import com.dragons.application.post.dto.PostUpdateCommand;
+import com.dragons.application.post.dto.PostUpdateResult;
+import com.dragons.application.post.dto.PostWriteCommand;
+import com.dragons.application.post.dto.PostWriteResult;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.post.dto.PostV1Dto;
 import com.dragons.interfaces.api.post.dto.PostV1Dto.Create;
@@ -8,6 +19,7 @@ import com.dragons.interfaces.api.post.dto.PostV1Dto.Get;
 import com.dragons.interfaces.api.post.dto.PostV1Dto.Search;
 import com.dragons.interfaces.api.post.dto.PostV1Dto.Update;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +34,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/posts")
+@RequiredArgsConstructor
 public class PostV1Controller implements PostV1Spec {
 
+         private final PostService postService;
 
   // 작성
   @Override
@@ -32,13 +46,19 @@ public class PostV1Controller implements PostV1Spec {
       @RequestHeader("X-TOKEN") String token,
       @RequestBody @Validated PostV1Dto.Create.Request request) {
 
+    PostWriteResult result = postService.write(new PostWriteCommand(
+        request.title(),
+        request.content(),
+        request.category().getValue(),
+        request.isPublic(),
+        token));
+
     return ApiResponse.success(new Create.Response(
-        "Spring Boot에서 JWT 인증 구현하기",
-        "Spring Security와 JWT를 활용한...",
-        "backend",
-        "yonghun",
-        true
-    ));
+        result.title(),
+        result.content(),
+        result.category(),
+        result.author(),
+        result.isPublic()));
   }
 
   // 목록 조회
@@ -48,21 +68,24 @@ public class PostV1Controller implements PostV1Spec {
       @RequestHeader("X-TOKEN") String token,
       @ModelAttribute PostV1Dto.Search.Condition condition) {
 
+    PostSearchResult result = postService.search(new PostSearchCondition(
+        condition.page(),
+        condition.limit(),
+        condition.sort()));
+
+    List<Search.Response.Posts> posts = result.posts().stream()
+        .map(post -> new Search.Response.Posts(
+            post.id(),
+            post.title(),
+            post.category(),
+            post.author()))
+        .toList();
+
     return ApiResponse.success(new Search.Response(
-        List.of(
-            new Search.Response.Posts(
-                1L,
-                "Spring Boot에서 JWT 인증 구현하기",
-                "backend",
-                "yonghun"
-            ),
-            new Search.Response.Posts(
-                2L,
-                "Spring Boot에서 JWT 인증 구현하기2",
-                "backend",
-                "yonghun2"
-            )
-        ), 1, 10, 2));
+        posts,
+        result.page(),
+        result.size(),
+        (int) result.total()));
   }
 
   // 조회
@@ -72,13 +95,14 @@ public class PostV1Controller implements PostV1Spec {
       @RequestHeader("X-TOKEN") String token,
       @PathVariable Long postId) {
 
+    PostGetResult result = postService.get(new PostGetCommand(postId));
+
     return ApiResponse.success(new Get.Response(
-        1L,
-        "Spring Boot에서 JWT 인증 구현하기",
-        "Spring Security와 JWT를 활용한...",
-        "backend",
-        "yonghun"
-    ));
+        result.id(),
+        result.title(),
+        result.content(),
+        result.category(),
+        result.author()));
   }
 
   // 수정
@@ -89,11 +113,16 @@ public class PostV1Controller implements PostV1Spec {
       @PathVariable Long postId,
       @RequestBody @Validated PostV1Dto.Update.Request request) {
 
-    return ApiResponse.success(new Update.Response(1L,
-        "Spring Boot에서 JWT 인증 구현하기",
-        "yonghun"));
-  }
+    PostUpdateResult result = postService.update(new PostUpdateCommand(
+        postId,
+        request.title(),
+        request.content()));
 
+    return ApiResponse.success(new Update.Response(
+        result.id(),
+        result.title(),
+        result.author()));
+  }
 
   // 삭제
   @Override
@@ -102,10 +131,11 @@ public class PostV1Controller implements PostV1Spec {
       @RequestHeader("X-TOKEN") String token,
       @PathVariable Long postId) {
 
+    PostDeleteResult result = postService.delete(new PostDeleteCommand(postId));
+
     return new Response(
-        1,
-        "Spring Boot에서 JWT 인증 구현하기",
-        "yonghun"
-    );
+        result.id(),
+        result.title(),
+        result.author());
   }
 }
