@@ -29,6 +29,18 @@ public class Post extends BaseEntity {
   @Column(name = "is_public", nullable = false)
   private boolean isPublic;
 
+  public static Post write(String title, String content, String category, boolean isPublic, String author) {
+    return new Post(title, content, category, isPublic, author);
+  }
+
+  private Post(String title, String content, String category, boolean isPublic, String author) {
+    this.title = title;
+    this.content = content;
+    this.category = category;
+    this.author = author;
+    this.isPublic = isPublic;
+  }
+
   public String title() {
     return title;
   }
@@ -43,5 +55,15 @@ public class Post extends BaseEntity {
 
   public String author() {
     return author;
+  }
+
+  public void reWrite(String title, String content) {
+    if(title != null) {
+      this.title = title;
+    }
+
+    if(content != null) {
+      this.content = content;
+    }
   }
 }

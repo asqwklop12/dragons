@@ -14,24 +14,14 @@ public class PostV1Dto {
 
     @Schema(name = "PostCreateRequest", description = "게시글 작성 요청")
     public record Request(
-        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기")
-        @NotBlank
-        @Size(min = 1, max = 100)
-        String title,
+        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") @NotBlank @Size(min = 1, max = 100) String title,
 
-        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...")
-        @NotBlank
-        @Size(min = 1, max = 10_000)
-        String content,
+        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...") @NotBlank @Size(min = 1, max = 10_000) String content,
 
         // 카테고리: enum 타입, 필수
-        @Schema(description = "카테고리", requiredMode = Schema.RequiredMode.REQUIRED, example = "BACKEND")
-        @NotNull
-        Category category,
+        @Schema(description = "카테고리", requiredMode = Schema.RequiredMode.REQUIRED, example = "BACKEND") @NotNull Category category,
 
-        @Schema(description = "공개 여부", example = "true")
-        Boolean isPublic
-    ) {
+        @Schema(description = "공개 여부", example = "true") Boolean isPublic) {
       public Request {
         if (isPublic == null) {
           isPublic = true;
@@ -41,16 +31,11 @@ public class PostV1Dto {
 
     @Schema(name = "PostCreateResponse", description = "게시글 작성 응답")
     public record Response(
-        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기")
-        String title, // 제목
-        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...")
-        String content, //내용
-        @Schema(description = "카테고리", example = "backend")
-        String category, // 카테고리
-        @Schema(description = "작성자", example = "yonghun")
-        String author, // 작가
-        @Schema(description = "공개 여부", example = "true")
-        Boolean isPublic // 공개 여부
+        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") String title, // 제목
+        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...") String content, // 내용
+        @Schema(description = "카테고리", example = "backend") String category, // 카테고리
+        @Schema(description = "작성자", example = "yonghun") String author, // 작가
+        @Schema(description = "공개 여부", example = "true") Boolean isPublic // 공개 여부
 
     ) {
 
@@ -62,13 +47,9 @@ public class PostV1Dto {
 
     @Schema(name = "PostSearchCondition", description = "게시글 목록 조회 조건")
     public record Condition(
-        @Schema(description = "페이지 번호(1부터)", example = "1")
-        Integer page,
-        @Schema(description = "페이지 크기", example = "10")
-        Integer limit,
-        @Schema(description = "정렬 필드", example = "createdAt,desc")
-        String sort
-    ) {
+        @Schema(description = "페이지 번호(1부터)", example = "1") Integer page,
+        @Schema(description = "페이지 크기", example = "10") Integer limit,
+        @Schema(description = "정렬 필드", example = "createdAt,desc") String sort) {
       public Condition {
         if (page == null) {
           page = 1;
@@ -82,27 +63,19 @@ public class PostV1Dto {
 
     @Schema(name = "PostSearchResponse", description = "게시글 목록 조회 응답")
     public record Response(
-        @Schema(description = "게시글 목록")
-        List<Posts> boards,
-        @Schema(description = "현재 페이지", example = "1")
-        int page,
-        @Schema(description = "페이지 크기", example = "10")
-        int size,
-        @Schema(description = "총 건수", example = "2")
-        int total
+        @Schema(description = "게시글 목록") List<Posts> boards,
+        @Schema(description = "현재 페이지", example = "1") int page,
+        @Schema(description = "페이지 크기", example = "10") int size,
+        @Schema(description = "총 건수", example = "2") int total
 
     ) {
 
       @Schema(name = "PostSummary", description = "게시글 요약 정보")
       public record Posts(
-          @Schema(description = "게시글 ID", example = "1")
-          long id,      //아이디
-          @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기")
-          String title, // 제목
-          @Schema(description = "카테고리", example = "backend")
-          String category, // 카테고리
-          @Schema(description = "작성자", example = "yonghun")
-          String author // 작가
+          @Schema(description = "게시글 ID", example = "1") long id, // 아이디
+          @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") String title, // 제목
+          @Schema(description = "카테고리", example = "backend") String category, // 카테고리
+          @Schema(description = "작성자", example = "yonghun") String author // 작가
       ) {
       }
 
@@ -115,16 +88,11 @@ public class PostV1Dto {
 
     @Schema(name = "PostGetResponse", description = "게시글 단건 조회 응답")
     public record Response(
-        @Schema(description = "게시글 ID", example = "1")
-        long id,
-        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기")
-        String title, // 제목
-        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...")
-        String content, //내용
-        @Schema(description = "카테고리", example = "backend")
-        String category, // 카테고리
-        @Schema(description = "작성자", example = "yonghun")
-        String author // 작가
+        @Schema(description = "게시글 ID", example = "1") long id,
+        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") String title, // 제목
+        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...") String content, // 내용
+        @Schema(description = "카테고리", example = "backend") String category, // 카테고리
+        @Schema(description = "작성자", example = "yonghun") String author // 작가
     ) {
 
     }
@@ -135,27 +103,16 @@ public class PostV1Dto {
 
     @Schema(name = "PostUpdateRequest", description = "게시글 수정 요청")
     public record Request(
-        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기")
-        @NotBlank
-        @Size(min = 1, max = 100)
-        String title,
-        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...")
-        @NotBlank
-        @Size(min = 1, max = 10_000)
-        String content
-    ) {
+        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") @NotBlank @Size(min = 1, max = 100) String title,
+        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...") @NotBlank @Size(min = 1, max = 10_000) String content) {
 
     }
 
     @Schema(name = "PostUpdateResponse", description = "게시글 수정 응답")
     public record Response(
-        @Schema(description = "게시글 ID", example = "1")
-        long id,
-        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기")
-        String title,
-        @Schema(description = "작성자", example = "yonghun")
-        String author
-    ) {
+        @Schema(description = "게시글 ID", example = "1") long id,
+        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") String title,
+        @Schema(description = "작성자", example = "yonghun") String author) {
 
     }
   }
@@ -164,18 +121,14 @@ public class PostV1Dto {
   public static class Delete {
     @Schema(name = "PostDeleteResponse", description = "게시글 삭제 응답")
     public record Response(
-        @Schema(description = "게시글 ID", example = "1")
-        int id,
-        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기")
-        String title,
-        @Schema(description = "작성자", example = "yonghun")
-        String author
-    ) {
+        @Schema(description = "게시글 ID", example = "1") long id,
+        @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") String title,
+        @Schema(description = "작성자", example = "yonghun") String author) {
     }
   }
 
   @Schema(name = "PostCategory", description = "게시글 카테고리")
-  enum Category {
+  public enum Category {
     BACKEND("backend"), FRONTEND("frontend"), DEVOPS("devops"), ECT("ect");
 
     private final String name;
@@ -189,6 +142,9 @@ public class PostV1Dto {
       return name;
     }
 
+    public String getValue() {
+      return name;
+    }
 
   }
 }
