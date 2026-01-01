@@ -21,5 +21,5 @@ public interface PostV1Spec {
   ApiResponse<PostV1Dto.Update.Response> update(String token, Long postId, PostV1Dto.Update.Request request);
 
   @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
-  PostV1Dto.Delete.Response delete(String token, Long postId);
+  ApiResponse<PostV1Dto.Delete.Response> delete(String token, Long postId);
 }

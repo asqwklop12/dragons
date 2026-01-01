@@ -244,8 +244,9 @@ class PostV1ControllerE2ETest {
         .header("X-TOKEN", token))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(saved.getId()))
-        .andExpect(jsonPath("$.title").value("Spring Boot에서 JWT 인증 구현하기"))
-        .andExpect(jsonPath("$.author").value("yonghun"));
+        .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
+        .andExpect(jsonPath("$.data.id").value(saved.getId()))
+        .andExpect(jsonPath("$.data.title").value("Spring Boot에서 JWT 인증 구현하기"))
+        .andExpect(jsonPath("$.data.author").value("yonghun"));
   }
 }

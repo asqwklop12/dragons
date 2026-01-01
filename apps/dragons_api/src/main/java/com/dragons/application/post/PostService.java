@@ -56,16 +56,19 @@ public class PostService {
     if (condition.sort() != null && !condition.sort().isBlank()) {
       String[] split = condition.sort().split(",");
       if (split.length == 2) {
-        sort = Sort.by(Sort.Direction.fromString(split[1]), split[0]);
+        try {
+          sort = Sort.by(Sort.Direction.fromString(split[1].trim()), split[0].trim());
+        } catch (IllegalArgumentException e) {
+          // 기본 정렬 유지
+        }
       }
     }
 
     Pageable pageable = PageRequest.of(condition.page() - 1, condition.limit(), sort);
-    Page<Post> result = postRepository.findAll(pageable);
+    Page<Post> result = postRepository.findAllByDeletedAtIsNull(pageable);
 
     return new PostSearchResult(
         result.getContent().stream()
-            .filter(p -> p.getDeletedAt() == null)
             .map(post -> new PostSearchResult.PostSummary(
                 post.getId(),
                 post.title(),

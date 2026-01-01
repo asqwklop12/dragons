@@ -8,7 +8,7 @@ public record PostSearchResult(
         int page,
         int size) {
     public record PostSummary(
-            Long id,
+            long id,
             String title,
             String category,
             String author) {

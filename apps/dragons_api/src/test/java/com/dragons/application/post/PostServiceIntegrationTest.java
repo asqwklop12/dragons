@@ -93,7 +93,7 @@ class PostServiceIntegrationTest {
     void get_notFound() {
         // given
         Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
-        PostGetCommand command = new PostGetCommand(saved.getId()+1);
+        PostGetCommand command = new PostGetCommand(Long.MAX_VALUE);
 
 
         // when&then
@@ -192,15 +192,4 @@ class PostServiceIntegrationTest {
         assertThat(result.posts().get(1).title()).isEqualTo("Old");
     }
 
-    @Test
-    @DisplayName("존재하지 않는 게시글 조회 시 예외")
-    void get_fail_notFound() {
-        // given
-        PostGetCommand command = new PostGetCommand(999L);
-
-        // when & then
-        assertThatThrownBy(() -> postService.get(command))
-                .isInstanceOf(CoreException.class)
-                .hasMessage("게시글이 존재하지 않습니다.");
-    }
 }
