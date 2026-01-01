@@ -54,6 +54,7 @@ public class PostV1Controller implements PostV1Spec {
         token));
 
     return ApiResponse.success(new Create.Response(
+        result.id(),
         result.title(),
         result.content(),
         result.category(),
