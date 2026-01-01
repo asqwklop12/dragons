@@ -67,7 +67,7 @@ public class PostV1Controller implements PostV1Spec {
   @GetMapping()
   public ApiResponse<PostV1Dto.Search.Response> search(
       @RequestHeader("X-TOKEN") String token,
-      @ModelAttribute PostV1Dto.Search.Condition condition) {
+      @ModelAttribute @Validated PostV1Dto.Search.Condition condition) {
 
     PostSearchResult result = postService.search(new PostSearchCondition(
         condition.page(),
