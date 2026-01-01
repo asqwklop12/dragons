@@ -78,7 +78,7 @@ public class PostService {
   // 조회
   public PostGetResult get(PostGetCommand command) {
     Long postId = command.postId();
-    Post post = postRepository.findById(postId).orElseThrow(
+    Post post = postRepository.findByIdAndDeletedAtIsNull(postId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
     return new PostGetResult(
         post.getId(),
@@ -92,7 +92,7 @@ public class PostService {
   @Transactional
   public PostUpdateResult update(PostUpdateCommand command) {
     Long postId = command.postId();
-    Post post = postRepository.findById(postId).orElseThrow(
+    Post post = postRepository.findByIdAndDeletedAtIsNull(postId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
     post.reWrite(command.title(), command.content());
@@ -107,7 +107,7 @@ public class PostService {
   @Transactional
   public PostDeleteResult delete(PostDeleteCommand command) {
     Long postId = command.postId();
-    Post post = postRepository.findById(postId).orElseThrow(
+    Post post = postRepository.findByIdAndDeletedAtIsNull(postId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
     post.delete();
