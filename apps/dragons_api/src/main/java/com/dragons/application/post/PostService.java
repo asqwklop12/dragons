@@ -100,6 +100,8 @@ public class PostService {
     Post post = postRepository.findByIdAndDeletedAtIsNull(postId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
+    String author = jwtTokenProvider.getPayload(command.token());
+    post.checkAuthor(author);
     post.reWrite(command.title(), command.content());
 
     return new PostUpdateResult(
@@ -114,7 +116,8 @@ public class PostService {
     Long postId = command.postId();
     Post post = postRepository.findByIdAndDeletedAtIsNull(postId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
-
+    String author = jwtTokenProvider.getPayload(command.token());
+    post.checkAuthor(author);
     post.delete();
 
     return new PostDeleteResult(

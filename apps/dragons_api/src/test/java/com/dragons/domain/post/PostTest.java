@@ -1,6 +1,7 @@
 package com.dragons.domain.post;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -81,6 +82,17 @@ class PostTest {
 
         // then
         assertThat(post.getDeletedAt()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("게시글 작성자와 로그인한 사용자가 다를 시 예외 발생")
+    void checkAuthor() {
+        // given
+        Post post = Post.write("제목", "내용", "backend", true, "author2");
+        String author = "author1";
+
+        // when & then
+        assertThatThrownBy(() -> post.checkAuthor(author));
     }
 
     @Test
