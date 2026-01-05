@@ -17,13 +17,13 @@ import com.dragons.domain.post.Post;
 import com.dragons.domain.post.PostRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.utils.DatabaseCleanUp;
-import com.dragons.utils.DragonIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@DragonIntegrationTest
+@SpringBootTest
 class PostServiceIntegrationTest {
 
   @Autowired
@@ -114,7 +114,6 @@ class PostServiceIntegrationTest {
         .isInstanceOf(CoreException.class)
         .hasMessage("게시글이 존재하지 않습니다.");
   }
-
 
   @Test
   @DisplayName("게시글 수정")
