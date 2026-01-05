@@ -1,42 +1,50 @@
 package com.dragons.domain.payment;
 
-import java.time.ZonedDateTime;
+import com.dragons.domain.common.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 @Getter
-public class Payment {
-  private Long id;
-  private ZonedDateTime createdAt;
-  private ZonedDateTime updatedAt;
-  private ZonedDateTime deletedAt;
+@Entity
+@Table(name = "payments")
+public class Payment extends BaseEntity {
 
+  @Column(name = "payment_type", nullable = false)
   private String paymentType;
+
+  @Column(nullable = false)
   private int amount;
+
+  @Column(name = "plan_type", nullable = false)
   private String planType;
+
+  @Column(name = "holder_name", nullable = false)
   private String holderName;
 
+  protected Payment() {
+  }
+
   public static Payment use(String holderName, int amount, String planType, String paymentType) {
-    return new Payment(null, holderName, amount, planType, paymentType, null, null, null);
+    Payment payment = new Payment();
+    payment.holderName = holderName;
+    payment.amount = amount;
+    payment.planType = planType;
+    payment.paymentType = paymentType;
+    return payment;
   }
 
-  public static Payment withId(Long id, String holderName, int amount, String planType, String paymentType,
-      ZonedDateTime createdAt, ZonedDateTime updatedAt, ZonedDateTime deletedAt) {
-    return new Payment(id, holderName, amount, planType, paymentType, createdAt, updatedAt, deletedAt);
+  public static Payment withId(Long id, String holderName, int amount, String planType, String paymentType) {
+    Payment payment = new Payment();
+    payment.setIdForTest(id);
+    payment.holderName = holderName;
+    payment.amount = amount;
+    payment.planType = planType;
+    payment.paymentType = paymentType;
+    return payment;
   }
 
-  private Payment(Long id, String holderName, int amount, String planType, String paymentType,
-      ZonedDateTime createdAt, ZonedDateTime updatedAt, ZonedDateTime deletedAt) {
-    this.id = id;
-    this.holderName = holderName;
-    this.amount = amount;
-    this.planType = planType;
-    this.paymentType = paymentType;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.deletedAt = deletedAt;
-  }
-
-  // Manual fluent accessors to support previous API
   public String paymentType() {
     return paymentType;
   }
@@ -53,15 +61,13 @@ public class Payment {
     return holderName;
   }
 
-  public void delete() {
-    if (this.deletedAt == null) {
-      this.deletedAt = ZonedDateTime.now();
-    }
-  }
-
-  public void restore() {
-    if (this.deletedAt != null) {
-      this.deletedAt = null;
+  private void setIdForTest(Long id) {
+    try {
+      java.lang.reflect.Field idField = BaseEntity.class.getDeclaredField("id");
+      idField.setAccessible(true);
+      idField.set(this, id);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 }

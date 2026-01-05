@@ -1,28 +1,45 @@
 package com.dragons.domain.user;
 
-import java.time.ZonedDateTime;
+import com.dragons.domain.common.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import java.util.regex.Pattern;
 import lombok.Getter;
 
 @Getter
-public class User {
-  private Long id;
-  private ZonedDateTime createdAt;
-  private ZonedDateTime updatedAt;
-  private ZonedDateTime deletedAt;
+@Entity
+@Table(name = "users")
+public class User extends BaseEntity {
 
+  @Column(nullable = false, length = 100)
   private String name;
+
+  @Column(nullable = false, unique = true)
   private String email;
+
+  @Column(nullable = false)
   private String password;
+
+  protected User() {
+  }
 
   public static User register(String name, String email, String password) {
     validate(name, email, password);
-    return new User(null, name, email, password, null, null, null);
+    User user = new User();
+    user.name = name;
+    user.email = email;
+    user.password = password;
+    return user;
   }
 
-  public static User withId(Long id, String name, String email, String password,
-      ZonedDateTime createdAt, ZonedDateTime updatedAt, ZonedDateTime deletedAt) {
-    return new User(id, name, email, password, createdAt, updatedAt, deletedAt);
+  public static User withId(Long id, String name, String email, String password) {
+    User user = new User();
+    user.setIdForTest(id);
+    user.name = name;
+    user.email = email;
+    user.password = password;
+    return user;
   }
 
   private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
@@ -51,17 +68,6 @@ public class User {
     }
   }
 
-  private User(Long id, String name, String email, String password,
-      ZonedDateTime createdAt, ZonedDateTime updatedAt, ZonedDateTime deletedAt) {
-    this.id = id;
-    this.name = name;
-    this.email = email;
-    this.password = password;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.deletedAt = deletedAt;
-  }
-
   public String name() {
     return name;
   }
@@ -74,15 +80,13 @@ public class User {
     return password;
   }
 
-  public void delete() {
-    if (this.deletedAt == null) {
-      this.deletedAt = ZonedDateTime.now();
-    }
-  }
-
-  public void restore() {
-    if (this.deletedAt != null) {
-      this.deletedAt = null;
+  private void setIdForTest(Long id) {
+    try {
+      java.lang.reflect.Field idField = BaseEntity.class.getDeclaredField("id");
+      idField.setAccessible(true);
+      idField.set(this, id);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 }

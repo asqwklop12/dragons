@@ -49,6 +49,16 @@ subprojects {
     }
 }
 
+// 루트 build.gradle
+subprojects {
+    if (project.name != 'api') { // 'api'가 아닌 모든 서브 프로젝트
+        plugins.withId('org.springframework.boot') {
+            bootJar { enabled = false }
+            jar { enabled = true }
+        }
+    }
+}
+
 configure(subprojects) {
     plugins.withId('io.spring.dependency-management') {
         dependencyManagement {

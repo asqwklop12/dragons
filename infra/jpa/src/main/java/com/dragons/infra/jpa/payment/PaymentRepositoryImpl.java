@@ -12,23 +12,6 @@ public class PaymentRepositoryImpl implements PaymentRepository {
 
     @Override
     public Payment save(Payment payment) {
-        PaymentEntity entity = new PaymentEntity(
-                payment.holderName(),
-                payment.amount(),
-                payment.planType(),
-                payment.paymentType());
-        return toDomain(jpaPaymentRepository.save(entity));
-    }
-
-    private Payment toDomain(PaymentEntity entity) {
-        return Payment.withId(
-                entity.getId(),
-                entity.getHolderName(),
-                entity.getAmount(),
-                entity.getPlanType(),
-                entity.getPaymentType(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getDeletedAt());
+        return jpaPaymentRepository.save(payment);
     }
 }

@@ -1,50 +1,60 @@
 package com.dragons.domain.post;
 
-import java.time.ZonedDateTime;
+import com.dragons.domain.common.BaseEntity;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.Getter;
 
 @Getter
-public class Post {
-  private Long id;
-  private ZonedDateTime createdAt;
-  private ZonedDateTime updatedAt;
-  private ZonedDateTime deletedAt;
+@Entity
+@Table(name = "boards")
+public class Post extends BaseEntity {
 
+  @Column(nullable = false)
   private String title;
+
+  @Column(nullable = false, length = 10000)
   private String content;
+
+  @Column(nullable = false)
   private String category;
+
+  @Column(nullable = false)
   private String author;
+
+  @Column(name = "is_public", nullable = false)
   private boolean isPublic;
 
+  protected Post() {
+  }
+
   public static Post write(String title, String content, String category, boolean isPublic, String author) {
-    return new Post(null, title, content, category, author, isPublic, null, null, null);
-  }
-
-  // Constructor for New Creation
-  private Post(Long id, String title, String content, String category, String author, boolean isPublic,
-      ZonedDateTime createdAt, ZonedDateTime updatedAt, ZonedDateTime deletedAt) {
     validate(title, content, category, author);
-    this.id = id;
-    this.title = title;
-    this.content = content;
-    this.category = category;
-    this.author = author;
-    this.isPublic = isPublic;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
-    this.deletedAt = deletedAt;
+    Post post = new Post();
+    post.title = title;
+    post.content = content;
+    post.category = category;
+    post.isPublic = isPublic;
+    post.author = author;
+    return post;
   }
 
-  // Constructor for Reconstruction from Persistence
-  public static Post withId(Long id, String title, String content, String category, String author, boolean isPublic,
-      ZonedDateTime createdAt, ZonedDateTime updatedAt, ZonedDateTime deletedAt) {
-    // Bypass validation or keep it? explicit constructor typically bypasses purely
-    // creation logic but keeps invariant checks.
-    // reusing the private constructor
-    return new Post(id, title, content, category, author, isPublic, createdAt, updatedAt, deletedAt);
+  // Constructor for Reconstruction from tests or other layers if needed, though
+  // usually JPA handles retrieval
+  // Keeping this for compatibility with existing tests
+  public static Post withId(Long id, String title, String content, String category, String author, boolean isPublic) {
+    Post post = new Post();
+    post.setIdForTest(id);
+    post.title = title;
+    post.content = content;
+    post.category = category;
+    post.author = author;
+    post.isPublic = isPublic;
+    return post;
   }
 
-  private void validate(String title, String content, String category, String author) {
+  private static void validate(String title, String content, String category, String author) {
     if (title == null || title.isBlank()) {
       throw new IllegalArgumentException("제목은 필수입니다");
     }
@@ -83,7 +93,6 @@ public class Post {
     if (content != null) {
       this.content = content;
     }
-    this.updatedAt = ZonedDateTime.now(); // Manually update timestamp (or let Infra handle it on save)
   }
 
   public void checkAuthor(String author) {
@@ -92,15 +101,25 @@ public class Post {
     }
   }
 
-  public void delete() {
-    if (this.deletedAt == null) {
-      this.deletedAt = ZonedDateTime.now();
-    }
-  }
-
-  public void restore() {
-    if (this.deletedAt != null) {
-      this.deletedAt = null;
+  private void setIdForTest(Long id) {
+    // Reflection or protected setter in BaseEntity needed if we want to set ID
+    // manually for tests without reflection
+    // For now, assuming BaseEntity might not expose setId.
+    // Actually BaseEntity usually generates ID.
+    // If we need to set ID, we might need a hack or change BaseEntity.
+    // Let's modify BaseEntity to allow protected setId or assume test uses
+    // reflection if it's strictly unit test.
+    // But wait, "withId" factory implies creating an object with ID.
+    // Since we removed 'id' field from here and it's in BaseEntity (private), we
+    // can't set it easily.
+    // We will touch BaseEntity to add a protected setter for id, or just use
+    // reflection here.
+    try {
+      java.lang.reflect.Field idField = BaseEntity.class.getDeclaredField("id");
+      idField.setAccessible(true);
+      idField.set(this, id);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
     }
   }
 }

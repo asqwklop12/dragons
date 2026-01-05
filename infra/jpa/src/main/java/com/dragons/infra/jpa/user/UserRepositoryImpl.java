@@ -2,6 +2,7 @@ package com.dragons.infra.jpa.user;
 
 import com.dragons.domain.user.User;
 import com.dragons.domain.user.UserRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -12,23 +13,16 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User save(User user) {
-        // If logic is register, usually ID is null.
-        UserEntity entity = new UserEntity(user.getName(), user.getEmail(), user.getPassword());
-
-        // Handle ID if present for updates (omitted for now as register is main use
-        // case shown)
-
-        return toDomain(jpaUserRepository.save(entity));
+        return jpaUserRepository.save(user);
     }
 
-    private User toDomain(UserEntity entity) {
-        return User.withId(
-                entity.getId(),
-                entity.getName(),
-                entity.getEmail(),
-                entity.getPassword(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getDeletedAt());
+    @Override
+    public Optional<User> findById(Long userId) {
+        return jpaUserRepository.findById(userId);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return jpaUserRepository.findByEmail(email);
     }
 }

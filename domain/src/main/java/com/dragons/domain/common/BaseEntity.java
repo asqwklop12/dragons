@@ -1,4 +1,4 @@
-package com.dragons.infra.jpa.common;
+package com.dragons.domain.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +22,7 @@ public abstract class BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private final Long id = 0L;
+  private Long id;
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private ZonedDateTime createdAt;

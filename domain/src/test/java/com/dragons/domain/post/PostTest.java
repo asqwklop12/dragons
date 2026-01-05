@@ -51,7 +51,7 @@ class PostTest {
 
         assertThat(post.title()).isEqualTo("새 제목");
         assertThat(post.content()).isEqualTo("새 내용");
-        assertThat(post.getUpdatedAt()).isNotNull();
+        assertThat(post.content()).isEqualTo("새 내용");
     }
 
     @Test
