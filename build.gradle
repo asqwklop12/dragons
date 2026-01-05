@@ -41,6 +41,11 @@ subprojects {
         systemProperty("user.timezone", "Asia/Seoul")
         systemProperty("spring.profiles.active", "test")
         jvmArgs("-Xshare:off")
+        testLogging {
+            events "passed", "skipped", "failed"
+            showStandardStreams = true
+            exceptionFormat "full"
+        }
     }
 }
 

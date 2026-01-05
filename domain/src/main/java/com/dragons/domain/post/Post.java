@@ -1,45 +1,47 @@
 package com.dragons.domain.post;
 
-import com.dragons.domain.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import lombok.AccessLevel;
+import java.time.ZonedDateTime;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "boards")
-public class Post extends BaseEntity {
-  @Column(name = "title", nullable = false, length = 200)
+@Getter
+public class Post {
+  private Long id;
+  private ZonedDateTime createdAt;
+  private ZonedDateTime updatedAt;
+  private ZonedDateTime deletedAt;
+
   private String title;
-
-  // 본문은 길이가 길 수 있으므로 TEXT로 지정
-  @Column(name = "content", nullable = false, columnDefinition = "TEXT")
   private String content;
-
-  @Column(name = "category", nullable = false, length = 100)
   private String category;
-
-  @Column(name = "author", nullable = false, length = 100)
   private String author;
-
-  @Getter
-  @Column(name = "is_public", nullable = false)
   private boolean isPublic;
 
   public static Post write(String title, String content, String category, boolean isPublic, String author) {
-    return new Post(title, content, category, isPublic, author);
+    return new Post(null, title, content, category, author, isPublic, null, null, null);
   }
 
-  private Post(String title, String content, String category, boolean isPublic, String author) {
+  // Constructor for New Creation
+  private Post(Long id, String title, String content, String category, String author, boolean isPublic,
+      ZonedDateTime createdAt, ZonedDateTime updatedAt, ZonedDateTime deletedAt) {
     validate(title, content, category, author);
+    this.id = id;
     this.title = title;
     this.content = content;
     this.category = category;
     this.author = author;
     this.isPublic = isPublic;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
+    this.deletedAt = deletedAt;
+  }
+
+  // Constructor for Reconstruction from Persistence
+  public static Post withId(Long id, String title, String content, String category, String author, boolean isPublic,
+      ZonedDateTime createdAt, ZonedDateTime updatedAt, ZonedDateTime deletedAt) {
+    // Bypass validation or keep it? explicit constructor typically bypasses purely
+    // creation logic but keeps invariant checks.
+    // reusing the private constructor
+    return new Post(id, title, content, category, author, isPublic, createdAt, updatedAt, deletedAt);
   }
 
   private void validate(String title, String content, String category, String author) {
@@ -81,11 +83,24 @@ public class Post extends BaseEntity {
     if (content != null) {
       this.content = content;
     }
+    this.updatedAt = ZonedDateTime.now(); // Manually update timestamp (or let Infra handle it on save)
   }
 
   public void checkAuthor(String author) {
     if (!this.author.equals(author)) {
       throw new IllegalArgumentException("작성자가 일치하지 않습니다.");
+    }
+  }
+
+  public void delete() {
+    if (this.deletedAt == null) {
+      this.deletedAt = ZonedDateTime.now();
+    }
+  }
+
+  public void restore() {
+    if (this.deletedAt != null) {
+      this.deletedAt = null;
     }
   }
 }

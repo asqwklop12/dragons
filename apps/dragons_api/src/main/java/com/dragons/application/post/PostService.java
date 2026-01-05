@@ -103,6 +103,7 @@ public class PostService {
     String author = jwtTokenProvider.getPayload(command.token());
     post.checkAuthor(author);
     post.reWrite(command.title(), command.content());
+    post = postRepository.save(post);
 
     return new PostUpdateResult(
         post.getId(),
@@ -119,6 +120,7 @@ public class PostService {
     String author = jwtTokenProvider.getPayload(command.token());
     post.checkAuthor(author);
     post.delete();
+    post = postRepository.save(post);
 
     return new PostDeleteResult(
         post.getId(),

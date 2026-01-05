@@ -95,7 +95,7 @@ class PostServiceIntegrationTest {
   @DisplayName("존재하지 않는 게시글 단건 조회 시 예외")
   void get_notFound() {
     // given
-    Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
+    postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
     PostGetCommand command = new PostGetCommand(Long.MAX_VALUE);
 
     // when&then
