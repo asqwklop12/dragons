@@ -8,7 +8,7 @@ import org.testcontainers.containers.MySQLContainer;
 public class MysqlTestContainersConfig implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
   private static final MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.0")
-      .withDatabaseName("test")
+      .withDatabaseName("dragons")
       .withUsername("test")
       .withPassword("test");
 
@@ -20,9 +20,9 @@ public class MysqlTestContainersConfig implements ApplicationContextInitializer<
   public void initialize(ConfigurableApplicationContext context) {
     // 시스템 프로퍼티 직접 주입
     TestPropertyValues.of(
-        "datasource.mysql-jpa.main.jdbc-url=" + mysql.getJdbcUrl(),
-        "datasource.mysql-jpa.main.username=" + mysql.getUsername(),
-        "datasource.mysql-jpa.main.password=" + mysql.getPassword()
-    ).applyTo(context.getEnvironment());
+        "MYSQL_HOST=" + mysql.getHost(),
+        "MYSQL_PORT=" + mysql.getFirstMappedPort(),
+        "MYSQL_USER=" + mysql.getUsername(),
+        "MYSQL_PWD=" + mysql.getPassword()).applyTo(context.getEnvironment());
   }
 }

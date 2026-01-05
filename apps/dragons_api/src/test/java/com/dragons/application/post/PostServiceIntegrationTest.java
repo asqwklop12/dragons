@@ -16,14 +16,17 @@ import com.dragons.config.jwt.JwtTokenProvider;
 import com.dragons.domain.post.Post;
 import com.dragons.domain.post.PostRepository;
 import com.dragons.support.error.CoreException;
+import com.dragons.testcontainers.MysqlTestContainersConfig;
 import com.dragons.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 
 @SpringBootTest
+@ContextConfiguration(initializers = MysqlTestContainersConfig.class)
 class PostServiceIntegrationTest {
 
   @Autowired
