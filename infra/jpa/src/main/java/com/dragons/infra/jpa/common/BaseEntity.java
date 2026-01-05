@@ -1,4 +1,4 @@
-package com.dragons.domain;
+package com.dragons.infra.jpa.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -37,7 +37,8 @@ public abstract class BaseEntity {
    * 엔티티의 유효성을 검증한다.
    * 이 메소드는 PrePersist 및 PreUpdate 시점에 호출된다.
    */
-  protected void guard() {}
+  protected void guard() {
+  }
 
   @PrePersist
   private void prePersist() {
