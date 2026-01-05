@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class PaymentRepositoryImpl implements PaymentRepository {
+class PaymentRepositoryImpl implements PaymentRepository {
     private final JpaPaymentRepository jpaPaymentRepository;
 
     @Override

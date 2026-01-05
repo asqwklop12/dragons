@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 import com.dragons.domain.post.Post;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface JpaPostRepository extends JpaRepository<Post, Long> {
+interface JpaPostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByDeletedAtIsNull(Pageable pageable);
 
     Optional<Post> findByIdAndDeletedAtIsNull(Long id);

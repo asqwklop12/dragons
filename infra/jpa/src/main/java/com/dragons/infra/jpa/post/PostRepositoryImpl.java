@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class PostRepositoryImpl implements PostRepository {
+class PostRepositoryImpl implements PostRepository {
     private final JpaPostRepository jpaPostRepository;
 
     @Override
