@@ -1,0 +1,33 @@
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+    id 'java-test-fixtures'
+}
+
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+dependencies {
+    api project(':supports:redis')
+
+    // QueryDSL (Entities are here)
+    annotationProcessor "com.querydsl:querydsl-apt::jakarta"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+
+    testFixturesImplementation project(':supports:redis')
+    
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+base { archivesName = 'modules-redis-domain' }

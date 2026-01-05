@@ -15,7 +15,12 @@ include(
         ':apps:dragons_api',
         ':supports:logging',
         ":supports:jackson",
-        ':modules:redis',
-        ':modules:jpa',
+
+        ':modules:jpa:domain',
+        ':modules:jpa:infrastructure',
+        ':modules:redis:domain',
+        ':modules:redis:infrastructure',
+        ':supports:jpa',
+        ':supports:redis',
         ':supports:jwt'
 )

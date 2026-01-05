@@ -3,7 +3,6 @@ plugins {
     id 'io.spring.dependency-management'
 }
 
-description = 'redis'
 
 bootJar {
     enabled = false
@@ -11,6 +10,10 @@ bootJar {
 
 jar {
     enabled = true
+}
+
+dependencies {
+
 }
 
 dependencies {

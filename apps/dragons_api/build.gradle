@@ -10,8 +10,9 @@ description = 'dragons_api'
 dependencies {
     implementation project(":supports:logging")
     implementation project(":supports:jackson")
-    implementation project(":modules:redis")
-    implementation project(":modules:jpa")
+
+    implementation project(":modules:jpa:infrastructure")
+    implementation project(":modules:redis:infrastructure")
     implementation project(":supports:jwt")
 
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
@@ -23,7 +24,7 @@ dependencies {
 
 
     testImplementation project(":supports:jackson")
-    testImplementation(testFixtures(project(":modules:jpa")))
+    testImplementation(testFixtures(project(":modules:jpa:domain")))
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc'
