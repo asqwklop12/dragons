@@ -47,12 +47,21 @@ subprojects {
             exceptionFormat "full"
         }
     }
+
+    // apps 모듈을 제외한 모든 서브프로젝트는 bootJar 비활성화
+    plugins.withId('org.springframework.boot') {
+        if (!project.path.startsWith(':apps:')) {
+            tasks.named('bootJar') {
+                enabled = false
+            }
+            tasks.named('jar') {
+                enabled = true
+            }
+        }
+    }
 }
 
-// 루트 build.gradle
-subprojects {
 
-}
 
 configure(subprojects) {
     plugins.withId('io.spring.dependency-management') {

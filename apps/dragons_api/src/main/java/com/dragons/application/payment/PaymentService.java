@@ -17,21 +17,20 @@ public class PaymentService {
 
   public PaymentCardResult card(PaymentCardCommand command) {
     Payment payment = repository.save(Payment.use(command.cardholderName(),
-                                                  command.amount(),
-                                                  command.planType(),
-                                      "card"));
+        command.amount(),
+        command.planType(),
+        "card"));
     String maskingCardNumber = Card.masking(command.cardNumber());
     return new PaymentCardResult(maskingCardNumber, payment.holderName(), payment.amount(), payment.planType());
   }
 
   public PaymentBankTransferResult bankTransfer(PaymentBankTransferCommand command) {
     Payment payment = repository.save(Payment.use(command.depositorName(),
-                                                  command.amount(),
-                                                  command.planType(),
-                                      "bank"));
+        command.amount(),
+        command.planType(),
+        "bank"));
 
-
-
-    return new PaymentBankTransferResult(command.bankCode(), command.accountNumber(), payment.holderName(), payment.amount(), payment.planType());
+    return new PaymentBankTransferResult(command.bankCode(), command.accountNumber(), payment.holderName(),
+        payment.amount(), payment.planType());
   }
 }

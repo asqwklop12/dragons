@@ -4,15 +4,6 @@ plugins {
     id 'io.spring.dependency-management'
 }
 
-bootJar {
-    enabled = false
-}
-
-jar {
-    enabled = true
-
-}
-
 dependencies {
     // Jackson databind for exception classes used in ApiControllerAdvice
     // 공개(api)로 노출하여 소비 모듈에서도 컴파일 타임에 사용할 수 있도록 함
