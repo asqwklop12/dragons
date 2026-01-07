@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
 
+    <!-- Default LOG_DIR for profiles without specific configuration -->
     <property name="LOG_DIR" value="../logs"/>
 
     <springProfile name="local">
+        <!-- Local uses ../../logs to show logs at repository root -->
         <springProperty scope="context" name="LOG_DIR" source="dragons.log.dir" defaultValue="../../logs"/>
         <springProperty scope="context" name="LOG_LEVEL" source="dragons.log.level" defaultValue="INFO"/>
         <springProperty scope="context" name="USE_FILE" source="dragons.log.use-file" defaultValue="Y"/>
