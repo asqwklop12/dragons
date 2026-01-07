@@ -15,7 +15,6 @@ include(
         ':apps:dragons_api',
         ':domain',
         ":infra:jackson",
-        ":infra:jackson",
         ":infra:logging",
         ":infra:redis",
         ":infra:jwt",
