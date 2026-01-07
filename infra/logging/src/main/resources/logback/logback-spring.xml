@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <configuration>
 
-    <!-- Default LOG_DIR for profiles without specific configuration -->
-    <property name="LOG_DIR" value="../logs"/>
+    <!-- Default LOG_DIR for profiles without specific configuration (Root execution) -->
+    <property name="LOG_DIR" value="./logs"/>
+    <property name="LOG_LEVEL" value="INFO"/>
+
+    <!-- Test environment runs in sub-module directory, so use ../../logs -->
+    <springProfile name="test">
+        <property name="LOG_DIR" value="../../logs"/>
+    </springProfile>
 
     <springProfile name="local">
-        <!-- Local uses ../../logs to show logs at repository root -->
-        <springProperty scope="context" name="LOG_DIR" source="dragons.log.dir" defaultValue="../../logs"/>
+        <!-- Local uses ./logs to show logs at repository root -->
+        <springProperty scope="context" name="LOG_DIR" source="dragons.log.dir" defaultValue="./logs"/>
         <springProperty scope="context" name="LOG_LEVEL" source="dragons.log.level" defaultValue="INFO"/>
         <springProperty scope="context" name="USE_FILE" source="dragons.log.use-file" defaultValue="Y"/>
         <springProperty scope="context" name="USE_CONSOLE" source="dragons.log.use-console" defaultValue="Y"/>
@@ -38,7 +44,10 @@
         <file>${LOG_DIR}/dragons.${HOSTNAME}.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${LOG_DIR}/dragons.%d.${HOSTNAME}.gz</fileNamePattern>
+            <fileNamePattern>${LOG_DIR}/dragons.%d{yyyy-MM-dd}.${HOSTNAME}.%i.gz</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
         <encoder>
