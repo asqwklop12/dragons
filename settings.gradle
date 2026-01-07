@@ -13,9 +13,10 @@ rootProject.name = 'dragons'
 
 include(
         ':apps:dragons_api',
-        ':supports:logging',
-        ":supports:jackson",
-        ':modules:redis',
-        ':modules:jpa',
-        ':supports:jwt'
+        ':domain',
+        ":infra:jackson",
+        ":infra:logging",
+        ":infra:redis",
+        ":infra:jwt",
+        ":infra:jpa"
 )

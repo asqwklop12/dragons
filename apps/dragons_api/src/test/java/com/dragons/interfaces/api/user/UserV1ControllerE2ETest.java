@@ -5,18 +5,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.dragons.interfaces.api.user.dto.UserV1Dto;
-import com.dragons.utils.DragonIntegrationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.MediaType;
+
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.context.WebApplicationContext;
 
-@DragonIntegrationTest
+@SpringBootTest
 class UserV1ControllerE2ETest {
 
   private MockMvc mockMvc;
@@ -33,12 +34,6 @@ class UserV1ControllerE2ETest {
   @DisplayName("회원가입 - 정상 케이스")
   void register_success() throws Exception {
     // given
-    UserV1Dto.Register.Request request = new UserV1Dto.Register.Request(
-        "홍길동",
-        "test@example.com",
-        "password123!"
-    );
-
     String requestBody = """
         {
           "name": "홍길동",
@@ -49,8 +44,8 @@ class UserV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
@@ -72,8 +67,8 @@ class UserV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -92,8 +87,8 @@ class UserV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -112,8 +107,8 @@ class UserV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -132,8 +127,8 @@ class UserV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -152,8 +147,8 @@ class UserV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/auth/register")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isBadRequest());
   }
@@ -171,8 +166,8 @@ class UserV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/auth/login")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestBody))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"));
