@@ -7,7 +7,6 @@ import com.dragons.application.user.dto.UserLoginResult;
 import com.dragons.application.user.dto.UserRegisterCommand;
 import com.dragons.application.user.dto.UserRegisterResult;
 import com.dragons.domain.user.UserRepository;
-
 import com.dragons.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
