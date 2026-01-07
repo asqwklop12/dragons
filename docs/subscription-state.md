@@ -25,14 +25,17 @@
 # 3. 불변식(Invariants) - 정합성 핵심 규칙
 
 ## 3.1 단일 활성 구독
+
 - 한 사용자(userId)는 동시에 **`ACTIVE` Subscription을 1개만** 가질 수 있다.
 - DB 레벨에서 `userId + (ACTIVE)` 유니크 제약으로 강제한다.
 
 ## 3.2 진행 중 결제 차단
+
 - 사용자에게 `PENDING` PaymentAttempt가 존재하는 동안 신규 구독 신청을 허용하지 않는다.
 - 즉, Subscription이 `NONE/EXPIRED/CANCELED`라도 결제 진행 중이면 신청은 차단된다.
 
 ## 3.3 이벤트 멱등성
+
 - 결제 이벤트는 `(paymentAttemptId, eventType)` 기준으로 멱등 처리한다.
 - 동일 이벤트 중복 수신 시 Subscription 상태는 한 번만 전이된다.
 

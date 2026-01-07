@@ -22,14 +22,11 @@
 ---
 
 # 3. 불변식(Invariants) - 정합성 핵심 규칙
-
 ## 3.1 단일 진행 결제
 - 사용자(userId) 기준으로 **동시에 `PENDING` PaymentAttempt는 1개만** 허용한다.
 - `PENDING`이 존재하면 신규 구독 신청은 차단된다.
-
 ## 3.2 종료 상태는 불변
 - `SUCCEEDED/FAILED/EXPIRED`는 **종료(terminal) 상태**이며, 종료 후 다른 상태로 전이하지 않는다.
-
 ## 3.3 멱등성
 - 결제 이벤트는 `(paymentAttemptId, eventType)` 기준으로 멱등 처리한다.
 - 동일 이벤트가 중복 수신되어도 상태 및 후속 처리(Subscription 전이)는 한 번만 발생해야 한다.
@@ -105,24 +102,22 @@
 PaymentAttempt 이벤트가 처리될 때, 연결된 Subscription을 다음과 같이 전이시킨다.
 
 - `PAYMENT_SUCCEEDED`
-    - 신규 신청이면 Subscription을 `ACTIVE`로 성립
-    - 갱신 결제이면 Subscription을 `ACTIVE` 유지(연장 처리)
+  - 신규 신청이면 Subscription을 `ACTIVE`로 성립
+  - 갱신 결제이면 Subscription을 `ACTIVE` 유지(연장 처리)
 - `PAYMENT_FAILED` 또는 `PAYMENT_EXPIRED`
-    - 신규 신청이면 Subscription은 성립하지 않음(대개 `NONE` 유지)
-    - 갱신 결제이면 Subscription을 `EXPIRED`로 전환
+  - 신규 신청이면 Subscription은 성립하지 않음(대개 `NONE` 유지)
+  - 갱신 결제이면 Subscription을 `EXPIRED`로 전환
 - `PAYMENT_TERMINATED`
-    - Subscription 전이는 발생시키지 않는다. (기존 결제 시도 종료용 이벤트)
+  - Subscription 전이는 발생시키지 않는다. (기존 결제 시도 종료용 이벤트)
 
 > 신규/갱신 여부는 PaymentAttempt가 "어떤 목적"으로 생성되었는지(예: INITIAL, RENEWAL)로 구분한다.
 
 ---
 
 # 8. 동시성/중복 처리 규칙
-
 ## 8.1 PENDING 중복 생성 차단
 - 동일 userId에 대해 PENDING PaymentAttempt가 있으면 새 PaymentAttempt를 생성하지 않는다.
 - 재시도가 필요하다면 기존 `PENDING`을 `FAILED`로 종료 처리한 후 새 시도를 생성한다.
-
 ## 8.2 이벤트 중복/지연/순서 뒤바뀜
 - 이벤트는 `(paymentAttemptId, eventType)`로 멱등 처리한다.
 - `SUCCEEDED/FAILED/EXPIRED` 같은 종료 상태에 도달한 이후 도착한 이벤트는 No-op 처리한다.

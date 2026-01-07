@@ -121,7 +121,9 @@ sequenceDiagram
         API ->> PA: 상태 전이(PENDING -> FAILED/EXPIRED)
         API ->> S: Subscription 전이(ACTIVE -> EXPIRED)
     end
+    
 ```
+
 ## 5) 구독 해지 (즉시 접근 차단)
 
 ```mermaid
@@ -135,6 +137,7 @@ sequenceDiagram
     API ->> S: Subscription 전이(ACTIVE -> CANCELED)
     API -->> U: 해지 완료(즉시 접근 차단)
 ```
+
 ## 6) 상태 다이어그램 (Subscription)
 
 ```mermaid
