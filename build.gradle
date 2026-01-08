@@ -1,5 +1,8 @@
+import com.github.spotbugs.snom.SpotBugsTask
+
 plugins {
     id 'java'
+    id "com.github.spotbugs" version "6.4.8" apply false
 }
 
 group = 'com.dragons'
@@ -12,7 +15,29 @@ allprojects {
 }
 
 subprojects {
+
+    ext {
+        lombokVersion = '1.18.34'
+    }
+
     apply plugin: 'java'
+    apply plugin: "com.github.spotbugs"
+    apply plugin: "checkstyle"
+
+
+    checkstyle {
+        toolVersion = "13.0.0"
+        configFile = rootProject.file("config/checkstyle/google_checks.xml")
+        ignoreFailures = false
+    }
+
+
+    spotbugs {
+        effort = "default"
+        reportLevel = "high"
+        ignoreFailures = false
+    }
+
 
     java {
         toolchain {
@@ -28,11 +53,26 @@ subprojects {
 
     // Apply Lombok to all submodules for both main and test sources
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.34'
-        annotationProcessor 'org.projectlombok:lombok:1.18.34'
+        compileOnly "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
-        testCompileOnly 'org.projectlombok:lombok:1.18.34'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+        testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    }
+
+
+    tasks.withType(Checkstyle).configureEach {
+        reports {
+            html.required = true
+            xml.required = false
+        }
+    }
+
+    tasks.withType(SpotBugsTask).configureEach {
+        reports {
+            html.required = true
+            xml.required = false
+        }
     }
 
     tasks.withType(Test).configureEach {
@@ -67,7 +107,7 @@ configure(subprojects) {
     plugins.withId('io.spring.dependency-management') {
         dependencyManagement {
             imports {
-                mavenBom "org.testcontainers:testcontainers-bom:2.0.1"
+                mavenBom "org.testcontainers:testcontainers-bom:1.19.8"
             }
         }
     }
