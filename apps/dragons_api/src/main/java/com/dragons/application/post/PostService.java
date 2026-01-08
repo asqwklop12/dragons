@@ -10,7 +10,6 @@ import com.dragons.application.post.dto.PostUpdateCommand;
 import com.dragons.application.post.dto.PostUpdateResult;
 import com.dragons.application.post.dto.PostWriteCommand;
 import com.dragons.application.post.dto.PostWriteResult;
-import com.dragons.config.jwt.JwtTokenProvider;
 import com.dragons.domain.post.Post;
 import com.dragons.domain.post.PostRepository;
 import com.dragons.support.error.CoreException;
@@ -27,11 +26,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostService {
   private final PostRepository postRepository;
-  private final JwtTokenProvider jwtTokenProvider;
+
 
   // 작성
   public PostWriteResult write(PostWriteCommand command) {
-    String author = jwtTokenProvider.getPayload(command.token());
 
     Post post = postRepository.save(
         Post.write(
@@ -39,7 +37,7 @@ public class PostService {
             command.content(),
             command.category(),
             command.isPublic(),
-            author));
+            command.author()));
 
     return new PostWriteResult(
         post.getId(),
@@ -100,8 +98,7 @@ public class PostService {
     Post post = postRepository.findByIdAndDeletedAtIsNull(postId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
 
-    String author = jwtTokenProvider.getPayload(command.token());
-    post.checkAuthor(author);
+    post.checkAuthor(command.email());
     post.reWrite(command.title(), command.content());
     post = postRepository.save(post);
 
@@ -117,8 +114,7 @@ public class PostService {
     Long postId = command.postId();
     Post post = postRepository.findByIdAndDeletedAtIsNull(postId).orElseThrow(
         () -> new CoreException(ErrorType.NOT_FOUND, "게시글이 존재하지 않습니다."));
-    String author = jwtTokenProvider.getPayload(command.token());
-    post.checkAuthor(author);
+    post.checkAuthor(command.author());
     post.delete();
     post = postRepository.save(post);
 

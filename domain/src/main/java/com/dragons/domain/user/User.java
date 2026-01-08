@@ -4,6 +4,7 @@ import com.dragons.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.time.ZonedDateTime;
 import java.util.regex.Pattern;
 import lombok.Getter;
 
@@ -21,6 +22,8 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   private String password;
 
+  private ZonedDateTime loginTime;
+
   protected User() {
   }
 
@@ -30,6 +33,7 @@ public class User extends BaseEntity {
     user.name = name;
     user.email = email;
     user.password = password;
+    user.loginTime = null;
     return user;
   }
 
@@ -88,5 +92,15 @@ public class User extends BaseEntity {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public void matchPassword(String password) {
+    if(!this.password.equals(password)) {
+      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+    }
+  }
+
+  public void loginUpdateTime() {
+    this.loginTime = ZonedDateTime.now();
   }
 }

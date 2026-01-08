@@ -8,6 +8,8 @@ import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
 import com.dragons.interfaces.api.user.dto.UserV1Dto.Login;
 import com.dragons.interfaces.api.user.dto.UserV1Dto.Register;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class UserV1Controller implements UserV1Spec{
+public class UserV1Controller implements UserV1Spec {
 
   private final UserService userService;
 
@@ -40,15 +42,27 @@ public class UserV1Controller implements UserV1Spec{
   // 로그인
   @Override
   @PostMapping("/login")
-  public ApiResponse<UserV1Dto.Login.Response> login(@RequestBody @Validated UserV1Dto.Login.Request request) {
-
+  public ApiResponse<UserV1Dto.Login.Response> login(@RequestBody @Validated UserV1Dto.Login.Request request,
+                                                     HttpServletRequest httpRequest) {
     UserLoginResult result = userService.login(new UserLoginCommand(
         request.email(),
         request.password()
     ));
 
+    // 2. 세션 교체 (기존 세션 무효화 후 새로 생성)
+    HttpSession session = httpRequest.getSession(false);
+    if (session != null) {
+      session.invalidate(); // 기존 세션 정보 파기
+    }
+
+    // 신규 세션 생성 및 정보 저장
+    session = httpRequest.getSession(true);
+    session.setAttribute("userEmail", result.email()); // 나중에 식별을 위해 저장
+
     return ApiResponse.success(new Login.Response(
-        result.token()
+        result.email(),
+        result.name(),
+        result.LoginTime()
     ));
   }
 

@@ -7,7 +7,10 @@ import com.dragons.application.user.dto.UserRegisterResult;
 import com.dragons.config.jwt.JwtTokenProvider;
 import com.dragons.domain.user.User;
 import com.dragons.domain.user.UserRepository;
+import com.dragons.support.error.CoreException;
+import com.dragons.support.error.ErrorType;
 import jakarta.transaction.Transactional;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,21 @@ public class UserService {
     return new UserRegisterResult(saved.name(), saved.email());
   }
 
+  @Transactional
   public UserLoginResult login(UserLoginCommand command) {
-    return new UserLoginResult(jwtTokenProvider.createAccessToken(command.email()));
+    Optional<User> byEmail = userRepository.findByEmail(command.email());
+    if (byEmail.isEmpty()) {
+      throw new CoreException(ErrorType.NOT_FOUND, "이메일이 존재하지 않습니다");
+    }
+
+    User user = byEmail.get();
+    user.matchPassword(command.password());
+    user.loginUpdateTime();
+
+    return new UserLoginResult(
+        user.email(),
+        user.name(),
+        user.getLoginTime()
+    );
   }
 }

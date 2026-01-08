@@ -4,6 +4,6 @@ public record PostUpdateCommand(
     Long postId,
     String title,
     String content,
-    String token
+    String email
 ) {
 }

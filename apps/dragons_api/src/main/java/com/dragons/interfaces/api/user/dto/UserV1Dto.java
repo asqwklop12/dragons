@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.time.ZonedDateTime;
 
 // v1 userDto
 @Schema(name = "UserV1Dto", description = "사용자(Auth) API v1 DTO 집합")
@@ -77,7 +78,9 @@ public class UserV1Dto {
 
     @Schema(name = "UserLoginResponse", description = "로그인 응답")
     public record Response(
-        @Schema(description = "인증 토큰", example = "아무튼 토큰") String token
+        @Schema(description = "이메일", example = "이메일") String email,
+        @Schema(description = "사용자 명", example = "사용자 명") String name,
+        @Schema(description = "로그인 시간", example = "로그인 시간") ZonedDateTime loginTime
     ) {
 
     }

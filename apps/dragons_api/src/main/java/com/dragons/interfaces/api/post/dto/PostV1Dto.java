@@ -106,7 +106,10 @@ public class PostV1Dto {
     @Schema(name = "PostUpdateRequest", description = "게시글 수정 요청")
     public record Request(
         @Schema(description = "제목", example = "Spring Boot에서 JWT 인증 구현하기") @NotBlank @Size(min = 1, max = 100) String title,
-        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...") @NotBlank @Size(min = 1, max = 10_000) String content) {
+        @Schema(description = "내용", example = "Spring Security와 JWT를 활용한...") @NotBlank @Size(min = 1, max = 10_000) String content,
+        @Schema(description = "작성자", example = "test@email.com") @NotBlank String email
+
+    ) {
 
     }
 

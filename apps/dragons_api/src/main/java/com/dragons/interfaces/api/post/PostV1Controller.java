@@ -18,6 +18,8 @@ import com.dragons.interfaces.api.post.dto.PostV1Dto.Delete.Response;
 import com.dragons.interfaces.api.post.dto.PostV1Dto.Get;
 import com.dragons.interfaces.api.post.dto.PostV1Dto.Search;
 import com.dragons.interfaces.api.post.dto.PostV1Dto.Update;
+import com.dragons.support.login.LoginUser;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +30,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,7 +44,7 @@ public class PostV1Controller implements PostV1Spec {
   @Override
   @PostMapping()
   public ApiResponse<PostV1Dto.Create.Response> create(
-      @RequestHeader("X-TOKEN") String token,
+      @Parameter(hidden = true) @LoginUser() String email,
       @RequestBody @Validated PostV1Dto.Create.Request request) {
 
     PostWriteResult result = postService.write(new PostWriteCommand(
@@ -51,7 +52,7 @@ public class PostV1Controller implements PostV1Spec {
         request.content(),
         request.category().category(),
         request.isPublic(),
-        token));
+        email));
 
     return ApiResponse.success(new Create.Response(
         result.id(),
@@ -66,7 +67,6 @@ public class PostV1Controller implements PostV1Spec {
   @Override
   @GetMapping()
   public ApiResponse<PostV1Dto.Search.Response> search(
-      @RequestHeader("X-TOKEN") String token,
       @ModelAttribute @Validated PostV1Dto.Search.Condition condition) {
 
     PostSearchResult result = postService.search(new PostSearchCondition(
@@ -93,7 +93,6 @@ public class PostV1Controller implements PostV1Spec {
   @Override
   @GetMapping("/{postId}")
   public ApiResponse<PostV1Dto.Get.Response> get(
-      @RequestHeader("X-TOKEN") String token,
       @PathVariable Long postId) {
 
     PostGetResult result = postService.get(new PostGetCommand(postId));
@@ -110,7 +109,6 @@ public class PostV1Controller implements PostV1Spec {
   @Override
   @PutMapping("/{postId}")
   public ApiResponse<PostV1Dto.Update.Response> update(
-      @RequestHeader("X-TOKEN") String token,
       @PathVariable Long postId,
       @RequestBody @Validated PostV1Dto.Update.Request request) {
 
@@ -118,7 +116,7 @@ public class PostV1Controller implements PostV1Spec {
         postId,
         request.title(),
         request.content(),
-        token));
+        request.email()));
 
     return ApiResponse.success(new Update.Response(
         result.id(),
@@ -130,10 +128,10 @@ public class PostV1Controller implements PostV1Spec {
   @Override
   @DeleteMapping("/{postId}")
   public ApiResponse<PostV1Dto.Delete.Response> delete(
-      @RequestHeader("X-TOKEN") String token,
+      @Parameter(hidden = true) @LoginUser() String email,
       @PathVariable Long postId) {
 
-    PostDeleteResult result = postService.delete(new PostDeleteCommand(postId,token));
+    PostDeleteResult result = postService.delete(new PostDeleteCommand(postId,email));
 
     return ApiResponse.success(new Response(
         result.id(),
