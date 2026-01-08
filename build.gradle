@@ -15,6 +15,11 @@ allprojects {
 }
 
 subprojects {
+
+    ext {
+        lombokVersion = '1.18.34'
+    }
+
     apply plugin: 'java'
     apply plugin: "com.github.spotbugs"
     apply plugin: "checkstyle"
@@ -48,11 +53,11 @@ subprojects {
 
     // Apply Lombok to all submodules for both main and test sources
     dependencies {
-        compileOnly 'org.projectlombok:lombok:1.18.34'
-        annotationProcessor 'org.projectlombok:lombok:1.18.34'
+        compileOnly 'org.projectlombok:lombok:${lombokVersion}'
+        annotationProcessor 'org.projectlombok:lombok:${lombokVersion}'
 
-        testCompileOnly 'org.projectlombok:lombok:1.18.34'
-        testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+        testCompileOnly 'org.projectlombok:lombok:${lombokVersion}'
+        testAnnotationProcessor 'org.projectlombok:lombok:${lombokVersion}'
     }
 
 
