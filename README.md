@@ -126,7 +126,7 @@ Root
 ### users
 - `name` (not null, length 100)
 - `email` (not null, unique)
-- `password` (not null)
+- `password` NULL 가능 (Google OAuth 사용자)
 - Google OAuth 지원(정책: OAuth 성공 ≠ 로그인, 최초 OAuth 시 REGISTERED 생성)
 
 ### posts

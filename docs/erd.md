@@ -35,7 +35,7 @@ erDiagram
     PAYMENT_ATTEMPT {
         bigint id PK
         bigint user_id FK
-        bigint subscription_id FK "선택(구현 편의)"
+        bigint subscription_id FK "subscription_id를 nullable로 하고, INITIAL은 null, RENEWAL은 FK"
         enum method "CARD|ACCOUNT|TOSS_PAY"
         enum purpose "INITIAL|RENEWAL"
         enum state "PENDING|SUCCEEDED|FAILED|EXPIRED"
