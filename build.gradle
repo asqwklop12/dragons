@@ -1,5 +1,8 @@
+
+
 plugins {
     id 'java'
+    id "com.github.spotbugs" version "6.4.8" apply false
 }
 
 group = 'com.dragons'
@@ -13,6 +16,14 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: "com.github.spotbugs"
+
+    spotbugs {
+        effort = "default"
+        reportLevel = "high"
+        ignoreFailures = false
+    }
+
 
     java {
         toolchain {
@@ -33,6 +44,13 @@ subprojects {
 
         testCompileOnly 'org.projectlombok:lombok:1.18.34'
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+    }
+
+    tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+        reports {
+            html.required = true
+            xml.required = false
+        }
     }
 
     tasks.withType(Test).configureEach {
