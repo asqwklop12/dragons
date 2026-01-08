@@ -1,4 +1,4 @@
-
+import com.github.spotbugs.snom.SpotBugsTask
 
 plugins {
     id 'java'
@@ -46,7 +46,7 @@ subprojects {
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
     }
 
-    tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+    tasks.withType(SpotBugsTask).configureEach {
         reports {
             html.required = true
             xml.required = false
