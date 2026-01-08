@@ -17,6 +17,15 @@ allprojects {
 subprojects {
     apply plugin: 'java'
     apply plugin: "com.github.spotbugs"
+    apply plugin: "checkstyle"
+
+
+    checkstyle {
+        toolVersion = "13.0.0"
+        configFile = rootProject.file("config/checkstyle/google_checks.xml")
+        ignoreFailures = false
+    }
+
 
     spotbugs {
         effort = "default"
@@ -44,6 +53,14 @@ subprojects {
 
         testCompileOnly 'org.projectlombok:lombok:1.18.34'
         testAnnotationProcessor 'org.projectlombok:lombok:1.18.34'
+    }
+
+
+    tasks.withType(Checkstyle).configureEach {
+        reports {
+            html.required = true
+            xml.required = false
+        }
     }
 
     tasks.withType(SpotBugsTask).configureEach {
@@ -85,7 +102,7 @@ configure(subprojects) {
     plugins.withId('io.spring.dependency-management') {
         dependencyManagement {
             imports {
-                mavenBom "org.testcontainers:testcontainers-bom:2.0.1"
+                mavenBom "org.testcontainers:testcontainers-bom:1.19.8"
             }
         }
     }
