@@ -4,6 +4,7 @@ import com.dragons.application.user.GoogleSocialService;
 import com.dragons.application.user.dto.UserLoginResult;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
+import com.dragons.support.login.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class GoogleV1AuthController implements GoogleV1AuthSpec {
 
   private final GoogleSocialService googleSocialService;
+  private final SessionHelper helper;
 
 
   @GetMapping("/url")
@@ -43,23 +45,15 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   }
 
   // Google 콜백 처리 (GET)
-  @Profile("!prod")
   @Override
   @GetMapping("/callback")
   public String callback(@RequestParam String code, HttpServletRequest httpRequest) {
-    return "Google OAuth Code: " + code;
+    return "Google OAuth callback received";
   }
 
   private ApiResponse<UserV1Dto.Login.Response> processLogin(UserLoginResult result, HttpServletRequest httpRequest) {
     // 세션 처리
-    HttpSession session = httpRequest.getSession(false);
-    if (session != null) {
-      session.invalidate();
-    }
-    session = httpRequest.getSession(true);
-    session.setAttribute("userEmail", result.email());
-    session.setAttribute("loginTime", result.loginTime());
-    session.setAttribute("provider", "GOOGLE");
+    helper.createLoginSession(httpRequest, result.email(), result.loginTime(), "GOOGLE");
 
     return ApiResponse.success(new UserV1Dto.Login.Response(
         result.email(),

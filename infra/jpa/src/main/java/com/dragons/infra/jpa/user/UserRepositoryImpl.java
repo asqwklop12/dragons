@@ -24,6 +24,13 @@ class UserRepositoryImpl implements UserRepository {
 
   @Override
   public Optional<User> findByEmailAndProvider(String email, String provider) {
-    return jpaUserRepository.findByEmailAndProvider(email, AuthProvider.valueOf(provider));
+
+    AuthProvider authProvider;
+    try {
+      authProvider = AuthProvider.valueOf(provider);
+    } catch (IllegalArgumentException e) {
+      return Optional.empty();
+    }
+    return jpaUserRepository.findByEmailAndProvider(email, authProvider);
   }
 }

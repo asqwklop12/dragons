@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.regex.Pattern;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
@@ -51,7 +52,7 @@ public class User extends BaseEntity {
     User user = new User();
     user.email = email;
     user.name = name;
-    user.password = null; // 더미 값
+    user.password = "TEMP"; // OAuth 사용자는 비밀번호 불필요
     user.provider = AuthProvider.GOOGLE;
     user.loginTime = null;
     return user;
@@ -146,9 +147,15 @@ public class User extends BaseEntity {
     this.loginTime = ZonedDateTime.now(clock);
   }
 
+  @Getter
+  @AllArgsConstructor
   public enum AuthProvider {
-    LOCAL,    // 일반 이메일/비밀번호 가입
-    GOOGLE,   // 구글 OAuth
+    LOCAL("LOCAL"),    // 일반 이메일/비밀번호 가입
+    GOOGLE("GOOGLE"),
+    ;   // 구글 OAuth
     // 향후 KAKAO, NAVER 등 추가 가능
+    private final String value;
+
+
   }
 }

@@ -8,6 +8,7 @@ import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
 import com.dragons.interfaces.api.user.dto.UserV1Dto.Login;
 import com.dragons.interfaces.api.user.dto.UserV1Dto.Register;
+import com.dragons.support.login.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserV1Controller implements UserV1Spec {
 
   private final UserService userService;
+  private final SessionHelper helper;
 
   // 회원가입
   @Override
@@ -46,17 +48,7 @@ public class UserV1Controller implements UserV1Spec {
         request.email(),
         request.password()));
 
-    // 2. 세션 교체 (기존 세션 무효화 후 새로 생성)
-    HttpSession session = httpRequest.getSession(false);
-    if (session != null) {
-      session.invalidate(); // 기존 세션 정보 파기
-    }
-
-    // 신규 세션 생성 및 정보 저장
-    session = httpRequest.getSession(true);
-    session.setAttribute("userEmail", result.email()); // 나중에 식별을 위해 저장
-    session.setAttribute("loginTime", result.loginTime());
-    session.setAttribute("provider", "GOOGLE");
+    helper.createLoginSession(httpRequest, result.email(), result.loginTime(), "LOCAL");
 
     return ApiResponse.success(new Login.Response(
         result.email(),

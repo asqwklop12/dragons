@@ -32,6 +32,10 @@ spring:
   hello: ????
 server:
   port: 8083
+  servlet:
+    session:
+      cookie:
+        secure: false
 ---
 spring:
   config:
@@ -40,4 +44,8 @@ spring:
   hello: ????
 server:
   port: 8089
+  servlet:
+    session:
+      cookie:
+        secure: false
 ---

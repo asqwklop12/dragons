@@ -35,6 +35,10 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
 
     HttpSession session = request.getSession(false);
 
+    if(session == null) {
+      throw new CoreException(ErrorType.UNAUTHORIZED, "로그인이 필요합니다.");
+    }
+
     Object emailAttr = session.getAttribute(SESSION_USER_EMAIL);
 
     if (!(emailAttr instanceof String email) || email.isBlank()) {

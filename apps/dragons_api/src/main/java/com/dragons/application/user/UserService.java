@@ -27,7 +27,7 @@ public class UserService {
 
   @Transactional
   public UserLoginResult login(UserLoginCommand command) {
-    User user = userRepository.findByEmailAndProvider(command.email(),"GOOGLE")
+    User user = userRepository.findByEmailAndProvider(command.email(),"LOCAL")
         .orElseThrow(() -> new CoreException(ErrorType.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다"));
 
     try {
