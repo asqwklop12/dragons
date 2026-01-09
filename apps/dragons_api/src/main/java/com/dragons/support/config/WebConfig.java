@@ -22,6 +22,7 @@ public class WebConfig implements WebMvcConfigurer {
         .addPathPatterns("/**") // 모든 경로를 일단 막음
         .excludePathPatterns(
             "/api/auth/**",
+            "/api/auth/google/**",
             "/error",              // 에러 응답 경로
             "/swagger-ui/**",      // API 문서 (사용 시)
             "/v3/api-docs/**"      // API 문서 (사용 시)

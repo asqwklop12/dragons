@@ -31,23 +31,20 @@ public class UserV1Controller implements UserV1Spec {
     var saved = userService.register(new UserRegisterCommand(
         request.name(),
         request.email(),
-        request.password()
-    ));
+        request.password()));
     return ApiResponse.success(new Register.Response(
         saved.name(),
-        saved.email()
-    ));
+        saved.email()));
   }
 
   // 로그인
   @Override
   @PostMapping("/login")
   public ApiResponse<UserV1Dto.Login.Response> login(@RequestBody @Validated UserV1Dto.Login.Request request,
-                                                     HttpServletRequest httpRequest) {
+      HttpServletRequest httpRequest) {
     UserLoginResult result = userService.login(new UserLoginCommand(
         request.email(),
-        request.password()
-    ));
+        request.password()));
 
     // 2. 세션 교체 (기존 세션 무효화 후 새로 생성)
     HttpSession session = httpRequest.getSession(false);
@@ -62,8 +59,6 @@ public class UserV1Controller implements UserV1Spec {
     return ApiResponse.success(new Login.Response(
         result.email(),
         result.name(),
-        result.LoginTime()
-    ));
+        result.LoginTime()));
   }
-
 }

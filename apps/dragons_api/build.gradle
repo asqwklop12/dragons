@@ -10,6 +10,7 @@ dependencies {
     implementation project(":infra:jwt")
     implementation project(":infra:jackson")
     implementation project(":infra:logging")
+    implementation project(":infra:social")
     
     testImplementation testFixtures(project(":infra:jpa"))
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'

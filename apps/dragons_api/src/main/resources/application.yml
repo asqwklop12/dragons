@@ -7,6 +7,7 @@ spring:
       - jwt.yml
       - optional:redis.yml
       - jpa.yml
+      - social.yml
 server:
   port: 8082
 datasource:

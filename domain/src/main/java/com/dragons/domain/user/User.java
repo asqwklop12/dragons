@@ -19,7 +19,7 @@ public class User extends BaseEntity {
   @Column(nullable = false, unique = true)
   private String email;
 
-  @Column(nullable = false)
+  @Column()
   private String password;
 
   private ZonedDateTime loginTime;
@@ -33,6 +33,14 @@ public class User extends BaseEntity {
     user.name = name;
     user.email = email;
     user.password = password;
+    user.loginTime = null;
+    return user;
+  }
+
+  public static User register(String email, String name) {
+    User user = new User();
+    user.email = email;
+    user.name = name;
     user.loginTime = null;
     return user;
   }

@@ -59,7 +59,7 @@ class UserServiceIntegrationTest {
     UserLoginResult result = userService.login(command);
 
     // then
-    assertThat(result.token()).isNotNull();
+    assertThat(result.email()).isNotNull();
   }
 
 }
