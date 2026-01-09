@@ -22,7 +22,7 @@ public class User extends BaseEntity {
   @Column(nullable = false, unique = true)
   private String email;
 
-  @Column()
+  @Column(nullable = false)
   private String password;
 
   @Enumerated(EnumType.STRING)
@@ -40,20 +40,37 @@ public class User extends BaseEntity {
     User user = new User();
     user.name = name;
     user.email = email;
-    user.password = password;
+    user.password = new PasswordHasher().hashPassword(password);
     user.provider = AuthProvider.LOCAL;
     user.loginTime = null;
     return user;
   }
 
   public static User register(String email, String name) {
+    validateEmailAndName(email, name);
     User user = new User();
     user.email = email;
     user.name = name;
-    user.password = "OAUTH_USER_NO_PASSWORD"; // 더미 값
+    user.password = null; // 더미 값
     user.provider = AuthProvider.GOOGLE;
     user.loginTime = null;
     return user;
+  }
+
+  private static void validateEmailAndName(String email, String name) {
+    if (email == null || email.isBlank()) {
+      throw new IllegalArgumentException("이메일은 비어 있을 수 없습니다.");
+    }
+    if (!EMAIL_PATTERN.matcher(email).matches()) {
+      throw new IllegalArgumentException("유효한 이메일 형식이 아닙니다.");
+
+    }
+    if (name == null || name.isBlank()) {
+      throw new IllegalArgumentException("이름은 비어 있을 수 없습니다.");
+    }
+    if (name.length() > 100) {
+      throw new IllegalArgumentException("이름은 100자를 초과할 수 없습니다.");
+    }
   }
 
   public static User withId(Long id, String name, String email, String password) {
@@ -117,7 +134,10 @@ public class User extends BaseEntity {
     if (this.provider != AuthProvider.LOCAL) {
       throw new IllegalArgumentException("OAuth 사용자는 비밀번호 로그인을 할 수 없습니다.");
     }
-    if(!this.password.equals(password)) {
+    if (this.password == null) {
+      throw new IllegalArgumentException("비밀번호가 설정되지 않았습니다.");
+    }
+    if(!new PasswordHasher().verifyPassword(password,this.password)) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
   }

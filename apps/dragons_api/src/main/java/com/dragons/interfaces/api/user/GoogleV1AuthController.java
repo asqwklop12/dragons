@@ -7,6 +7,7 @@ import com.dragons.interfaces.api.user.dto.UserV1Dto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,6 +25,12 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   private final GoogleSocialService googleSocialService;
 
 
+  @GetMapping("/url")
+  public ApiResponse<String> getGoogleLoginUrl() {
+    String googleLoginUrl = googleSocialService.getGoogleLoginUrl();
+    return ApiResponse.success(googleLoginUrl);
+  }
+
   // Google 로그인 처리 (Callback Code 수신)
   // 기존 UserV1Controller에 구현했던 POST /login/google과 동일한 역할
   @Override
@@ -36,10 +43,11 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   }
 
   // Google 콜백 처리 (GET)
+  @Profile("!prod")
   @Override
   @GetMapping("/callback")
   public String callback(@RequestParam String code, HttpServletRequest httpRequest) {
-    return "";
+    return "Google OAuth Code: " + code;
   }
 
   private ApiResponse<UserV1Dto.Login.Response> processLogin(UserLoginResult result, HttpServletRequest httpRequest) {
@@ -50,6 +58,8 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
     }
     session = httpRequest.getSession(true);
     session.setAttribute("userEmail", result.email());
+    session.setAttribute("loginTime", result.loginTime());
+    session.setAttribute("provider", "GOOGLE");
 
     return ApiResponse.success(new UserV1Dto.Login.Response(
         result.email(),

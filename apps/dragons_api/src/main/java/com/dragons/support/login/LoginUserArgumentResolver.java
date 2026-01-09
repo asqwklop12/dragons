@@ -14,6 +14,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
+  private static final String SESSION_USER_EMAIL = "userEmail";
 
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
@@ -27,13 +28,19 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
                                           NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory)
       throws Exception {
     // NativeWebRequest를 HttpServletRequest로 변환
-    HttpServletRequest request = (HttpServletRequest) webRequest.getNativeRequest();
-    HttpSession session = request.getSession(false); // 세션이 없으면 새로 만들지 않음
-
-    if (session == null) {
+    HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+    if (request == null) {
       throw new CoreException(ErrorType.UNAUTHORIZED, "로그인이 필요합니다.");
     }
 
-    return session.getAttribute("userEmail");
+    HttpSession session = request.getSession(false);
+
+    Object emailAttr = session.getAttribute(SESSION_USER_EMAIL);
+
+    if (!(emailAttr instanceof String email) || email.isBlank()) {
+      throw new CoreException(ErrorType.UNAUTHORIZED, "로그인이 필요합니다.");
+    }
+
+    return email;
   }
 }

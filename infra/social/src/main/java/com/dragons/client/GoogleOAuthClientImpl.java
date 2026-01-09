@@ -30,6 +30,15 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
   }
 
   @Override
+  public String getGoogleLoginUrl() {
+    return "https://accounts.google.com/o/oauth2/v2/auth"
+        + "?client_id=" + clientId
+        + "&redirect_uri=" + redirectUri
+        + "&response_type=code"
+        + "&scope=email profile";
+  }
+
+  @Override
   public GoogleOAuthResponse getUserInfo(String code) {
     // 1. Authorization Code를 Access Token으로 교환
     String tokenUrl = "https://oauth2.googleapis.com/token";

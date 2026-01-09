@@ -9,6 +9,13 @@ spring:
       - jpa.yml
       - social.yml
 server:
+  servlet:
+    session:
+      cookie:
+        secure: true
+        http-only: true
+        same-site: strict
+      timeout: 30m
   port: 8082
 datasource:
   redis:

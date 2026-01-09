@@ -55,6 +55,8 @@ public class UserV1Controller implements UserV1Spec {
     // 신규 세션 생성 및 정보 저장
     session = httpRequest.getSession(true);
     session.setAttribute("userEmail", result.email()); // 나중에 식별을 위해 저장
+    session.setAttribute("loginTime", result.loginTime());
+    session.setAttribute("provider", "GOOGLE");
 
     return ApiResponse.success(new Login.Response(
         result.email(),
