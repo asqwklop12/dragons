@@ -59,6 +59,21 @@ public class UserV1Controller implements UserV1Spec {
     return ApiResponse.success(new Login.Response(
         result.email(),
         result.name(),
-        result.LoginTime()));
+        result.loginTime()));
+  }
+
+  @Override
+  @PostMapping("/logout")
+  public ApiResponse<Void> logout(HttpServletRequest request) {
+    // 1. 현재 요청의 세션을 가져옴 (false: 없으면 새로 만들지 않음)
+    HttpSession session = request.getSession(false);
+
+    // 2. 세션이 존재한다면 서버 메모리에서 즉시 파기
+    if (session != null) {
+      session.invalidate();
+    }
+
+    // 3. 성공 응답 (내용물은 빈 값)
+    return ApiResponse.success(null);
   }
 }

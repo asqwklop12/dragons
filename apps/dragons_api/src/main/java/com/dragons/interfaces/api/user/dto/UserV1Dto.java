@@ -49,9 +49,9 @@ public class UserV1Dto {
 
     @Schema(name = "UserLoginResponse", description = "로그인 응답")
     public record Response(
-        @Schema(description = "이메일", example = "이메일") String email,
-        @Schema(description = "사용자 명", example = "사용자 명") String name,
-        @Schema(description = "로그인 시간", example = "로그인 시간") ZonedDateTime loginTime) {
+        @Schema(description = "이메일", example = "user@example.com") String email,
+        @Schema(description = "사용자 명", example = "홍길동") String name,
+        @Schema(description = "로그인 시간", example = "2026-01-08T16:00:00+09:00") ZonedDateTime loginTime) {
 
     }
 

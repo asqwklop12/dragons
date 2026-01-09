@@ -4,7 +4,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.dragons.domain.user.User;
+import com.dragons.domain.user.UserRepository;
+import com.dragons.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,9 +25,16 @@ class UserV1ControllerE2ETest {
   @Autowired
   private WebApplicationContext context;
 
+  @Autowired
+  private DatabaseCleanUp databaseCleanUp;
+
+  @Autowired
+  private UserRepository userRepository;
+
   @BeforeEach
   void setUp() {
     mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
+    databaseCleanUp.truncateAllTables();
   }
 
   @Test
@@ -155,6 +164,8 @@ class UserV1ControllerE2ETest {
   @DisplayName("로그인 - 정상 케이스")
   void login_success() throws Exception {
     // given
+    userRepository.save(User.register("홍길동", "test@example.com", "password123!"));
+
     String requestBody = """
         {
           "email": "test@example.com",

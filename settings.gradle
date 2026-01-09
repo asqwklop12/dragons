@@ -19,5 +19,6 @@ include(
         ":infra:redis",
         ":infra:jwt",
         ":infra:jpa",
-        ":infra:social"
+        ":infra:social",
+        ":infra:restTemplate"
 )

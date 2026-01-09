@@ -2,11 +2,13 @@ plugins {
     id 'java-library'
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
+    id 'java-test-fixtures'
 }
 description = 'social'
 
 dependencies {
     implementation project(":domain")
-    implementation 'org.springframework.boot:spring-boot-starter-restclient'
+    implementation project(":infra:restTemplate")
+    implementation 'org.springframework.boot:spring-boot-starter'
 }
 

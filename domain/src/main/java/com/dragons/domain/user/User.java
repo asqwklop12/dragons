@@ -3,7 +3,10 @@ package com.dragons.domain.user;
 import com.dragons.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.regex.Pattern;
 import lombok.Getter;
@@ -22,6 +25,11 @@ public class User extends BaseEntity {
   @Column()
   private String password;
 
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private AuthProvider provider;
+
+  @Column
   private ZonedDateTime loginTime;
 
   protected User() {
@@ -33,6 +41,7 @@ public class User extends BaseEntity {
     user.name = name;
     user.email = email;
     user.password = password;
+    user.provider = AuthProvider.LOCAL;
     user.loginTime = null;
     return user;
   }
@@ -41,6 +50,8 @@ public class User extends BaseEntity {
     User user = new User();
     user.email = email;
     user.name = name;
+    user.password = "OAUTH_USER_NO_PASSWORD"; // 더미 값
+    user.provider = AuthProvider.GOOGLE;
     user.loginTime = null;
     return user;
   }
@@ -103,12 +114,21 @@ public class User extends BaseEntity {
   }
 
   public void matchPassword(String password) {
+    if (this.provider != AuthProvider.LOCAL) {
+      throw new IllegalArgumentException("OAuth 사용자는 비밀번호 로그인을 할 수 없습니다.");
+    }
     if(!this.password.equals(password)) {
       throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
     }
   }
 
-  public void loginUpdateTime() {
+  public void loginUpdateTime(Clock clock) {
     this.loginTime = ZonedDateTime.now();
+  }
+
+  public enum AuthProvider {
+    LOCAL,    // 일반 이메일/비밀번호 가입
+    GOOGLE,   // 구글 OAuth
+    // 향후 KAKAO, NAVER 등 추가 가능
   }
 }

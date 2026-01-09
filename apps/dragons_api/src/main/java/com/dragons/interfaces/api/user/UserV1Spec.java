@@ -30,4 +30,11 @@ public interface UserV1Spec {
       UserV1Dto.Login.Request request,
       HttpServletRequest httpRequest);
 
+  // 로그아웃
+  @Operation(
+      summary = "로그아웃",
+      description = "세션을 제거하고 로그아웃합니다."
+  )
+  ApiResponse<Void> logout(HttpServletRequest request);
+
 }

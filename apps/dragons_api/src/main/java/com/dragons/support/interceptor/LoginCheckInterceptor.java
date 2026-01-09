@@ -1,4 +1,4 @@
-package com.dragons.support.intercepter;
+package com.dragons.support.interceptor;
 
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @RequiredArgsConstructor
 public class LoginCheckInterceptor implements HandlerInterceptor {
 
-  private final String USER_EMAIL = "userEmail";
+  private final static String USER_EMAIL = "userEmail";
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {

@@ -18,7 +18,7 @@ public interface PostV1Spec {
   ApiResponse<PostV1Dto.Get.Response> get(Long postId);
 
   @Operation(summary = "게시글 수정", description = "게시글 제목/내용을 수정합니다.")
-  ApiResponse<PostV1Dto.Update.Response> update(Long postId, PostV1Dto.Update.Request request);
+  ApiResponse<PostV1Dto.Update.Response> update(String email, Long postId, PostV1Dto.Update.Request request);
 
   @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
   ApiResponse<PostV1Dto.Delete.Response> delete(String email, Long postId);

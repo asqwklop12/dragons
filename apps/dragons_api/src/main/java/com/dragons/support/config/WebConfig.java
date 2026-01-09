@@ -1,6 +1,6 @@
 package com.dragons.support.config;
 
-import com.dragons.support.intercepter.LoginCheckInterceptor;
+import com.dragons.support.interceptor.LoginCheckInterceptor;
 import com.dragons.support.login.LoginUserArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

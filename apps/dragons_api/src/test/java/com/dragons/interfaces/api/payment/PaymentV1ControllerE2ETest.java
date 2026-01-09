@@ -46,6 +46,7 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/card")
+        .sessionAttr("userEmail", "test@example.com")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -75,6 +76,7 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/card")
+        .sessionAttr("userEmail", "test@example.com")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -99,6 +101,7 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/card")
+        .sessionAttr("userEmail", "test@example.com")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -121,6 +124,7 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/bank-transfer")
+        .sessionAttr("userEmail", "test@example.com")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -148,6 +152,7 @@ class PaymentV1ControllerE2ETest {
 
     // when & then
     mockMvc.perform(post("/api/payments/bank-transfer")
+        .sessionAttr("userEmail", "test@example.com")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())

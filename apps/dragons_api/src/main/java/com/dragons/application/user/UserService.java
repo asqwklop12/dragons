@@ -9,7 +9,7 @@ import com.dragons.domain.user.UserRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
 import jakarta.transaction.Transactional;
-import java.util.Optional;
+import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
   private final UserRepository userRepository;
+  private final Clock clock;
 
   @Transactional
   public UserRegisterResult register(UserRegisterCommand command) {
@@ -26,14 +27,11 @@ public class UserService {
 
   @Transactional
   public UserLoginResult login(UserLoginCommand command) {
-    Optional<User> byEmail = userRepository.findByEmail(command.email());
-    if (byEmail.isEmpty()) {
-      throw new CoreException(ErrorType.NOT_FOUND, "이메일이 존재하지 않습니다");
-    }
+    User user = userRepository.findByEmail(command.email())
+        .orElseThrow(() -> new CoreException(ErrorType.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다"));
 
-    User user = byEmail.get();
     user.matchPassword(command.password());
-    user.loginUpdateTime();
+    user.loginUpdateTime(clock);
 
     return new UserLoginResult(
         user.email(),

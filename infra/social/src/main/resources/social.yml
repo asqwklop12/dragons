@@ -1,5 +1,5 @@
 google:
-  client-id: ${Client-id}
-  client-secret: ${Client-secret}
+  client-id: ${GOOGLE_CLIENT_ID}
+  client-secret: ${GOOGLE_CLIENT_SECRET}
   redirect-uri: http://localhost:8089/api/auth/google/callback
 

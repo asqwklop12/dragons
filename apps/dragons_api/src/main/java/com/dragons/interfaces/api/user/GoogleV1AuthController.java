@@ -60,6 +60,6 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
     return ApiResponse.success(new UserV1Dto.Login.Response(
         result.email(),
         result.name(),
-        result.LoginTime()));
+        result.loginTime()));
   }
 }

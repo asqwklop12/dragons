@@ -109,6 +109,7 @@ public class PostV1Controller implements PostV1Spec {
   @Override
   @PutMapping("/{postId}")
   public ApiResponse<PostV1Dto.Update.Response> update(
+      @Parameter(hidden = true) @LoginUser() String email,
       @PathVariable Long postId,
       @RequestBody @Validated PostV1Dto.Update.Request request) {
 
@@ -116,7 +117,7 @@ public class PostV1Controller implements PostV1Spec {
         postId,
         request.title(),
         request.content(),
-        request.email()));
+        email));
 
     return ApiResponse.success(new Update.Response(
         result.id(),

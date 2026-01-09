@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class GoogleOAuthClientImpl implements GoogleOAuthClient {
 
-  private final RestTemplate restTemplate = new RestTemplate();
+  private final RestTemplate restTemplate;
 
   @Value("${google.client-id}")
   private String clientId;
@@ -25,7 +25,12 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
   @Value("${google.redirect-uri}")
   private String redirectUri;
 
-  public GoogleOAuthResponse getUserEmail(String code) {
+  public GoogleOAuthClientImpl(RestTemplate restTemplate) {
+    this.restTemplate = restTemplate;
+  }
+
+  @Override
+  public GoogleOAuthResponse getUserInfo(String code) {
     // 1. Authorization Code를 Access Token으로 교환
     String tokenUrl = "https://oauth2.googleapis.com/token";
 
@@ -41,6 +46,11 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
     try {
       // 토큰 요청
       Map<String, Object> response = restTemplate.postForObject(tokenUrl, params, Map.class);
+
+      if (response == null || !response.containsKey("access_token")) {
+        throw new RuntimeException("Google OAuth 토큰 응답이 유효하지 않습니다");
+      }
+
       String accessToken = (String) response.get("access_token");
 
       // 2. Access Token으로 구글 유저 정보(Resource) 가져오기
@@ -59,10 +69,19 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
       );
 
       Map<String, Object> userInfo = userInfoResponse.getBody();
+      if (userInfo == null) {
+        throw new RuntimeException("Google 사용자 정보를 가져올 수 없습니다.");
+      }
+      String email = (String) userInfo.get("email");
+      String name = (String) userInfo.get("name");
+
+      if (email == null) {
+        throw new RuntimeException("Google 계정에서 이메일을 가져올 수 없습니다");
+      }
       return
           new GoogleOAuthResponse(
-              (String) userInfo.get("email"),
-              (String) userInfo.get("name")
+              email,
+              name
           );
 
     } catch (Exception e) {
