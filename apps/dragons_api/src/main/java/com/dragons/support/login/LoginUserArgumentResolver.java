@@ -1,5 +1,7 @@
 package com.dragons.support.login;
 
+import com.dragons.support.error.CoreException;
+import com.dragons.support.error.ErrorType;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.jspecify.annotations.Nullable;
@@ -29,7 +31,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     HttpSession session = request.getSession(false); // 세션이 없으면 새로 만들지 않음
 
     if (session == null) {
-      return null;
+      throw new CoreException(ErrorType.UNAUTHORIZED, "로그인이 필요합니다.");
     }
 
     return session.getAttribute("userEmail");

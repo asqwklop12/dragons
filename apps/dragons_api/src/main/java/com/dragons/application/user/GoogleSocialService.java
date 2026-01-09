@@ -5,10 +5,10 @@ import com.dragons.domain.social.GoogleOAuthClient;
 import com.dragons.domain.social.GoogleOAuthResponse;
 import com.dragons.domain.user.User;
 import com.dragons.domain.user.UserRepository;
-import jakarta.transaction.Transactional;
 import java.time.Clock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class GoogleSocialService {
 
     user.loginUpdateTime(clock);
 
-    return new UserLoginResult(user.getEmail(), user.getName(), user.getLoginTime());
+    return new UserLoginResult(user.email(), user.name(), user.getLoginTime());
   }
 
 }

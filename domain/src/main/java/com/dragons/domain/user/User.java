@@ -122,8 +122,8 @@ public class User extends BaseEntity {
     }
   }
 
-  public void loginUpdateTime(Clock clock) {
-    this.loginTime = ZonedDateTime.now();
+  public void loginUpdateTime(final Clock clock) {
+    this.loginTime = ZonedDateTime.now(clock);
   }
 
   public enum AuthProvider {

@@ -30,7 +30,11 @@ public class UserService {
     User user = userRepository.findByEmail(command.email())
         .orElseThrow(() -> new CoreException(ErrorType.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다"));
 
-    user.matchPassword(command.password());
+    try {
+      user.matchPassword(command.password());
+    } catch (IllegalArgumentException e) {
+      throw new CoreException(ErrorType.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다");
+    }
     user.loginUpdateTime(clock);
 
     return new UserLoginResult(

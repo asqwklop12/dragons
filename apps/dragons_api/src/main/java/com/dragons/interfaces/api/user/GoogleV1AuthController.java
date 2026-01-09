@@ -23,12 +23,6 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
 
   private final GoogleSocialService googleSocialService;
 
-  // 구글 인증 페이지로 리다이렉트 (프론트엔드에서 처리하므로 실제로는 불필요할 수 있음, 스펙 유지)
-  @Override
-  @GetMapping
-  public void login() {
-    // TODO: 프론트엔드 리다이렉트 URL 제공 필요 시 구현
-  }
 
   // Google 로그인 처리 (Callback Code 수신)
   // 기존 UserV1Controller에 구현했던 POST /login/google과 동일한 역할
@@ -45,7 +39,7 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   @Override
   @GetMapping("/callback")
   public String callback(@RequestParam String code, HttpServletRequest httpRequest) {
-    return code;
+    return "";
   }
 
   private ApiResponse<UserV1Dto.Login.Response> processLogin(UserLoginResult result, HttpServletRequest httpRequest) {

@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Tag(name = "Google Auth V1 API", description = "구글 소셜 인증 API")
 public interface GoogleV1AuthSpec {
 
-  // 구글 인증 페이지로 리다이렉트
-  @Operation(summary = "Google 로그인 페이지", description = "구글 인증 페이지로 리다이렉트합니다.")
-  void login();
-
   // Google 로그인 (Code 수신)
   @Operation(summary = "Google 로그인", description = "구글 인증 코드를 받아 로그인을 처리합니다.")
   ApiResponse<UserV1Dto.Login.Response> googleLogin(@RequestBody @Validated UserV1Dto.GoogleLogin.Request request,

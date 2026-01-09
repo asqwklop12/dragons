@@ -132,7 +132,9 @@ public class PostV1Controller implements PostV1Spec {
       @Parameter(hidden = true) @LoginUser() String email,
       @PathVariable Long postId) {
 
-    PostDeleteResult result = postService.delete(new PostDeleteCommand(postId,email));
+    PostDeleteResult result = postService.delete(new PostDeleteCommand(
+        postId,
+        email));
 
     return ApiResponse.success(new Response(
         result.id(),
