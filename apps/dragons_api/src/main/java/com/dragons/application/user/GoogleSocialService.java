@@ -30,7 +30,7 @@ public class GoogleSocialService {
 
   @Transactional
   public UserLoginResult createOrUpdateUser(GoogleOAuthResponse response) {
-    User user = userRepository.findByEmailAndProvider(response.email(),"LOCAL")
+    User user = userRepository.findByEmailAndProvider(response.email(),"GOOGLE")
         .orElseGet(() -> userRepository.save(User.register(response.email(), response.name()))); // 없으면 가입
 
     user.loginUpdateTime(clock);
