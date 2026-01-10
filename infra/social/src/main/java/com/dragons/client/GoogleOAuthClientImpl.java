@@ -2,7 +2,6 @@ package com.dragons.client;
 
 import com.dragons.domain.social.GoogleOAuthClient;
 import com.dragons.domain.social.GoogleOAuthResponse;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -41,12 +40,13 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
 
   @Override
   public String getGoogleLoginUrl() {
-    String loginUrl = "https://accounts.google.com/o/oauth2/v2/auth"
-        + "?client_id=" + clientId
-        + "&redirect_uri=" + redirectUri
-        + "&response_type=code"
-        + "&scope=email profile";
-
+    String loginUrl = UriComponentsBuilder
+        .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
+        .queryParam("client_id",clientId)
+        .queryParam("redirect_uri",redirectUri)
+        .queryParam("response_type","code")
+        .queryParam("scope","email profile").build()
+        .toUriString();
     log.debug("Generated Google login URL: {}", loginUrl);
     return loginUrl;
   }

@@ -52,7 +52,7 @@ public class User extends BaseEntity {
     User user = new User();
     user.email = email;
     user.name = name;
-    user.password = "TEMP"; // OAuth 사용자는 비밀번호 불필요
+    user.password = "OAUTH_NO_PASSWORD"; // OAuth 사용자는 비밀번호 불필요
     user.provider = AuthProvider.GOOGLE;
     user.loginTime = null;
     return user;
@@ -151,8 +151,7 @@ public class User extends BaseEntity {
   @AllArgsConstructor
   public enum AuthProvider {
     LOCAL("LOCAL"),    // 일반 이메일/비밀번호 가입
-    GOOGLE("GOOGLE"),
-    ;   // 구글 OAuth
+    GOOGLE("GOOGLE");   // 구글 OAuth
     // 향후 KAKAO, NAVER 등 추가 가능
     private final String value;
 

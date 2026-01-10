@@ -5,8 +5,10 @@ import com.dragons.domain.user.User.AuthProvider;
 import com.dragons.domain.user.UserRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 class UserRepositoryImpl implements UserRepository {
@@ -29,6 +31,7 @@ class UserRepositoryImpl implements UserRepository {
     try {
       authProvider = AuthProvider.valueOf(provider);
     } catch (IllegalArgumentException e) {
+      log.warn("Invalid provider string: {}", provider);
       return Optional.empty();
     }
     return jpaUserRepository.findByEmailAndProvider(email, authProvider);

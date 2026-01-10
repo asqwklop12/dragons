@@ -2,7 +2,7 @@ package com.dragons.domain.user;
 
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 
-public class PasswordHasher {
+public class  PasswordHasher {
   private final Argon2PasswordEncoder encoder = Argon2PasswordEncoder.defaultsForSpringSecurity_v5_8();
 
   public String hashPassword(String plainPassword) {

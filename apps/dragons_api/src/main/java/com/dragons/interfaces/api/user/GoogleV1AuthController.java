@@ -47,7 +47,7 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   // Google 콜백 처리 (GET)
   @Override
   @GetMapping("/callback")
-  public String callback(@RequestParam String code, HttpServletRequest httpRequest) {
+  public String callback(@RequestParam String code) {
     return "Google OAuth callback received";
   }
 

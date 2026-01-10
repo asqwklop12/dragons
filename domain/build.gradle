@@ -10,7 +10,7 @@ dependencies {
 
     // 암호화
     implementation 'org.springframework.security:spring-security-crypto'
-    implementation 'org.bouncycastle:bcprov-jdk18on:1.79.1' // Argon2 사용 시
+    implementation 'org.bouncycastle:bcprov-jdk18on'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

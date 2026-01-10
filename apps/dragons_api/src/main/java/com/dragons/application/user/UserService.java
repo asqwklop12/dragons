@@ -5,6 +5,7 @@ import com.dragons.application.user.dto.UserLoginResult;
 import com.dragons.application.user.dto.UserRegisterCommand;
 import com.dragons.application.user.dto.UserRegisterResult;
 import com.dragons.domain.user.User;
+import com.dragons.domain.user.User.AuthProvider;
 import com.dragons.domain.user.UserRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
@@ -27,7 +28,7 @@ public class UserService {
 
   @Transactional
   public UserLoginResult login(UserLoginCommand command) {
-    User user = userRepository.findByEmailAndProvider(command.email(),"LOCAL")
+    User user = userRepository.findByEmailAndProvider(command.email(), AuthProvider.LOCAL.getValue())
         .orElseThrow(() -> new CoreException(ErrorType.UNAUTHORIZED, "아이디 또는 비밀번호가 일치하지 않습니다"));
 
     try {

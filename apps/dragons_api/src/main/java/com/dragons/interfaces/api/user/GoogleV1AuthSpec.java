@@ -19,5 +19,5 @@ public interface GoogleV1AuthSpec {
 
   // Google 콜백 처리 (GET) - 테스트용: 코드를 화면에 출력
   @Operation(summary = "Google 콜백 처리", description = "구글 인증 후 리다이렉트되는 콜백 엔드포인트입니다. (테스트용: 코드 반환)")
-  String callback(@RequestParam String code, HttpServletRequest httpRequest);
+  String callback(@RequestParam String code);
 }

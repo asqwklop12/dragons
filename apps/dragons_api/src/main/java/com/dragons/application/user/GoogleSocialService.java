@@ -4,6 +4,7 @@ import com.dragons.application.user.dto.UserLoginResult;
 import com.dragons.domain.social.GoogleOAuthClient;
 import com.dragons.domain.social.GoogleOAuthResponse;
 import com.dragons.domain.user.User;
+import com.dragons.domain.user.User.AuthProvider;
 import com.dragons.domain.user.UserRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
@@ -39,7 +40,7 @@ public class GoogleSocialService {
 
   @Transactional
   public UserLoginResult createOrUpdateUser(GoogleOAuthResponse response) {
-    User user = userRepository.findByEmailAndProvider(response.email(), "GOOGLE")
+    User user = userRepository.findByEmailAndProvider(response.email(), AuthProvider.GOOGLE.getValue())
         .orElseGet(() -> userRepository.save(User.register(response.email(), response.name()))); // 없으면 가입
 
     user.loginUpdateTime(clock);
