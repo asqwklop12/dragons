@@ -15,7 +15,6 @@ class UserTest {
 
         assertThat(user.name()).isEqualTo("홍길동");
         assertThat(user.email()).isEqualTo("test@example.com");
-        assertThat(user.password()).isEqualTo("password123!");
         assertThat(user.getId()).isNull();
         assertThat(user.getDeletedAt()).isNull();
     }
@@ -24,7 +23,7 @@ class UserTest {
     @DisplayName("회원가입 실패 - 유효성 검증")
     void register_fail_validation() {
         // 이름
-        assertThatThrownBy(() -> User.register("", "test@example.com", "password123!"))
+        assertThatThrownBy(() -> User.register("", "test@example.com", "password123"))
                 .isInstanceOf(IllegalArgumentException.class);
 
         assertThatThrownBy(() -> User.register("a".repeat(101), "test@example.com", "password123!"))

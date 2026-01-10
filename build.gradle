@@ -3,6 +3,7 @@ import com.github.spotbugs.snom.SpotBugsTask
 plugins {
     id 'java'
     id "com.github.spotbugs" version "6.4.8" apply false
+    id "io.spring.dependency-management" version "1.1.6" apply false
 }
 
 group = 'com.dragons'
@@ -23,6 +24,7 @@ subprojects {
     apply plugin: 'java'
     apply plugin: "com.github.spotbugs"
     apply plugin: "checkstyle"
+    apply plugin: "io.spring.dependency-management"
 
 
     checkstyle {
@@ -58,6 +60,10 @@ subprojects {
 
         testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+
+        constraints {
+            implementation "org.bouncycastle:bcprov-jdk18on:1.83"
+        }
     }
 
 

@@ -6,6 +6,7 @@ import com.dragons.interfaces.api.user.dto.UserV1Dto.Register.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Tag(name = "Auth V1 API", description = "인증/사용자 계정 API")
 public interface UserV1Spec {
@@ -26,6 +27,14 @@ public interface UserV1Spec {
   )
   ApiResponse<UserV1Dto.Login.Response> login(
       @Schema(name = "로그인 요청", description = "이메일과 비밀번호")
-      UserV1Dto.Login.Request request);
+      UserV1Dto.Login.Request request,
+      HttpServletRequest httpRequest);
+
+  // 로그아웃
+  @Operation(
+      summary = "로그아웃",
+      description = "세션을 제거하고 로그아웃합니다."
+  )
+  ApiResponse<Void> logout(HttpServletRequest request);
 
 }

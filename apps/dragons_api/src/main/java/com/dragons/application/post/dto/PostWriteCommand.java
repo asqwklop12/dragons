@@ -5,6 +5,6 @@ public record PostWriteCommand(
     String content,
     String category,
     boolean isPublic,
-    String token // authToken
+    String author
 ) {
 }

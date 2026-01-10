@@ -63,6 +63,7 @@ class PostV1ControllerE2ETest {
     // when & then
     mockMvc.perform(post("/api/posts")
         .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -82,7 +83,8 @@ class PostV1ControllerE2ETest {
     postRepository.save(Post.write("Title 2", "Content 2", "backend", true, "yonghun"));
 
     mockMvc.perform(get("/api/posts")
-        .header("X-TOKEN", token))
+        .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun"))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
@@ -107,6 +109,7 @@ class PostV1ControllerE2ETest {
     // when & then
     mockMvc.perform(post("/api/posts")
         .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -128,6 +131,7 @@ class PostV1ControllerE2ETest {
     // when & then
     mockMvc.perform(post("/api/posts")
         .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -148,6 +152,7 @@ class PostV1ControllerE2ETest {
     // when & then
     mockMvc.perform(post("/api/posts")
         .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -161,7 +166,8 @@ class PostV1ControllerE2ETest {
         .save(Post.write("Spring Boot에서 JWT 인증 구현하기", "Spring Security와 JWT를 활용한...", "backend", true, "yonghun"));
 
     mockMvc.perform(get("/api/posts/{postId}", saved.getId())
-        .header("X-TOKEN", token))
+        .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun"))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))
@@ -186,6 +192,7 @@ class PostV1ControllerE2ETest {
 
     mockMvc.perform(put("/api/posts/{postId}", saved.getId())
         .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -209,6 +216,7 @@ class PostV1ControllerE2ETest {
 
     mockMvc.perform(put("/api/posts/{postId}", saved.getId())
         .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -229,6 +237,7 @@ class PostV1ControllerE2ETest {
 
     mockMvc.perform(put("/api/posts/{postId}", saved.getId())
         .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun")
         .contentType(MediaType.APPLICATION_JSON)
         .content(requestBody))
         .andDo(print())
@@ -241,7 +250,8 @@ class PostV1ControllerE2ETest {
     Post saved = postRepository.save(Post.write("Spring Boot에서 JWT 인증 구현하기", "Content", "backend", true, "yonghun"));
 
     mockMvc.perform(delete("/api/posts/{postId}", saved.getId())
-        .header("X-TOKEN", token))
+        .header("X-TOKEN", token)
+        .sessionAttr("userEmail", "yonghun"))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.meta.result").value("SUCCESS"))

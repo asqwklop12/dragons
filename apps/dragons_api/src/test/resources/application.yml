@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: dragons
+  config:
+    import:
+      - logging.yml
+      - jwt.yml
+      - optional:redis.yml
+      - jpa.yml
+      # - social.yml REMOVED to avoid env var issues
+server:
+  port: 8082
+datasource:
+  redis:
+    enabled: false
+springdoc:
+  use-fqn: true
+  swagger-ui:
+    path: /swagger-ui.html
+
+google:
+  client-id: test-client-id
+  client-secret: test-client-secret
+  redirect-uri: http://localhost:8089/api/auth/google/callback

@@ -7,7 +7,15 @@ spring:
       - jwt.yml
       - optional:redis.yml
       - jpa.yml
+      - social.yml
 server:
+  servlet:
+    session:
+      cookie:
+        secure: true
+        http-only: true
+        same-site: lax
+      timeout: 30m
   port: 8082
 datasource:
   redis:
@@ -24,6 +32,13 @@ spring:
   hello: ????
 server:
   port: 8083
+  servlet:
+    session:
+      cookie:
+        secure: false
+        same-site: lax
+        http-only: true
+      timeout: 30m
 ---
 spring:
   config:
@@ -32,4 +47,11 @@ spring:
   hello: ????
 server:
   port: 8089
+  servlet:
+    session:
+      cookie:
+        secure: false
+        same-site: lax
+        http-only: true
+      timeout: 30m
 ---

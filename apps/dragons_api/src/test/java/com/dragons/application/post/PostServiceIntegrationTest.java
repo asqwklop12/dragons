@@ -12,7 +12,6 @@ import com.dragons.application.post.dto.PostUpdateCommand;
 import com.dragons.application.post.dto.PostUpdateResult;
 import com.dragons.application.post.dto.PostWriteCommand;
 import com.dragons.application.post.dto.PostWriteResult;
-import com.dragons.config.jwt.JwtTokenProvider;
 import com.dragons.domain.post.Post;
 import com.dragons.domain.post.PostRepository;
 import com.dragons.support.error.CoreException;
@@ -33,17 +32,11 @@ class PostServiceIntegrationTest {
   private PostRepository postRepository;
 
   @Autowired
-  private JwtTokenProvider jwtTokenProvider;
-
-  @Autowired
   private DatabaseCleanUp databaseCleanUp;
-
-  private String token;
 
   @BeforeEach
   void setUp() {
     databaseCleanUp.truncateAllTables();
-    token = jwtTokenProvider.createAccessToken("test@example.com");
   }
 
   @Test
@@ -55,7 +48,7 @@ class PostServiceIntegrationTest {
         "내용",
         "backend",
         true,
-        token);
+        "test@example.com");
 
     // when
     PostWriteResult result = postService.write(command);
@@ -106,7 +99,7 @@ class PostServiceIntegrationTest {
   void get_delete_post() {
     // given
     Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
-    postService.delete(new PostDeleteCommand(saved.getId(), token));
+    postService.delete(new PostDeleteCommand(saved.getId(), "test@example.com"));
     PostGetCommand command = new PostGetCommand(saved.getId());
 
     // when&then
@@ -120,7 +113,8 @@ class PostServiceIntegrationTest {
   void update_success() {
     // given
     Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
-    PostUpdateCommand command = new PostUpdateCommand(saved.getId(), "Updated Title", "Updated Content", token);
+    PostUpdateCommand command = new PostUpdateCommand(saved.getId(), "Updated Title", "Updated Content",
+        "test@example.com");
 
     // when
     PostUpdateResult result = postService.update(command);
@@ -138,7 +132,7 @@ class PostServiceIntegrationTest {
   void delete_success() {
     // given
     Post saved = postRepository.save(Post.write("Title", "Content", "backend", true, "test@example.com"));
-    PostDeleteCommand command = new PostDeleteCommand(saved.getId(), token);
+    PostDeleteCommand command = new PostDeleteCommand(saved.getId(), "test@example.com");
 
     // when
     postService.delete(command);
