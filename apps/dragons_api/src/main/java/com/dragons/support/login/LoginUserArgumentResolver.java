@@ -1,5 +1,6 @@
 package com.dragons.support.login;
 
+import com.dragons.domain.constants.SessionConstants;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 @Component
 public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver {
-  private static final String SESSION_USER_EMAIL = "userEmail";
 
   private static CoreException unauthorized() {
     return new CoreException(ErrorType.UNAUTHORIZED, "로그인이 필요합니다.");
@@ -42,7 +42,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
       throw unauthorized();
     }
 
-    Object emailAttr = session.getAttribute(SESSION_USER_EMAIL);
+    Object emailAttr = session.getAttribute(SessionConstants.SESSION_USER_EMAIL.getValue());
 
     if (!(emailAttr instanceof String email) || email.isBlank()) {
       throw unauthorized();

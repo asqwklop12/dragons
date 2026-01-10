@@ -38,6 +38,7 @@ server:
         secure: false
         same-site: lax
         http-only: true
+      timeout: 30m
 ---
 spring:
   config:
@@ -52,4 +53,5 @@ server:
         secure: false
         same-site: lax
         http-only: true
+      timeout: 30m
 ---
