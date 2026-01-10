@@ -4,7 +4,6 @@ import com.dragons.domain.constants.SessionConstants;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.jspecify.annotations.Nullable;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -36,13 +35,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
       throw unauthorized();
     }
 
-    HttpSession session = request.getSession(false);
-
-    if(session == null) {
-      throw unauthorized();
-    }
-
-    Object emailAttr = session.getAttribute(SessionConstants.SESSION_USER_EMAIL.getValue());
+    Object emailAttr = request.getAttribute(SessionConstants.SESSION_USER_EMAIL.getValue());
 
     if (!(emailAttr instanceof String email) || email.isBlank()) {
       throw unauthorized();

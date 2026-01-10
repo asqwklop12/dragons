@@ -87,6 +87,7 @@ public class User extends BaseEntity {
     user.name = name;
     user.email = email;
     user.password = password;
+    user.provider = AuthProvider.LOCAL; // 기본값으로 LOCAL 설정
     return user;
   }
 

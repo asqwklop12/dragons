@@ -6,6 +6,7 @@ import com.dragons.application.user.dto.UserLoginCommand;
 import com.dragons.application.user.dto.UserLoginResult;
 import com.dragons.application.user.dto.UserRegisterCommand;
 import com.dragons.application.user.dto.UserRegisterResult;
+import com.dragons.domain.user.User;
 import com.dragons.domain.user.UserRepository;
 import com.dragons.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +26,9 @@ class UserServiceIntegrationTest {
 
   @Autowired
   private DatabaseCleanUp databaseCleanup;
+
+  @Autowired
+  private PasswordHasher passwordHasher;
 
   @BeforeEach
   void setUp() {
@@ -52,7 +56,7 @@ class UserServiceIntegrationTest {
   @DisplayName("로그인 성공")
   void login_success() {
     // given
-    userRepository.save(com.dragons.domain.user.User.register("홍길동", "test@example.com", "password123!"));
+    userRepository.save(User.register("홍길동", "test@example.com", passwordHasher.hashPassword("password123!")));
     UserLoginCommand command = new UserLoginCommand("test@example.com", "password123!");
 
     // when

@@ -4,6 +4,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.dragons.application.user.PasswordHasher;
 import com.dragons.domain.user.User;
 import com.dragons.domain.user.UserRepository;
 import com.dragons.utils.DatabaseCleanUp;
@@ -30,6 +32,9 @@ class UserV1ControllerE2ETest {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private PasswordHasher passwordHasher;
 
   @BeforeEach
   void setUp() {
@@ -164,7 +169,7 @@ class UserV1ControllerE2ETest {
   @DisplayName("로그인 - 정상 케이스")
   void login_success() throws Exception {
     // given
-    userRepository.save(User.register("홍길동", "test@example.com", "password123!"));
+    userRepository.save(User.register("홍길동", "test@example.com", passwordHasher.hashPassword("password123!")));
 
     String requestBody = """
         {
