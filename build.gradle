@@ -62,7 +62,7 @@ subprojects {
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
         constraints {
-            implementation "org.bouncycastle:bcprov-jdk18on:1.79"
+            implementation "org.bouncycastle:bcprov-jdk18on:1.83"
         }
     }
 

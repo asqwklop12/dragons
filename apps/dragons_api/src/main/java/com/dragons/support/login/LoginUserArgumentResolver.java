@@ -23,7 +23,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
   public boolean supportsParameter(MethodParameter parameter) {
     // @LoginUser 어노테이션이 붙어 있고, 타입이 String(이메일)인지 체크
     return parameter.hasParameterAnnotation(LoginUser.class)
-        && parameter.getParameterType().equals(String.class);
+        && parameter.getParameterType() == String.class;
   }
 
   @Override
@@ -39,7 +39,7 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     HttpSession session = request.getSession(false);
 
     if(session == null) {
-      throw new CoreException(ErrorType.UNAUTHORIZED, "로그인이 필요합니다.");
+      throw unauthorized();
     }
 
     Object emailAttr = session.getAttribute(SESSION_USER_EMAIL);

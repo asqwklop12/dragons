@@ -41,7 +41,7 @@ public class User extends BaseEntity {
     User user = new User();
     user.name = name;
     user.email = email;
-    user.password = new PasswordHasher().hashPassword(password);
+    user.password = password;
     user.provider = AuthProvider.LOCAL;
     user.loginTime = null;
     return user;
@@ -131,17 +131,6 @@ public class User extends BaseEntity {
     }
   }
 
-  public void matchPassword(String password) {
-    if (this.provider != AuthProvider.LOCAL) {
-      throw new IllegalArgumentException("OAuth 사용자는 비밀번호 로그인을 할 수 없습니다.");
-    }
-    if (this.password == null) {
-      throw new IllegalArgumentException("비밀번호가 설정되지 않았습니다.");
-    }
-    if(!new PasswordHasher().verifyPassword(password,this.password)) {
-      throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-    }
-  }
 
   public void loginUpdateTime(final Clock clock) {
     this.loginTime = ZonedDateTime.now(clock);

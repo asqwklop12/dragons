@@ -37,6 +37,7 @@ server:
       cookie:
         secure: false
         same-site: lax
+        http-only: true
 ---
 spring:
   config:
@@ -50,4 +51,5 @@ server:
       cookie:
         secure: false
         same-site: lax
+        http-only: true
 ---
