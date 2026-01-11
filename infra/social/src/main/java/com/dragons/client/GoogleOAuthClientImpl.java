@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
@@ -42,10 +43,10 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
   public String getGoogleLoginUrl() {
     String loginUrl = UriComponentsBuilder
         .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
-        .queryParam("client_id",clientId)
-        .queryParam("redirect_uri",redirectUri)
-        .queryParam("response_type","code")
-        .queryParam("scope","email profile").build()
+        .queryParam("client_id", clientId)
+        .queryParam("redirect_uri", redirectUri)
+        .queryParam("response_type", "code")
+        .queryParam("scope", "email profile").build()
         .toUriString();
     log.debug("Generated Google login URL: {}", loginUrl);
     return loginUrl;
@@ -72,12 +73,17 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
     params.add("redirect_uri", redirectUri);
     params.add("grant_type", "authorization_code");
 
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+    // 파라미터와 헤더를 합친 HttpEntity 생성
+    HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
     try {
       log.debug("Requesting access token from Google");
 
       ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(
           tokenUrl,
-          params,
+          request,
           GoogleTokenResponse.class
       );
 

@@ -48,7 +48,7 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   @Override
   @GetMapping("/callback")
   public String callback(@RequestParam String code) {
-    return "Google OAuth callback received";
+    return "Google OAuth callback received:" +code;
   }
 
   private ApiResponse<UserV1Dto.Login.Response> processLogin(UserLoginResult result, HttpServletRequest httpRequest) {

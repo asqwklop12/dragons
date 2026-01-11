@@ -2,6 +2,7 @@ package com.dragons.interfaces.api.user;
 
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,7 @@ public interface GoogleV1AuthSpec {
       HttpServletRequest httpRequest);
 
   // Google 콜백 처리 (GET) - 테스트용: 코드를 화면에 출력
+  @Hidden
   @Operation(summary = "Google 콜백 처리", description = "구글 인증 후 리다이렉트되는 콜백 엔드포인트입니다. (테스트용: 코드 반환)")
   String callback(@RequestParam String code);
 }
