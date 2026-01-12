@@ -1,5 +1,6 @@
 package com.dragons.support.filter;
 
+import com.dragons.support.util.SensitiveDataMasker;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -7,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -19,14 +19,12 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Slf4j
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
-@RequiredArgsConstructor
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   private static final Set<String> BODY_LOGGING_EXCLUDE_PREFIX = Set.of(
       "/actuator",
       "/health",
       "/swagger-ui",
-      "/v3/api-docs",
-      "/api/auth"
+      "/v3/api-docs"
   );
 
   @Override
@@ -64,11 +62,21 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private void logRequestResponse(ContentCachingRequestWrapper request,
                                   ContentCachingResponseWrapper response) {
-    String requestBody = new String(request.getContentAsByteArray(), StandardCharsets.UTF_8);
-    String responseBody = new String(response.getContentAsByteArray(), StandardCharsets.UTF_8);
+    byte[] requestContent = request.getContentAsByteArray();
+    byte[] responseContent = response.getContentAsByteArray();
+    String requestBody = new String(requestContent, StandardCharsets.UTF_8);
+    String responseBody = new String(responseContent, StandardCharsets.UTF_8);
 
-    log.info("RequestBody = {}", requestBody);
-    log.info("ResponseBody = {}", responseBody);
+    if (requestContent.length > 0) {
+      String maskedRequest = SensitiveDataMasker.maskSensitiveData(requestBody);
+      log.info("RequestBody = {}", truncate(maskedRequest, 100));
+    }
+
+    if (responseContent.length > 0) {
+      String maskedResponse = SensitiveDataMasker.maskSensitiveData(responseBody);
+      log.info("ResponseBody = {}", truncate(maskedResponse, 100));
+    }
+
   }
 
   private boolean shouldSkipBodyLogging(HttpServletRequest request, HttpServletResponse response) {
@@ -83,5 +91,12 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
     return uriExcluded || requestBinary || responseBinary;
 
+  }
+
+  private String truncate(String str, int maxLength) {
+    if (str == null || str.length() <= maxLength) {
+      return str;
+    }
+    return str.substring(0, maxLength) + "... (truncated)";
   }
 }
