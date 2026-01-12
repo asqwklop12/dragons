@@ -83,7 +83,7 @@
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="JSON_CONSOLE"/>
+            <appender-ref ref="ASYNC_JSON_CONSOLE"/>
             <appender-ref ref="INFO_LOG"/>
         </root>
     </springProfile>

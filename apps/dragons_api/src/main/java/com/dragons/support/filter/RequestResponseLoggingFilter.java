@@ -32,7 +32,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${logging.request-response.enabled:true}")
   private boolean loggingEnabled;
@@ -48,23 +48,27 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private static final String PRETTY_LOG =
       """
-      
-      ╔══════════════════════════════════════════════════════════════
-      ║ 🌐 HTTP Request/Response
-      ╔══════════════════════════════════════════════════════════════
-      ║ Method    : {}
-      ║ URI       : {}
-      ║ Status    : {}
-      ║ Duration  : {}ms
-      ║ Request ID: {}
-      ╚══════════════════════════════════════════════════════════════
-      ║ 📤 Request Body:
-      ║   {}
-      ╚══════════════════════════════════════════════════════════════
-      ║ 📥 Response Body:
-      ║   {}
-      ╚══════════════════════════════════════════════════════════════
-      """;
+          
+          ╔══════════════════════════════════════════════════════════════
+          ║ 🌐 HTTP Request/Response
+          ╠══════════════════════════════════════════════════════════════
+          ║ Method    : {}
+          ║ URI       : {}
+          ║ Status    : {}
+          ║ Duration  : {}ms
+          ║ Request ID: {}
+          ╠══════════════════════════════════════════════════════════════
+          ║ 📤 Request Body:
+          ╠══════════════════════════════════════════════════════════════
+          ║   {}
+          ╠══════════════════════════════════════════════════════════════
+          ║ 📥 Response Body:
+          ╠══════════════════════════════════════════════════════════════
+          ║   {}
+          ╚══════════════════════════════════════════════════════════════
+          """;
+
+  private static final int REQUEST_BUFFER_SIZE = 1024 * 1024; // 1MB
 
   private static final Set<String> BODY_LOGGING_EXCLUDE_PREFIX = Set.of(
       "/actuator",
@@ -74,9 +78,15 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   );
 
   private boolean isProdProfile;
+
   @PostConstruct
   void init() {
     isProdProfile = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+  }
+
+  private boolean isBinaryRequest(HttpServletRequest request) {
+    String ct = request.getContentType();
+    return ct != null && (ct.contains("multipart") || ct.contains("octet-stream"));
   }
 
   @Override
@@ -89,10 +99,16 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
       filterChain.doFilter(request, response);
       return;
     }
+
+    // 바이너리 요청은 래핑 없이 처리
+    if (isBinaryRequest(request)) {
+      filterChain.doFilter(request, response);
+      return;
+    }
     long start = System.currentTimeMillis();
 
     ContentCachingRequestWrapper wrappedRequest =
-        new ContentCachingRequestWrapper(request, 1024 * 1024);
+        new ContentCachingRequestWrapper(request, REQUEST_BUFFER_SIZE);
     ContentCachingResponseWrapper wrappedResponse =
         new ContentCachingResponseWrapper(response);
 
@@ -100,7 +116,6 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
       filterChain.doFilter(wrappedRequest, wrappedResponse);
     } finally {
       long elapsed = System.currentTimeMillis() - start;
-
 
       if (!shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
         logRequestResponse(wrappedRequest, wrappedResponse, elapsed);
@@ -129,9 +144,9 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     String requestBody = "";
     String responseBody = "";
 
-    if(bodyLoggingEnabled) {
-      requestBody = truncate(new String(requestContent, StandardCharsets.UTF_8), maxBodySize);
-      responseBody = truncate(new String(responseContent, StandardCharsets.UTF_8), maxBodySize);
+    if (bodyLoggingEnabled) {
+      requestBody = truncate(SensitiveDataMasker.maskSensitiveData(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+      responseBody = truncate(SensitiveDataMasker.maskSensitiveData(new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
     }
     log.info(PRETTY_LOG,
         request.getMethod(),
@@ -139,8 +154,8 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
         response.getStatus(),
         elapsed,
         MDC.get("request_id"),
-        bodyLoggingEnabled ? prettifyJson(SensitiveDataMasker.maskSensitiveData(requestBody)) : "(body logging disabled)",
-        bodyLoggingEnabled ? prettifyJson(SensitiveDataMasker.maskSensitiveData(responseBody)) : "(body logging disabled)");
+        bodyLoggingEnabled ? prettifyJson(requestBody) : "(body logging disabled)",
+        bodyLoggingEnabled ? prettifyJson(responseBody) : "(body logging disabled)");
 
   }
 
@@ -160,8 +175,10 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
     // Body는 조건부로만 로깅 (에러 상태 또는 설정된 경우만)
     if (bodyLoggingEnabled && (response.getStatus() >= 400 || log.isDebugEnabled())) {
-      String requestBody = SensitiveDataMasker.maskSensitiveData(truncate(new String(requestContent, StandardCharsets.UTF_8), maxBodySize));
-      String responseBody = SensitiveDataMasker.maskSensitiveData(truncate(new String(responseContent, StandardCharsets.UTF_8), maxBodySize));
+      String requestBody = SensitiveDataMasker.maskSensitiveData(
+          truncate(new String(requestContent, StandardCharsets.UTF_8), maxBodySize));
+      String responseBody = SensitiveDataMasker.maskSensitiveData(
+          truncate(new String(responseContent, StandardCharsets.UTF_8), maxBodySize));
 
       log.info("REQ_BODY={} RES_BODY={}", requestBody, responseBody);
     }
