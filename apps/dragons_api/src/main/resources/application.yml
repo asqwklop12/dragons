@@ -24,6 +24,11 @@ springdoc:
   use-fqn: true
   swagger-ui:
     path: /swagger-ui.html
+logging:
+  request-response:
+    enabled: true
+    body-enabled: true
+    max-body-size: 10240  # 10KB
 ---
 spring:
   config:
@@ -55,3 +60,10 @@ server:
         http-only: true
       timeout: 30m
 ---
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  request-response:
+    body-enabled: false  # 프로덕션에서는 바디 로깅 비활성화

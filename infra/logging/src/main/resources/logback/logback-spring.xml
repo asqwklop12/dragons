@@ -56,7 +56,6 @@
     </appender>
 
     <logger name="com.dragons" level="${LOG_LEVEL}" />
-    <!--    <logger name="com.iam.mapper" level="ERROR" />-->
     <logger name="org.springframework" level="ERROR" />
     <!--    <logger name="org.mybatis" level="ERROR" />-->
     <!-- RequestMapping URL 확인용 : 최초 로드 시, 로그 작성 -->
@@ -67,5 +66,34 @@
         <appender-ref ref="INFO_LOG" />
     </root>
 
+    <springProfile name="prod">
+        <!-- 프로덕션: JSON 형식 로그 -->
+        <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <customFields>{"application":"dragons-api"}</customFields>
+                <includeMdcKeyName>request_id</includeMdcKeyName>
+            </encoder>
+        </appender>
+
+        <appender name="ASYNC_JSON_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+            <appender-ref ref="JSON_CONSOLE"/>
+            <queueSize>512</queueSize>
+            <discardingThreshold>51</discardingThreshold> <!-- 큐가 90% 이상 찼을 때 TRACE/DEBUG 드롭 -->
+            <includeCallerData>false</includeCallerData>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="ASYNC_JSON_CONSOLE"/>
+            <appender-ref ref="INFO_LOG"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="!prod">
+        <!-- 로컬: 읽기 쉬운 텍스트 형식 -->
+        <root level="INFO">
+            <appender-ref ref="console"/>
+            <appender-ref ref="INFO_LOG"/>
+        </root>
+    </springProfile>
 
 </configuration>

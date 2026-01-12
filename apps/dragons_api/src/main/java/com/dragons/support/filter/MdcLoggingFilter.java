@@ -35,7 +35,7 @@ public class MdcLoggingFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } finally {
-            MDC.remove(REQUEST_ID);
+            MDC.clear();
         }
     }
 }
