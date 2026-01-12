@@ -116,12 +116,8 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
             ? (ContentCachingResponseWrapper) response
             : new ContentCachingResponseWrapper(response);
 
-    Exception filterException = null;
     try {
       filterChain.doFilter(wrappedRequest, wrappedResponse);
-    } catch (Exception e) {
-      filterException = e;
-      throw e;
     }
 
     finally {
@@ -130,9 +126,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
       if (!shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
         logRequestResponse(wrappedRequest, wrappedResponse, elapsed);
       }
-      if (filterException != null) {
-        log.error("Request failed with exception", filterException);
-      }
+
 
       wrappedResponse.copyBodyToResponse();
     }
@@ -158,8 +152,10 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     String responseBody = "";
 
     if (bodyLoggingEnabled) {
-      requestBody = truncate(SensitiveDataMasker.maskSensitiveData(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
-      responseBody = truncate(SensitiveDataMasker.maskSensitiveData(new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
+      requestBody = SensitiveDataMasker.maskSensitiveData(
+          new String(requestContent, 0, Math.min(requestContent.length, maxBodySize), StandardCharsets.UTF_8));
+      responseBody = SensitiveDataMasker.maskSensitiveData(
+          new String(responseContent, 0, Math.min(responseContent.length, maxBodySize), StandardCharsets.UTF_8));
     }
     log.info(PRETTY_LOG,
         request.getMethod(),
