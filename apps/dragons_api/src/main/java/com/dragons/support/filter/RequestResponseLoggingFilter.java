@@ -108,17 +108,30 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     long start = System.currentTimeMillis();
 
     ContentCachingRequestWrapper wrappedRequest =
-        new ContentCachingRequestWrapper(request, REQUEST_BUFFER_SIZE);
+        request instanceof ContentCachingRequestWrapper
+            ? (ContentCachingRequestWrapper) request
+            : new ContentCachingRequestWrapper(request, REQUEST_BUFFER_SIZE);
     ContentCachingResponseWrapper wrappedResponse =
-        new ContentCachingResponseWrapper(response);
+        response instanceof ContentCachingResponseWrapper
+            ? (ContentCachingResponseWrapper) response
+            : new ContentCachingResponseWrapper(response);
 
+    Exception filterException = null;
     try {
       filterChain.doFilter(wrappedRequest, wrappedResponse);
-    } finally {
+    } catch (Exception e) {
+      filterException = e;
+      throw e;
+    }
+
+    finally {
       long elapsed = System.currentTimeMillis() - start;
 
       if (!shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
         logRequestResponse(wrappedRequest, wrappedResponse, elapsed);
+      }
+      if (filterException != null) {
+        log.error("Request failed with exception", filterException);
       }
 
       wrappedResponse.copyBodyToResponse();
@@ -175,10 +188,10 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
     // Body는 조건부로만 로깅 (에러 상태 또는 설정된 경우만)
     if (bodyLoggingEnabled && (response.getStatus() >= 400 || log.isDebugEnabled())) {
-      String requestBody = SensitiveDataMasker.maskSensitiveData(
-          truncate(new String(requestContent, StandardCharsets.UTF_8), maxBodySize));
-      String responseBody = SensitiveDataMasker.maskSensitiveData(
-          truncate(new String(responseContent, StandardCharsets.UTF_8), maxBodySize));
+      String requestBody = truncate(
+          SensitiveDataMasker.maskSensitiveData(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+      String responseBody = truncate(
+          SensitiveDataMasker.maskSensitiveData(new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
 
       log.info("REQ_BODY={} RES_BODY={}", requestBody, responseBody);
     }

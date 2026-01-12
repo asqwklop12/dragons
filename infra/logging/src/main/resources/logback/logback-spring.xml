@@ -78,7 +78,7 @@
         <appender name="ASYNC_JSON_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
             <appender-ref ref="JSON_CONSOLE"/>
             <queueSize>512</queueSize>
-            <discardingThreshold>0</discardingThreshold>
+            <discardingThreshold>51</discardingThreshold> <!-- 큐가 80% 이상 찼을 때 TRACE/DEBUG 드롭 -->
             <includeCallerData>false</includeCallerData>
         </appender>
 
