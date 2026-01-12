@@ -66,5 +66,5 @@ spring:
       on-profile: prod
 logging:
   request-response:
-    body-enabled: false  # 또는 에러 시에만 로깅
+    body-enabled: false  # 프로덕션에서는 바디 로깅 비활성화
     max-body-size: 1024  # 더 작은 크기

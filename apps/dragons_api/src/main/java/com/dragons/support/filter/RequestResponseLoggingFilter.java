@@ -4,6 +4,7 @@ package com.dragons.support.filter;
 import com.dragons.support.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +32,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
-  private ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${logging.request-response.enabled:true}")
   private boolean loggingEnabled;
@@ -44,6 +45,27 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private final Environment environment;
 
+
+  private static final String PRETTY_LOG =
+      """
+      
+      ╔══════════════════════════════════════════════════════════════
+      ║ 🌐 HTTP Request/Response
+      ╔══════════════════════════════════════════════════════════════
+      ║ Method    : {}
+      ║ URI       : {}
+      ║ Status    : {}
+      ║ Duration  : {}ms
+      ║ Request ID: {}
+      ╚══════════════════════════════════════════════════════════════
+      ║ 📤 Request Body:
+      ║   {}
+      ╚══════════════════════════════════════════════════════════════
+      ║ 📥 Response Body:
+      ║   {}
+      ╚══════════════════════════════════════════════════════════════
+      """;
+
   private static final Set<String> BODY_LOGGING_EXCLUDE_PREFIX = Set.of(
       "/actuator",
       "/health",
@@ -51,12 +73,22 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
       "/v3/api-docs"
   );
 
+  private boolean isProdProfile;
+  @PostConstruct
+  void init() {
+    isProdProfile = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+  }
+
   @Override
   protected void doFilterInternal(HttpServletRequest request,
                                   HttpServletResponse response,
                                   FilterChain filterChain)
       throws ServletException, IOException {
 
+    if (!loggingEnabled) {
+      filterChain.doFilter(request, response);
+      return;
+    }
     long start = System.currentTimeMillis();
 
     ContentCachingRequestWrapper wrappedRequest =
@@ -70,7 +102,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
       long elapsed = System.currentTimeMillis() - start;
 
 
-      if (loggingEnabled && !shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
+      if (!shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
         logRequestResponse(wrappedRequest, wrappedResponse, elapsed);
       }
 
@@ -81,7 +113,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   private void logRequestResponse(ContentCachingRequestWrapper request,
                                   ContentCachingResponseWrapper response,
                                   long elapsed) {
-    if (Arrays.asList(environment.getActiveProfiles()).contains("prod")) {
+    if (isProdProfile) {
       logCompact(request, response, elapsed);
     } else {
       // 로컬: 가독성 좋은 포맷
@@ -94,41 +126,24 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   private void logPretty(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long elapsed) {
     byte[] requestContent = request.getContentAsByteArray();
     byte[] responseContent = response.getContentAsByteArray();
-    String requestBody = new String(requestContent, StandardCharsets.UTF_8);
-    String responseBody = new String(responseContent, StandardCharsets.UTF_8);
+    String requestBody = "";
+    String responseBody = "";
 
-    log.info(prettyLog(),
+    if(bodyLoggingEnabled) {
+      requestBody = truncate(new String(requestContent, StandardCharsets.UTF_8), maxBodySize);
+      responseBody = truncate(new String(responseContent, StandardCharsets.UTF_8), maxBodySize);
+    }
+    log.info(PRETTY_LOG,
         request.getMethod(),
         request.getRequestURI(),
         response.getStatus(),
         elapsed,
         MDC.get("request_id"),
-        prettifyJson(SensitiveDataMasker.maskSensitiveData(requestBody)),
-        prettifyJson(SensitiveDataMasker.maskSensitiveData(responseBody)));
+        bodyLoggingEnabled ? prettifyJson(SensitiveDataMasker.maskSensitiveData(requestBody)) : "(body logging disabled)",
+        bodyLoggingEnabled ? prettifyJson(SensitiveDataMasker.maskSensitiveData(responseBody)) : "(body logging disabled)");
 
   }
 
-  private String prettyLog() {
-
-    final String BAR = "╔══════════════════════════════════════════════════════════════\n";
-    return new StringBuilder().append("\n")
-        .append(BAR)
-        .append("║ 🌐 HTTP Request/Response\n")
-        .append(BAR)
-        .append("║ Method    : {}\n")
-        .append("║ URI       : {}\n")
-        .append("║ Status    : {}\n")
-        .append("║ Duration  : {}ms\n")
-        .append("║ Request ID: {}\n")
-        .append(BAR)
-        .append("║ 📤 Request Body:\n")
-        .append("{}\n")
-        .append(BAR)
-        .append("║ 📥 Response Body:\n")
-        .append("{}\n")
-        .append("╚══════════════════════════════════════════════════════════════")
-        .toString();
-  }
 
   private void logCompact(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long elapsed) {
     byte[] requestContent = request.getContentAsByteArray();
