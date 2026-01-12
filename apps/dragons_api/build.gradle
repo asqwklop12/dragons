@@ -3,20 +3,28 @@ plugins {
     id 'io.spring.dependency-management'
 }
 
-description = 'dragons_api'
-
-
 dependencies {
-    implementation project(":supports:logging")
-    implementation project(":modules:redis")
-
+    implementation project(":domain")
+    implementation project(":infra:jpa")
+    implementation project(":infra:redis")
+    implementation project(":infra:jwt")
+    implementation project(":infra:jackson")
+    implementation project(":infra:logging")
+    implementation project(":infra:social")
+    
+    testImplementation testFixtures(project(":infra:jpa"))
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-}
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-tasks.named('test') {
-    useJUnitPlatform()
+    // 암호화
+    implementation 'org.springframework.security:spring-security-crypto'
+    implementation 'org.bouncycastle:bcprov-jdk18on'
+
+    // swagger
+    implementation"org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0"
+
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
