@@ -56,7 +56,6 @@
     </appender>
 
     <logger name="com.dragons" level="${LOG_LEVEL}" />
-    <!--    <logger name="com.iam.mapper" level="ERROR" />-->
     <logger name="org.springframework" level="ERROR" />
     <!--    <logger name="org.mybatis" level="ERROR" />-->
     <!-- RequestMapping URL 확인용 : 최초 로드 시, 로그 작성 -->
@@ -78,14 +77,15 @@
 
         <root level="INFO">
             <appender-ref ref="JSON_CONSOLE"/>
+            <appender-ref ref="INFO_LOG"/>
         </root>
     </springProfile>
 
     <springProfile name="!prod">
         <!-- 로컬: 읽기 쉬운 텍스트 형식 -->
-        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
         <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="console"/>
+            <appender-ref ref="INFO_LOG"/>
         </root>
     </springProfile>
 

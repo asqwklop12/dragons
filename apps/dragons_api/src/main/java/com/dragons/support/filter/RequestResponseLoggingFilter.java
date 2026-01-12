@@ -10,13 +10,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -24,6 +27,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
@@ -38,8 +42,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   @Value("${logging.request-response.max-body-size:1024}")
   private int maxBodySize;
 
-  @Value("${spring.config.activate.on-profile}")
-  private String activeProfile;
+  private final Environment environment;
 
   private static final Set<String> BODY_LOGGING_EXCLUDE_PREFIX = Set.of(
       "/actuator",
@@ -66,8 +69,8 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     } finally {
       long elapsed = System.currentTimeMillis() - start;
 
-      // api 요청은 알려줬으면 좋겠다.
-      if (!shouldSkipBodyLogging(request, response)) {
+
+      if (loggingEnabled && !shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
         logRequestResponse(wrappedRequest, wrappedResponse, elapsed);
       }
 
@@ -78,7 +81,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   private void logRequestResponse(ContentCachingRequestWrapper request,
                                   ContentCachingResponseWrapper response,
                                   long elapsed) {
-    if ("prod".equals(activeProfile)) {
+    if (Arrays.asList(environment.getActiveProfiles()).contains("prod")) {
       logCompact(request, response, elapsed);
     } else {
       // 로컬: 가독성 좋은 포맷
@@ -136,14 +139,14 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
         request.getRequestURI(),
         response.getStatus(),
         elapsed,
-        request.getContentAsByteArray().length,
-        response.getContentAsByteArray().length
+        requestContent.length,
+        responseContent.length
     );
 
     // Body는 조건부로만 로깅 (에러 상태 또는 설정된 경우만)
     if (bodyLoggingEnabled && (response.getStatus() >= 400 || log.isDebugEnabled())) {
-      String requestBody = truncate(new String(requestContent, StandardCharsets.UTF_8), maxBodySize);
-      String responseBody = truncate(new String(responseContent, StandardCharsets.UTF_8), maxBodySize);
+      String requestBody = SensitiveDataMasker.maskSensitiveData(truncate(new String(requestContent, StandardCharsets.UTF_8), maxBodySize));
+      String responseBody = SensitiveDataMasker.maskSensitiveData(truncate(new String(responseContent, StandardCharsets.UTF_8), maxBodySize));
 
       log.info("REQ_BODY={} RES_BODY={}", requestBody, responseBody);
     }

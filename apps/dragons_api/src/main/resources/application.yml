@@ -60,3 +60,11 @@ server:
         http-only: true
       timeout: 30m
 ---
+spring:
+  config:
+    activate:
+      on-profile: prod
+logging:
+  request-response:
+    body-enabled: false  # 또는 에러 시에만 로깅
+    max-body-size: 1024  # 더 작은 크기
