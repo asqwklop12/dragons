@@ -152,10 +152,10 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     String responseBody = "";
 
     if (bodyLoggingEnabled) {
-      requestBody = SensitiveDataMasker.maskSensitiveData(
-          new String(requestContent, 0, Math.min(requestContent.length, maxBodySize), StandardCharsets.UTF_8));
-      responseBody = SensitiveDataMasker.maskSensitiveData(
-          new String(responseContent, 0, Math.min(responseContent.length, maxBodySize), StandardCharsets.UTF_8));
+      requestBody = truncate(SensitiveDataMasker.maskSensitiveData(
+          new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+      responseBody = truncate(SensitiveDataMasker.maskSensitiveData(
+          new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
     }
     log.info(PRETTY_LOG,
         request.getMethod(),
