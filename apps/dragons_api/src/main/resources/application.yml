@@ -24,6 +24,11 @@ springdoc:
   use-fqn: true
   swagger-ui:
     path: /swagger-ui.html
+logging:
+  request-response:
+    enabled: true
+    body-enabled: true
+    max-body-size: 10240  # 10KB
 ---
 spring:
   config:
