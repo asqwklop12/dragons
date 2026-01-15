@@ -96,4 +96,8 @@ public class Payment extends BaseEntity {
       throw new RuntimeException(e);
     }
   }
+
+  public void updateKey(String paymentKey) {
+    this.paymentKey = paymentKey;
+  }
 }

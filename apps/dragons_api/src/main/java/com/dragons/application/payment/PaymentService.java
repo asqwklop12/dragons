@@ -14,10 +14,13 @@ import com.dragons.domain.subscription.Subscription;
 import com.dragons.domain.subscription.Subscription.PlanType;
 import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
+import com.dragons.support.error.CoreException;
+import com.dragons.support.error.ErrorType;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -83,11 +86,25 @@ public class PaymentService {
         payment.amount(), payment.planType());
   }
 
+  @Transactional
   public void confirmTossPayment(String paymentKey, String orderId, long amount) {
     // 승인처리
     tossPaymentClient.confirm(paymentKey, orderId, amount);
 
+    // 결제 상태 업데이트
+    Payment payment = repository.findByOrderId(orderId)
+        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "Payment not found for orderId: " + orderId));
+    payment.updateKey(paymentKey);
+
+
     // 구독 처리를 한다.
+    if (!subscriptionRepository.find(payment.holderName())) {
+      subscriptionRepository.apply(
+          Subscription.aply(
+              payment.holderName(),
+              PlanType.PREMIUM.name(),
+              Status.ACTIVE.name()));
+    }
   }
 
   public void failTossPayment(String code, String message, String orderId) {

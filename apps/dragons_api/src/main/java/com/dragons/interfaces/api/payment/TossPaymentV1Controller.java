@@ -4,7 +4,6 @@ import com.dragons.application.payment.PaymentService;
 import com.dragons.interfaces.api.payment.dto.PaymentV1Dto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,17 +38,16 @@ public class TossPaymentV1Controller implements TossPaymentV1Spec {
   }
 
   @Override
-  @GetMapping("/success")
+  @PostMapping("/success")
   public void success(
       @RequestParam String paymentKey,
       @RequestParam String orderId,
       @RequestParam Long amount) {
     paymentService.confirmTossPayment(paymentKey, orderId, amount);
-
   }
 
   @Override
-  @GetMapping("/fail")
+  @PostMapping("/fail")
   public void fail(
       @RequestParam String code,
       @RequestParam String message,

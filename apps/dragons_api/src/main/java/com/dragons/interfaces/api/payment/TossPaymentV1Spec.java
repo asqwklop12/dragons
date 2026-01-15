@@ -11,9 +11,9 @@ public interface TossPaymentV1Spec {
   PaymentV1Dto.Toss.Response request(
       PaymentV1Dto.Toss.Request request);
 
-  @Operation(summary = "토스 결제 성공 콜백", description = "토스 결제 성공 콜백을 처리합니다.")
+  @Operation(summary = "토스 결제 성공", description = "토스 결제 성공을 처리합니다.")
   void success(String paymentKey, String orderId, Long amount);
 
-  @Operation(summary = "토스 결제 실패 콜백", description = "토스 결제 실패 콜백을 처리합니다.")
+  @Operation(summary = "토스 결제 실패", description = "토스 결제 실패를 처리합니다.")
   void fail(String code, String message, String orderId);
 }
