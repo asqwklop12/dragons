@@ -7,12 +7,12 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class SubscriptionRepositoryImpl implements SubscriptionRepository {
+class SubscriptionRepositoryImpl implements SubscriptionRepository {
   private final JpaSubscriptionRepository subscriptionRepository;
 
   @Override
-  public void save(Subscription subscription) {
-    subscriptionRepository.save(subscription);
+  public Subscription save(Subscription subscription) {
+    return subscriptionRepository.save(subscription);
   }
 
   @Override
