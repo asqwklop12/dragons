@@ -15,7 +15,7 @@ public class Payment extends BaseEntity {
   private String paymentType;
 
   @Column(nullable = false)
-  private int amount;
+  private long amount;
 
   @Column(name = "plan_type", nullable = false)
   private String planType;
@@ -32,7 +32,7 @@ public class Payment extends BaseEntity {
   protected Payment() {
   }
 
-  public static Payment use(String holderName, int amount, String planType, String paymentType) {
+  public static Payment use(String holderName, long amount, String planType, String paymentType) {
     Payment payment = new Payment();
     payment.orderId = java.util.UUID.randomUUID().toString();
     payment.holderName = holderName;
@@ -42,7 +42,7 @@ public class Payment extends BaseEntity {
     return payment;
   }
 
-  public static Payment createOrder(String orderId, String holderName, int amount, String planType,
+  public static Payment createOrder(String orderId, String holderName, long amount, String planType,
       String paymentType) {
     Payment payment = new Payment();
     payment.orderId = orderId;
@@ -75,7 +75,7 @@ public class Payment extends BaseEntity {
     return orderId;
   }
 
-  public int amount() {
+  public long amount() {
     return amount;
   }
 

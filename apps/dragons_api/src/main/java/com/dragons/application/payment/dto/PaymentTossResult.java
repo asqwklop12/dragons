@@ -2,7 +2,7 @@ package com.dragons.application.payment.dto;
 
 public record PaymentTossResult(
     String orderId,
-    int amount,
+    long amount,
     String orderName,
     String customerName,
     String planType

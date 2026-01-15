@@ -80,7 +80,7 @@ public class PaymentV1Dto {
         @Schema(description = "은행 코드(3자리)", example = "004") String bankCode,
         @Schema(description = "마스킹된 계좌번호", example = "1234567890") String accountNumber, // 계좌번호
         @Schema(description = "예금주명", example = "홍길동") String depositorName, // 예금주 명
-        @Schema(description = "결제 금액", example = "100") int amount, // 금액
+        @Schema(description = "결제 금액", example = "100") long amount, // 금액
         @Schema(description = "요금제/플랜 타입", example = "premium") String planType // 결제타입
 
     ) {
@@ -92,7 +92,7 @@ public class PaymentV1Dto {
   public static class Toss {
     @Schema(name = "PaymentTossRequest", description = "토스 페이먼츠 결제 요청")
     public record Request(
-        @Schema(description = "결제 금액(양수)", example = "9900") @Positive(message = "금액은 양수여야합니다.") int amount,
+        @Schema(description = "결제 금액(양수)", example = "9900") @Positive(message = "금액은 양수여야합니다.") long amount,
 
         @Schema(description = "주문명", example = "구독") @NotBlank String orderName,
 
@@ -121,7 +121,7 @@ public class PaymentV1Dto {
     public record Response(
         @Schema(description = "주문 ID", example = "order-id-1234") String orderId,
 
-        @Schema(description = "결제 금액", example = "9900") int amount,
+        @Schema(description = "결제 금액", example = "9900") long amount,
 
         @Schema(description = "주문명", example = "구독 결제") String orderName,
 

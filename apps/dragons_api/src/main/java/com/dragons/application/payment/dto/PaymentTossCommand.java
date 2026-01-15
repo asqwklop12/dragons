@@ -1,7 +1,7 @@
 package com.dragons.application.payment.dto;
 
 public record PaymentTossCommand(
-    int amount,
+    long amount,
     String orderName,
     String customerName,
     String planType
