@@ -4,6 +4,7 @@ import com.dragons.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.Getter;
 
 @Getter
@@ -34,7 +35,7 @@ public class Payment extends BaseEntity {
 
   public static Payment use(String holderName, long amount, String planType, String paymentType) {
     Payment payment = new Payment();
-    payment.orderId = java.util.UUID.randomUUID().toString();
+    payment.orderId = UUID.randomUUID().toString();
     payment.holderName = holderName;
     payment.amount = amount;
     payment.planType = planType;
@@ -57,6 +58,7 @@ public class Payment extends BaseEntity {
     Payment payment = new Payment();
     payment.setIdForTest(id);
     payment.holderName = holderName;
+    payment.orderId = UUID.randomUUID().toString();
     payment.amount = amount;
     payment.planType = planType;
     payment.paymentType = paymentType;
