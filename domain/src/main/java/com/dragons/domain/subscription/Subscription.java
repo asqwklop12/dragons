@@ -24,7 +24,10 @@ public class Subscription extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Status status;
 
-  public static Subscription aply(String holderName, String planType, String status) {
+  public static Subscription apply(String holderName, String planType, String status) {
+    if (holderName == null || holderName.isBlank()) {
+      throw new IllegalArgumentException("holderName은 필수입니다");
+    }
     return new Subscription(holderName, PlanType.valueOf(planType), Status.valueOf(status));
   }
 
@@ -39,7 +42,7 @@ public class Subscription extends BaseEntity {
   }
 
   public enum Status {
-    ACTIVE, WAITING, CANCELLED, EXPIRED, CANCELED
+    ACTIVE, WAITING, CANCELLED, EXPIRED
   }
 
 }

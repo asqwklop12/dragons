@@ -1,7 +1,7 @@
 package com.dragons.domain.subscription;
 
 public interface SubscriptionRepository {
-  void apply(Subscription subscription);
+  void save(Subscription subscription);
 
-  boolean find(String holderName);
+  boolean exists(String holderName);
 }

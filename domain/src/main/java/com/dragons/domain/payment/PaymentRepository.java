@@ -1,7 +1,9 @@
 package com.dragons.domain.payment;
 
+import java.util.Optional;
+
 public interface PaymentRepository {
   Payment save(Payment payment);
 
-  java.util.Optional<Payment> findByOrderId(String orderId);
+  Optional<Payment> findByOrderId(String orderId);
 }

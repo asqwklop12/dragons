@@ -35,7 +35,9 @@ public class PaymentV1Dto {
         // amount must be > 0
         @Schema(description = "결제 금액(양수)", example = "10000") @Positive(message = "금액은 양수여야합니다.") int amount,
 
-        @Schema(description = "요금제/플랜 타입", example = "premium") @NotBlank String planType
+        @Schema(description = "요금제/플랜 타입", example = "premium")
+        @Pattern(regexp = "^(premium|basic)$", message = "유효한 플랜 타입이 아닙니다.")
+        @NotBlank String planType
 
     ) {
       public Request {
@@ -66,7 +68,9 @@ public class PaymentV1Dto {
         @Schema(description = "계좌번호(10~14자리)", example = "123456789012") @NotBlank @Pattern(regexp = "\\d{10,14}", message = "계좌번호는 10~14자리 숫자입니다.") String accountNumber,
         @Schema(description = "예금주명(2~20자)", example = "홍길동") @NotBlank @Size(min = 2, max = 20, message = "예금주명은 2~20자리입니다.") String depositorName,
         @Schema(description = "결제 금액(양수)", example = "10000") @Positive(message = "금액은 양수여야합니다.") int amount,
-        @Schema(description = "요금제/플랜 타입", example = "premium") @NotBlank String planType) {
+        @Schema(description = "요금제/플랜 타입", example = "premium")
+        @Pattern(regexp = "^(premium|basic)$", message = "유효한 플랜 타입이 아닙니다.")
+        @NotBlank String planType) {
 
     }
 
@@ -94,7 +98,9 @@ public class PaymentV1Dto {
 
         @Schema(description = "구매자명", example = "홍길동") @NotBlank String customerName,
 
-        @Schema(description = "요금제/플랜 타입", example = "premium") String planType // Optional, default to premium if null
+        @Schema(description = "요금제/플랜 타입", example = "premium")
+        @Pattern(regexp = "^(premium|basic)$", message = "유효한 플랜 타입이 아닙니다.")
+        @NotBlank String planType // Optional, default to premium if null
     ) {
       public Request {
         if (planType == null) {

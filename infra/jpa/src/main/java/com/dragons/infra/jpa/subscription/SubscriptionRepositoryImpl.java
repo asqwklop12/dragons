@@ -11,12 +11,12 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
   private final JpaSubscriptionRepository subscriptionRepository;
 
   @Override
-  public void apply(Subscription subscription) {
+  public void save(Subscription subscription) {
     subscriptionRepository.save(subscription);
   }
 
   @Override
-  public boolean find(String holderName) {
+  public boolean exists(String holderName) {
     return subscriptionRepository.existsSubscriptionByHolderName(holderName);
 
   }

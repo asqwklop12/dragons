@@ -9,5 +9,4 @@ dependencies {
     implementation project(":domain")
     implementation project(":infra:restTemplate")
     implementation 'org.springframework.boot:spring-boot-starter'
-    // implementation 'com.fasterxml.jackson.core:jackson-databind' // Likely needed for API response parsing, but inherited from starter-web usually or can add clearly
 }

@@ -9,7 +9,7 @@ import com.dragons.application.payment.dto.PaymentTossResult;
 import com.dragons.domain.payment.Card;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
-import com.dragons.domain.payment.TossPaymentClient;
+import com.dragons.domain.payment.PgPaymentClient;
 import com.dragons.domain.subscription.Subscription;
 import com.dragons.domain.subscription.Subscription.PlanType;
 import com.dragons.domain.subscription.Subscription.Status;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentService {
   private final PaymentRepository repository;
   private final SubscriptionRepository subscriptionRepository;
-  private final TossPaymentClient tossPaymentClient;
+  private final PgPaymentClient pgPaymentClient;
 
   public PaymentTossResult toss(PaymentTossCommand command) {
     String orderId = UUID.randomUUID().toString();
@@ -55,10 +55,10 @@ public class PaymentService {
         "card"));
     String maskingCardNumber = Card.masking(command.cardNumber());
 
-    if (!subscriptionRepository.find(payment.holderName())) {
+    if (!subscriptionRepository.exists(payment.holderName())) {
       // 카드로 구독 신청이 완료 상태로 들어간다.
-      subscriptionRepository.apply(
-          Subscription.aply(
+      subscriptionRepository.save(
+          Subscription.apply(
               payment.holderName(),
               PlanType.PREMIUM.name(),
               Status.ACTIVE.name()));
@@ -74,9 +74,9 @@ public class PaymentService {
         "bank"));
 
     // 계좌이체로 구독 신청이 대기 상태로 들어간다.
-    if (!subscriptionRepository.find(payment.holderName())) {
-      subscriptionRepository.apply(
-          Subscription.aply(
+    if (!subscriptionRepository.exists(payment.holderName())) {
+      subscriptionRepository.save(
+          Subscription.apply(
               payment.holderName(),
               PlanType.PREMIUM.name(),
               Status.WAITING.name()));
@@ -89,7 +89,7 @@ public class PaymentService {
   @Transactional
   public void confirmTossPayment(String paymentKey, String orderId, long amount) {
     // 승인처리
-    tossPaymentClient.confirm(paymentKey, orderId, amount);
+    pgPaymentClient.confirm(paymentKey, orderId, amount);
 
     // 결제 상태 업데이트
     Payment payment = repository.findByOrderId(orderId)
@@ -98,9 +98,9 @@ public class PaymentService {
 
 
     // 구독 처리를 한다.
-    if (!subscriptionRepository.find(payment.holderName())) {
-      subscriptionRepository.apply(
-          Subscription.aply(
+    if (!subscriptionRepository.exists(payment.holderName())) {
+      subscriptionRepository.save(
+          Subscription.apply(
               payment.holderName(),
               PlanType.PREMIUM.name(),
               Status.ACTIVE.name()));
