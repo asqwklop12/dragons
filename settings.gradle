@@ -20,5 +20,6 @@ include(
         ":infra:jwt",
         ":infra:jpa",
         ":infra:social",
-        ":infra:restTemplate"
+        ":infra:restTemplate",
+        ":infra:toss"
 )

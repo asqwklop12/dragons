@@ -6,6 +6,7 @@ plugins {
 dependencies {
     implementation project(":domain")
     implementation project(":infra:jpa")
+    implementation project(":infra:toss")
     implementation project(":infra:redis")
     implementation project(":infra:jwt")
     implementation project(":infra:jackson")
