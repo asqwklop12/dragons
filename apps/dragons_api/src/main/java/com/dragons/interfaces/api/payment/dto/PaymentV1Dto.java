@@ -42,7 +42,7 @@ public class PaymentV1Dto {
     ) {
       public Request {
         if (planType == null) {
-          planType = "premium"; // 임시 플랜이 정해지면 제거
+          planType = "premium";
         }
       }
     }
@@ -71,6 +71,12 @@ public class PaymentV1Dto {
         @Schema(description = "요금제/플랜 타입", example = "premium")
         @Pattern(regexp = "^(premium|basic)$", message = "유효한 플랜 타입이 아닙니다.")
         String planType) {
+
+      public Request {
+        if (planType == null) {
+          planType = "premium"; // 임시 플랜이 정해지면 제거
+        }
+      }
 
     }
 

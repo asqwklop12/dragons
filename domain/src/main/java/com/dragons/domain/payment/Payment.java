@@ -53,7 +53,7 @@ public class Payment extends BaseEntity {
     return payment;
   }
 
-  public static Payment withId(Long id, String holderName, int amount, String planType, String paymentType) {
+  public static Payment withId(Long id, String holderName, long amount, String planType, String paymentType) {
     Payment payment = new Payment();
     payment.setIdForTest(id);
     payment.holderName = holderName;
