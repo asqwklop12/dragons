@@ -37,7 +37,7 @@ public class PaymentV1Dto {
 
         @Schema(description = "요금제/플랜 타입", example = "premium")
         @Pattern(regexp = "^(premium|basic)$", message = "유효한 플랜 타입이 아닙니다.")
-        @NotBlank String planType
+        String planType
 
     ) {
       public Request {
@@ -70,7 +70,7 @@ public class PaymentV1Dto {
         @Schema(description = "결제 금액(양수)", example = "10000") @Positive(message = "금액은 양수여야합니다.") int amount,
         @Schema(description = "요금제/플랜 타입", example = "premium")
         @Pattern(regexp = "^(premium|basic)$", message = "유효한 플랜 타입이 아닙니다.")
-        @NotBlank String planType) {
+        String planType) {
 
     }
 
@@ -100,7 +100,7 @@ public class PaymentV1Dto {
 
         @Schema(description = "요금제/플랜 타입", example = "premium")
         @Pattern(regexp = "^(premium|basic)$", message = "유효한 플랜 타입이 아닙니다.")
-        @NotBlank String planType // Optional, default to premium if null
+        String planType // Optional, default to premium if null
     ) {
       public Request {
         if (planType == null) {

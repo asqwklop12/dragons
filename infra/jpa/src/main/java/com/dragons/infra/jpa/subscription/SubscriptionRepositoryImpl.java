@@ -18,6 +18,5 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
   @Override
   public boolean exists(String holderName) {
     return subscriptionRepository.existsSubscriptionByHolderName(holderName);
-
   }
 }

@@ -88,12 +88,20 @@ public class PaymentService {
 
   @Transactional
   public void confirmTossPayment(String paymentKey, String orderId, long amount) {
+    Payment payment = repository.findByOrderId(orderId)
+        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "Payment not found for orderId: " + orderId));
+
+    // 금액 검증
+    if (payment.amount() != amount) {
+      throw new CoreException(ErrorType.BAD_REQUEST,
+          "결제 금액 불일치: expected=" + payment.amount() + ", actual=" + amount);
+    }
+
+
     // 승인처리
     pgPaymentClient.confirm(paymentKey, orderId, amount);
 
-    // 결제 상태 업데이트
-    Payment payment = repository.findByOrderId(orderId)
-        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "Payment not found for orderId: " + orderId));
+    // 결제 완료 처리
     payment.updateKey(paymentKey);
 
 

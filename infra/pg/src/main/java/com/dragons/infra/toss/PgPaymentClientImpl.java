@@ -13,12 +13,12 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
-public class PgPgPaymentClientImpl implements PgPaymentClient {
+public class PgPaymentClientImpl implements PgPaymentClient {
 
   private final RestTemplate restTemplate;
   private final PgProperties pgProperties;
 
-  public PgPgPaymentClientImpl(RestTemplate restTemplate, PgProperties pgProperties) {
+  public PgPaymentClientImpl(RestTemplate restTemplate, PgProperties pgProperties) {
     this.restTemplate = restTemplate;
     this.pgProperties = pgProperties;
   }
