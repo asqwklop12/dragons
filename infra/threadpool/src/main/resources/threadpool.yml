@@ -1,0 +1,56 @@
+spring:
+  task:
+    execution:
+      # 비동기 작업(@Async)에서 사용할 쓰레드 이름 앞에 붙는 접두사
+      thread-name-prefix: app-async-
+      pool:
+        # [Default] 기본 설정 (적당한 수준)
+        core-size: 4
+        max-size: 8
+        queue-capacity: 200
+        keep-alive: 30s
+      shutdown:
+        # 애플리케이션 종료 시, 실행 중인 비동기 작업이 끝나기를 기다릴지 여부
+        await-termination: true
+        await-termination-period: 20s
+
+---
+# [Local] 로컬 개발 환경
+spring.config.activate.on-profile: local
+
+spring:
+  task:
+    execution:
+      pool:
+        # 로컬은 리소스를 적게 먹도록 설정
+        core-size: 2
+        max-size: 4
+        # 디버깅 시 큐가 꽉 차는 상황을 쉽게 재현하기 위해 작게 설정
+        queue-capacity: 10
+
+---
+# [Dev] 개발 서버 환경
+spring.config.activate.on-profile: dev
+
+spring:
+  task:
+    execution:
+      pool:
+        # 개발 서버는 여러 사람이 테스트하므로 기본보다는 조금 넉넉하게
+        core-size: 4
+        max-size: 16
+        queue-capacity: 500
+
+---
+# [Prod] 운영 환경
+spring.config.activate.on-profile: prod
+
+spring:
+  task:
+    execution:
+      pool:
+        # 실사용 트래픽을 감당하기 위해 넉넉하게 설정
+        core-size: 10
+        max-size: 50
+        # 순간적인 트래픽 폭주를 버퍼링하기 위해 큐를 크게 설정
+        queue-capacity: 1000
