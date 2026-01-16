@@ -39,7 +39,7 @@ public class ThreadPoolConfig {
     executor.setMaxPoolSize(maxPoolSize);
     executor.setQueueCapacity(queueCapacity);
     executor.setThreadNamePrefix(threadNamePrefix);
-    executor.setKeepAliveSeconds((int) keepAlive.getSeconds());
+    executor.setKeepAliveSeconds(Math.toIntExact(keepAlive.getSeconds()));
 
     // 거부 정책 설정 (CallerRunsPolicy 권장)
     // 큐가 가득 찼을 때 호출한 스레드에서 직접 실행하여 back-pressure 제공
