@@ -9,6 +9,7 @@ spring:
       - jpa.yml
       - social.yml
       - payment.yml
+      - threadpool.yml
 server:
   servlet:
     session:
