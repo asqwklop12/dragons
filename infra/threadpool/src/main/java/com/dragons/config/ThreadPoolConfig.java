@@ -47,7 +47,6 @@ public class ThreadPoolConfig {
     executor.setWaitForTasksToCompleteOnShutdown(true);
     executor.setAwaitTerminationSeconds(20);
 
-    executor.initialize();
     return executor;
   }
 
