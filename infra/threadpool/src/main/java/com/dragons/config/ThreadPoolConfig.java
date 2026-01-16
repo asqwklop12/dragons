@@ -41,9 +41,8 @@ public class ThreadPoolConfig {
     executor.setThreadNamePrefix(threadNamePrefix);
     executor.setKeepAliveSeconds(Math.toIntExact(keepAlive.getSeconds()));
 
-    // 거부 정책 설정 (CallerRunsPolicy 권장)
     // 큐가 가득 찼을 때 호출한 스레드에서 직접 실행하여 back-pressure 제공
-    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 
     // 애플리케이션 종료 시 작업 완료 대기
     executor.setWaitForTasksToCompleteOnShutdown(true);
