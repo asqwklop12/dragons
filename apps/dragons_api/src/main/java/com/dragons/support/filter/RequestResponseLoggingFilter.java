@@ -29,7 +29,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Order(Ordered.HIGHEST_PRECEDENCE + 1) //주석
+@Order(Ordered.HIGHEST_PRECEDENCE + 1) // !MDC보다 우선순위를 낮게 하기 위함
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
