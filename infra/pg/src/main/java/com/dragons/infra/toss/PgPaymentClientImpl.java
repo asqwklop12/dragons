@@ -1,6 +1,7 @@
 package com.dragons.infra.toss;
 
 import com.dragons.domain.payment.PgPaymentClient;
+import com.dragons.domain.payment.TossPaymentConfirmation;
 import java.util.Collections;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class PgPaymentClientImpl implements PgPaymentClient {
   }
 
   @Override
-  public Map<String, Object> confirm(String paymentKey, String orderId, long amount) {
+  public TossPaymentConfirmation confirm(String paymentKey, String orderId, long amount) {
     String url = pgProperties.getBaseUrl() + "/payments/confirm";
 
     HttpHeaders headers = new HttpHeaders();
@@ -40,7 +41,7 @@ public class PgPaymentClientImpl implements PgPaymentClient {
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
     try {
-      return restTemplate.postForObject(url, entity, Map.class);
+      return restTemplate.postForObject(url, entity, TossPaymentConfirmation.class);
     } catch (RestClientException e) {
       log.error("Toss 결제 확인 실패: paymentKey={}, orderId={}", paymentKey, orderId, e);
       throw new RuntimeException("결제 확인 중 오류가 발생했습니다", e);

@@ -29,7 +29,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+@Order(Ordered.HIGHEST_PRECEDENCE + 1) //주석
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -118,16 +118,12 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
     try {
       filterChain.doFilter(wrappedRequest, wrappedResponse);
-    }
-
-    finally {
+    } finally {
       long elapsed = System.currentTimeMillis() - start;
 
       if (!shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
         logRequestResponse(wrappedRequest, wrappedResponse, elapsed);
       }
-
-
       wrappedResponse.copyBodyToResponse();
     }
   }

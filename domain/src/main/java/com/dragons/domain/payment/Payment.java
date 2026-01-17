@@ -27,7 +27,7 @@ public class Payment extends BaseEntity {
   @Column(name = "payment_key")
   private String paymentKey;
 
-  @Column(name = "order_id", nullable = false)
+  @Column(name = "order_id", nullable = false, unique = true)
   private String orderId;
 
   protected Payment() {
@@ -44,7 +44,7 @@ public class Payment extends BaseEntity {
   }
 
   public static Payment createOrder(String orderId, String holderName, long amount, String planType,
-      String paymentType) {
+                                    String paymentType) {
     Payment payment = new Payment();
     payment.orderId = orderId;
     payment.holderName = holderName;
