@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "bank_deposit")
 public class BankDeposit extends BaseEntity {
   private String holder;
-  private Long amount;
+  private long amount;
   @Enumerated(EnumType.STRING)
   private Confirm confirm;
 
@@ -29,6 +29,9 @@ public class BankDeposit extends BaseEntity {
   }
 
   public void check() {
+    if (this.confirm != Confirm.WAITING) {
+      throw new IllegalStateException("이미 처리된 입금입니다.");
+    }
     this.confirm = Confirm.CONFIRMED;
   }
 

@@ -14,7 +14,7 @@ class BankDepositRepositoryImpl implements BankDepositRepository {
 
 
   @Override
-  public List<BankDeposit> findAll() {
-   return jpaBankDepositRepository.findAll(Confirm.WAITING);
+  public List<BankDeposit> findAllWaiting() {
+   return jpaBankDepositRepository.findAllWaiting(Confirm.WAITING);
   }
 }

@@ -17,17 +17,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class BankSubscriptionScheduler {
   private final BankDepositRepository depositRepository;
   private final SubscriptionRepository subscriptionRepository;
-
+  private static final long MINIMUM_PREMIUM_AMOUNT = 9900L;
 
   @Scheduled(cron = "0 30 0 * * *")
   @Transactional
   public void subscription() {
     // 입금 확인을 받는다.
-    List<BankDeposit> bankDeposits = depositRepository.findAll();
+    List<BankDeposit> bankDeposits = depositRepository.findAllWaiting();
     for (BankDeposit bankDeposit : bankDeposits) {
 
       // 입금이 덜된경우 무시
-      if(bankDeposit.getAmount() < 9900) {
+      if(bankDeposit.getAmount() < MINIMUM_PREMIUM_AMOUNT) {
         continue;
       }
 

@@ -10,5 +10,5 @@ interface JpaBankDepositRepository extends JpaRepository<BankDeposit, Long> {
   @Query("""
           SELECT b FROM BankDeposit b WHERE b.confirm =:confirm
          """)
-  List<BankDeposit> findAll(Confirm confirm);
+  List<BankDeposit> findAllWaiting(Confirm confirm);
 }
