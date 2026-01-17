@@ -1,5 +1,6 @@
 package com.dragons.interfaces.api.payment;
 
+import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.payment.dto.PaymentV1Dto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,8 +13,8 @@ public interface TossPaymentV1Spec {
       PaymentV1Dto.Toss.Request request);
 
   @Operation(summary = "토스 결제 성공", description = "토스 결제 성공을 처리합니다.")
-  void success(String paymentKey, String orderId, Long amount);
+  ApiResponse<Void> success(String paymentKey, String orderId, Long amount);
 
   @Operation(summary = "토스 결제 실패", description = "토스 결제 실패를 처리합니다.")
-  void fail(String code, String message, String orderId);
+  ApiResponse<Void> fail(String code, String message, String orderId);
 }
