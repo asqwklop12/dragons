@@ -6,7 +6,7 @@ public record PaymentCardCommand(
     int expiryYear,
     String cvc,
     String cardholderName,
-    int amount,
+    long amount,
     String planType
 ) {
 }

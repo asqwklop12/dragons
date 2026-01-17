@@ -2,6 +2,7 @@ package com.dragons.infra.jpa.payment;
 
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -13,5 +14,10 @@ class PaymentRepositoryImpl implements PaymentRepository {
     @Override
     public Payment save(Payment payment) {
         return jpaPaymentRepository.save(payment);
+    }
+
+    @Override
+    public Optional<Payment> findByOrderId(String orderId) {
+        return jpaPaymentRepository.findByOrderId(orderId);
     }
 }

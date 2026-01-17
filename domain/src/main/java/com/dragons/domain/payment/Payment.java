@@ -4,6 +4,7 @@ import com.dragons.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.Getter;
 
 @Getter
@@ -15,7 +16,7 @@ public class Payment extends BaseEntity {
   private String paymentType;
 
   @Column(nullable = false)
-  private int amount;
+  private long amount;
 
   @Column(name = "plan_type", nullable = false)
   private String planType;
@@ -23,11 +24,18 @@ public class Payment extends BaseEntity {
   @Column(name = "holder_name", nullable = false)
   private String holderName;
 
+  @Column(name = "payment_key")
+  private String paymentKey;
+
+  @Column(name = "order_id", nullable = false, unique = true)
+  private String orderId;
+
   protected Payment() {
   }
 
-  public static Payment use(String holderName, int amount, String planType, String paymentType) {
+  public static Payment use(String holderName, long amount, String planType, String paymentType) {
     Payment payment = new Payment();
+    payment.orderId = UUID.randomUUID().toString();
     payment.holderName = holderName;
     payment.amount = amount;
     payment.planType = planType;
@@ -35,10 +43,22 @@ public class Payment extends BaseEntity {
     return payment;
   }
 
-  public static Payment withId(Long id, String holderName, int amount, String planType, String paymentType) {
+  public static Payment createOrder(String orderId, String holderName, long amount, String planType,
+                                    String paymentType) {
+    Payment payment = new Payment();
+    payment.orderId = orderId;
+    payment.holderName = holderName;
+    payment.amount = amount;
+    payment.planType = planType;
+    payment.paymentType = paymentType;
+    return payment;
+  }
+
+  public static Payment withId(Long id, String holderName, long amount, String planType, String paymentType) {
     Payment payment = new Payment();
     payment.setIdForTest(id);
     payment.holderName = holderName;
+    payment.orderId = UUID.randomUUID().toString();
     payment.amount = amount;
     payment.planType = planType;
     payment.paymentType = paymentType;
@@ -49,7 +69,15 @@ public class Payment extends BaseEntity {
     return paymentType;
   }
 
-  public int amount() {
+  public String paymentKey() {
+    return paymentKey;
+  }
+
+  public String orderId() {
+    return orderId;
+  }
+
+  public long amount() {
     return amount;
   }
 
@@ -69,5 +97,9 @@ public class Payment extends BaseEntity {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  public void updateKey(String paymentKey) {
+    this.paymentKey = paymentKey;
   }
 }

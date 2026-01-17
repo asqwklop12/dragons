@@ -4,7 +4,7 @@ public record PaymentBankTransferCommand(
     String bankCode,
     String accountNumber,
     String depositorName,
-    int amount,
+    long amount,
     String planType
 ) {
 }

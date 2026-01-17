@@ -21,5 +21,6 @@ include(
         ":infra:threadpool",
         ":infra:jpa",
         ":infra:social",
-        ":infra:restTemplate"
+        ":infra:restTemplate",
+        ":infra:pg"
 )

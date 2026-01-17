@@ -8,6 +8,7 @@ spring:
       - optional:redis.yml
       - jpa.yml
       - social.yml
+      - payment.yml
       - threadpool.yml
 server:
   servlet:
