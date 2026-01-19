@@ -13,8 +13,11 @@ public class PaymentServiceImpl implements PaymentService {
   private final PaymentStrategyResolver resolver;
 
   @Override
+  @SuppressWarnings("unchecked")
   public PaymentResult request(PaymentType type, PaymentCommand command) {
-    return resolver.resolve(type).pay(command);
+    PaymentStrategy<PaymentCommand, PaymentResult> strategy =
+        (PaymentStrategy<PaymentCommand, PaymentResult>) resolver.resolve(type);
+    return strategy.pay(command);
   }
 
   @Override

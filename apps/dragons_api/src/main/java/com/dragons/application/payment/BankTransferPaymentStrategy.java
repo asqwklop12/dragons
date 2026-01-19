@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BankTransferPaymentStrategy implements PaymentStrategy {
+public class BankTransferPaymentStrategy implements PaymentStrategy<PaymentBankTransferCommand,PaymentBankTransferResult> {
   private final PaymentRepository repository;
   private final SubscriptionRepository subscriptionRepository;
 
@@ -25,12 +25,10 @@ public class BankTransferPaymentStrategy implements PaymentStrategy {
   }
 
   @Override
-  public PaymentResult pay(PaymentCommand command) {
-
-    PaymentBankTransferCommand bankTransferCommand = (PaymentBankTransferCommand) command;
-    Payment payment = repository.save(Payment.use(bankTransferCommand.depositorName(),
-        bankTransferCommand.amount(),
-        bankTransferCommand.planType(),
+  public PaymentBankTransferResult pay(PaymentBankTransferCommand command) {
+    Payment payment = repository.save(Payment.use(command.depositorName(),
+        command.amount(),
+        command.planType(),
         "bank"));
 
     // 계좌이체로 구독 신청이 대기 상태로 들어간다.
@@ -43,7 +41,7 @@ public class BankTransferPaymentStrategy implements PaymentStrategy {
 
     }
 
-    return new PaymentBankTransferResult(bankTransferCommand.bankCode(), bankTransferCommand.accountNumber(),
+    return new PaymentBankTransferResult(command.bankCode(), command.accountNumber(),
         payment.holderName(),
         payment.amount(), payment.planType());
   }

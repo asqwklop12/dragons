@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class CardPaymentStrategy implements PaymentStrategy {
+public class CardPaymentStrategy implements PaymentStrategy<PaymentCardCommand, PaymentCardResult> {
   private final PaymentRepository repository;
   private final SubscriptionRepository subscriptionRepository;
 
@@ -26,13 +26,12 @@ public class CardPaymentStrategy implements PaymentStrategy {
   }
 
   @Override
-  public PaymentResult pay(PaymentCommand command) {
-    PaymentCardCommand cardCommand = (PaymentCardCommand) command;
-    Payment payment = repository.save(Payment.use(cardCommand.cardholderName(),
-        cardCommand.amount(),
-        cardCommand.planType(),
+  public PaymentCardResult pay(PaymentCardCommand command) {
+    Payment payment = repository.save(Payment.use(command.cardholderName(),
+        command.amount(),
+        command.planType(),
         "card"));
-    String maskingCardNumber = Card.masking(cardCommand.cardNumber());
+    String maskingCardNumber = Card.masking(command.cardNumber());
 
     if (!subscriptionRepository.exists(payment.holderName())) {
       // 카드로 구독 신청이 완료 상태로 들어간다.

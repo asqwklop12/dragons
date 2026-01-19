@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PgPaymentStrategy implements PaymentStrategy {
+public class PgPaymentStrategy implements PaymentStrategy<PaymentPgCommand, PaymentPgResult> {
   private final PaymentRepository repository;
   private final SubscriptionRepository subscriptionRepository;
   private final PgPaymentClient pgPaymentClient;
@@ -33,23 +33,22 @@ public class PgPaymentStrategy implements PaymentStrategy {
   }
 
   @Override
-  public PaymentResult pay(PaymentCommand command) {
+  public PaymentPgResult pay(PaymentPgCommand command) {
     String orderId = UUID.randomUUID().toString();
-    PaymentPgCommand pgCommand = (PaymentPgCommand) command;
     Payment payment = Payment.createOrder(
         orderId,
-        pgCommand.customerName(),
-        pgCommand.amount(),
-        pgCommand.planType(),
+        command.customerName(),
+        command.amount(),
+        command.planType(),
         "TOSS");
     repository.save(payment);
 
     return new PaymentPgResult(
         orderId,
-        pgCommand.amount(),
-        pgCommand.orderName(),
-        pgCommand.customerName(),
-        pgCommand.planType());
+        command.amount(),
+        command.orderName(),
+        command.customerName(),
+        command.planType());
   }
 
   @Override
