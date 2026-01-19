@@ -1,7 +1,5 @@
 package com.dragons.application.payment;
 
-import com.dragons.application.payment.dto.PaymentPgCommand;
-import com.dragons.application.payment.dto.PaymentPgResult;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;

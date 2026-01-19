@@ -1,9 +1,7 @@
 package com.dragons.application.payment;
 
-import com.dragons.application.payment.dto.PaymentCommand;
 import com.dragons.application.payment.dto.PaymentPgCommand;
 import com.dragons.application.payment.dto.PaymentPgResult;
-import com.dragons.application.payment.dto.PaymentResult;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
 import com.dragons.domain.payment.PgPaymentClient;
@@ -48,7 +46,7 @@ public class PgPaymentStrategy implements PaymentStrategy<PaymentPgCommand, Paym
         command.amount(),
         command.orderName(),
         command.customerName(),
-        command.planType());
+        payment.planType());
   }
 
   @Override
