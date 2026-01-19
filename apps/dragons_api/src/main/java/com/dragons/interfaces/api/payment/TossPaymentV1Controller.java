@@ -1,6 +1,8 @@
 package com.dragons.interfaces.api.payment;
 
 import com.dragons.application.payment.PaymentService;
+import com.dragons.application.payment.PaymentType;
+import com.dragons.application.payment.dto.PaymentPgResult;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.payment.dto.PaymentV1Dto;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,7 @@ public class TossPaymentV1Controller implements TossPaymentV1Spec {
   public PaymentV1Dto.Toss.Response request(
       @RequestBody @Validated PaymentV1Dto.Toss.Request request) {
 
-    var result = paymentService.toss(request.toCommand());
+    var result = (PaymentPgResult) paymentService.request(PaymentType.PG, request.toCommand());
 
     String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
         .build().toUriString();
@@ -45,7 +47,7 @@ public class TossPaymentV1Controller implements TossPaymentV1Spec {
       @RequestParam String paymentKey,
       @RequestParam String orderId,
       @RequestParam Long amount) {
-    paymentService.confirmTossPayment(paymentKey, orderId, amount);
+    paymentService.success(paymentKey, orderId, amount);
     return ApiResponse.success(null);
   }
 
@@ -55,7 +57,7 @@ public class TossPaymentV1Controller implements TossPaymentV1Spec {
       @RequestParam String code,
       @RequestParam String message,
       @RequestParam String orderId) {
-    paymentService.failTossPayment(code, message, orderId);
+    paymentService.fail(code, message, orderId);
     return ApiResponse.success(null);
   }
 

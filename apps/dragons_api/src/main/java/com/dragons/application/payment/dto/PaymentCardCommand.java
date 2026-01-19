@@ -8,5 +8,5 @@ public record PaymentCardCommand(
     String cardholderName,
     long amount,
     String planType
-) {
+) implements PaymentCommand{
 }

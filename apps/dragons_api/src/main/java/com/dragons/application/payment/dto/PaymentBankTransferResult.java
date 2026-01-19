@@ -6,6 +6,6 @@ public record PaymentBankTransferResult(
     String depositorName,
     long amount,
     String planType
-) {
+) implements PaymentResult {
 
 }
