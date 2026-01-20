@@ -26,6 +26,10 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
   void fail(String code, String message, String orderId) {
   }
 
+  protected PaymentRepository getPaymentRepository() {
+    return paymentRepository;
+  }
+
   // 구독은 하나로 통합
   public void subscribe(String name, String planType, String status) {
     if (!subscriptionRepository.exists(name)) {

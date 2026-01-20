@@ -18,14 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, PaymentPgResult> {
   private final PgPaymentClient pgPaymentClient;
-  private final PaymentRepository repository;
 
 
   public PgPaymentStrategy(SubscriptionRepository subscriptionRepository, PaymentRepository paymentRepository,
-                           PgPaymentClient pgPaymentClient, PaymentRepository repository) {
+                           PgPaymentClient pgPaymentClient) {
     super(subscriptionRepository, paymentRepository);
     this.pgPaymentClient = pgPaymentClient;
-    this.repository = repository;
   }
 
   @Override
@@ -49,7 +47,7 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
   @Override
   @Transactional
   public void success(String paymentKey, String orderId, long amount) {
-    Payment payment = repository.findByOrderId(orderId)
+    Payment payment = getPaymentRepository().findByOrderId(orderId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "Payment not found for orderId: " + orderId));
 
     // 금액 검증
