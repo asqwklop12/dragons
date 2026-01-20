@@ -21,7 +21,7 @@ public class PaymentServiceImpl implements PaymentService {
   }
 
   @Override
-  public void success(String paymentKey, String orderId, long amount) {
+  public void success(String paymentKey, String orderId, Long amount) {
     resolver.confirm().success(paymentKey, orderId, amount);
   }
 

@@ -17,7 +17,7 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
 
   public abstract R pay(C command);
 
-  public void success(String paymentKey, String orderId, long amount) {
+  public void success(String paymentKey, String orderId, Long amount) {
 
   }
 
