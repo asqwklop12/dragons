@@ -5,7 +5,6 @@ import com.dragons.application.payment.dto.PaymentCardResult;
 import com.dragons.domain.payment.Card;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
-import com.dragons.domain.subscription.Subscription.PlanType;
 import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import org.springframework.stereotype.Component;
@@ -27,7 +26,7 @@ public class CardPaymentStrategy extends PaymentStrategy<PaymentCardCommand, Pay
     Payment payment = super.pay(command.cardholderName(),command.amount(),command.planType(),"card");
     String maskingCardNumber = Card.masking(command.cardNumber());
 
-    super.subscribe(payment.holderName(), PlanType.PREMIUM.name(), Status.ACTIVE.name());
+    super.subscribe(payment.holderName(), payment.planType(), Status.ACTIVE.name());
 
     return new PaymentCardResult(maskingCardNumber, payment.holderName(), payment.amount(), payment.planType());
   }

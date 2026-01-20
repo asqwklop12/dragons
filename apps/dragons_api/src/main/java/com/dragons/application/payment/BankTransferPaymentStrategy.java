@@ -4,7 +4,6 @@ import com.dragons.application.payment.dto.PaymentBankTransferCommand;
 import com.dragons.application.payment.dto.PaymentBankTransferResult;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
-import com.dragons.domain.subscription.Subscription.PlanType;
 import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import org.springframework.stereotype.Component;
@@ -26,7 +25,7 @@ public class BankTransferPaymentStrategy extends
   @Override
   public PaymentBankTransferResult pay(PaymentBankTransferCommand command) {
     Payment payment = super.pay(command.depositorName(), command.amount(), command.planType(), "bank");
-    subscribe(payment.holderName(), PlanType.PREMIUM.name(), Status.WAITING.name());
+    subscribe(payment.holderName(), payment.planType(), Status.WAITING.name());
 
     return new PaymentBankTransferResult(command.bankCode(), command.accountNumber(),
         payment.holderName(),

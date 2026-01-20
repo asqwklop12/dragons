@@ -5,7 +5,6 @@ import com.dragons.application.payment.dto.PaymentPgResult;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
 import com.dragons.domain.payment.PgPaymentClient;
-import com.dragons.domain.subscription.Subscription.PlanType;
 import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import com.dragons.support.error.CoreException;
@@ -66,7 +65,7 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
     payment.updateKey(paymentKey);
 
     // 구독 처리를 한다.
-    super.subscribe(payment.holderName(), PlanType.PREMIUM.name(), Status.ACTIVE.name());
+    super.subscribe(payment.holderName(), payment.planType(), Status.ACTIVE.name());
   }
 
   @Override
