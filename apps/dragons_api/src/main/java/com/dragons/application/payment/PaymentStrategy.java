@@ -17,10 +17,16 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
 
   public abstract R pay(C command);
 
+  /**
+   * 결제 성공 후처리 훅 (기본 no-op).
+   */
   public void success(String paymentKey, String orderId, Long amount) {
 
   }
 
+  /**
+   * 결제 성공 후처리 훅 (기본 no-op).
+   */
   public void fail(String code, String message, String orderId) {
   }
 
