@@ -1,10 +1,9 @@
 package com.dragons.application.payment.dto;
 
-public record PaymentTossResult(
-    String orderId,
+public record PaymentPgCommand(
     long amount,
     String orderName,
     String customerName,
     String planType
-) {
+) implements PaymentCommand{
 }

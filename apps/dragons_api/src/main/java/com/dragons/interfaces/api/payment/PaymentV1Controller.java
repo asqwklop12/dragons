@@ -1,8 +1,11 @@
 package com.dragons.interfaces.api.payment;
 
 import com.dragons.application.payment.PaymentService;
+import com.dragons.application.payment.PaymentType;
 import com.dragons.application.payment.dto.PaymentBankTransferCommand;
+import com.dragons.application.payment.dto.PaymentBankTransferResult;
 import com.dragons.application.payment.dto.PaymentCardCommand;
+import com.dragons.application.payment.dto.PaymentCardResult;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.payment.dto.PaymentV1Dto;
 import com.dragons.interfaces.api.payment.dto.PaymentV1Dto.Bank;
@@ -34,7 +37,7 @@ public class PaymentV1Controller implements PaymentV1Spec {
         request.cardholderName(),
         request.amount(),
         request.planType());
-    var response = paymentService.card(command);
+    var response = (PaymentCardResult) paymentService.request(PaymentType.CARD, command);
 
     return ApiResponse.success(new Card.Response(
         response.cardNumber(),
@@ -54,7 +57,7 @@ public class PaymentV1Controller implements PaymentV1Spec {
         request.depositorName(),
         request.amount(),
         request.planType());
-    var response = paymentService.bankTransfer(command);
+    var response = (PaymentBankTransferResult) paymentService.request(PaymentType.BANK_TRANSFER, command);
 
     return ApiResponse.success(new Bank.Response(
         response.bankCode(),

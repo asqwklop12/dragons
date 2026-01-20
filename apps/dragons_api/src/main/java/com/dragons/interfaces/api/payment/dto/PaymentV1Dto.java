@@ -1,6 +1,6 @@
 package com.dragons.interfaces.api.payment.dto;
 
-import com.dragons.application.payment.dto.PaymentTossCommand;
+import com.dragons.application.payment.dto.PaymentPgCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -114,8 +114,8 @@ public class PaymentV1Dto {
         }
       }
 
-      public PaymentTossCommand toCommand() {
-        return new PaymentTossCommand(
+      public PaymentPgCommand toCommand() {
+        return new PaymentPgCommand(
             amount,
             orderName,
             customerName,

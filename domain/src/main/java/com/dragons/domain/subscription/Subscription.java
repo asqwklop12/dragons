@@ -28,7 +28,7 @@ public class Subscription extends BaseEntity {
     if (holderName == null || holderName.isBlank()) {
       throw new IllegalArgumentException("holderName은 필수입니다");
     }
-    return new Subscription(holderName, PlanType.valueOf(planType), Status.valueOf(status));
+    return new Subscription(holderName, PlanType.valueOf(planType.toUpperCase()), Status.valueOf(status));
   }
 
   public Subscription(String holderName, PlanType planType, Status status) {

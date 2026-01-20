@@ -5,5 +5,5 @@ public record PaymentCardResult(
     String cardHolderName,
     long amount,
     String planType
-) {
+) implements PaymentResult {
 }

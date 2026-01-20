@@ -6,5 +6,5 @@ public record PaymentBankTransferCommand(
     String depositorName,
     long amount,
     String planType
-) {
+) implements PaymentCommand{
 }
