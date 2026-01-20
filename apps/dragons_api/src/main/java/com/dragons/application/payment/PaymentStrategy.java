@@ -7,23 +7,21 @@ import com.dragons.domain.payment.PaymentRepository;
 import com.dragons.domain.subscription.Subscription;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 
-@Component
 @RequiredArgsConstructor
 public abstract class PaymentStrategy<C extends PaymentCommand, R extends PaymentResult> {
   private final SubscriptionRepository subscriptionRepository;
   private final PaymentRepository paymentRepository;
 
-  abstract PaymentType supports();
+  public abstract PaymentType supports();
 
-  abstract R pay(C command);
+  public abstract R pay(C command);
 
-  void success(String paymentKey, String orderId, long amount) {
+  public void success(String paymentKey, String orderId, long amount) {
 
   }
 
-  void fail(String code, String message, String orderId) {
+  public void fail(String code, String message, String orderId) {
   }
 
   protected PaymentRepository getPaymentRepository() {
