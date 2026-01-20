@@ -5,17 +5,17 @@ import com.dragons.application.payment.dto.PaymentCardResult;
 import com.dragons.domain.payment.Card;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
-import com.dragons.domain.subscription.Subscription;
+import com.dragons.domain.subscription.Subscription.PlanType;
 import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-@RequiredArgsConstructor
-public class CardPaymentStrategy implements PaymentStrategy<PaymentCardCommand, PaymentCardResult> {
-  private final PaymentRepository repository;
-  private final SubscriptionRepository subscriptionRepository;
+public class CardPaymentStrategy extends PaymentStrategy<PaymentCardCommand, PaymentCardResult> {
+
+  public CardPaymentStrategy(SubscriptionRepository subscriptionRepository, PaymentRepository paymentRepository) {
+    super(subscriptionRepository, paymentRepository);
+  }
 
   @Override
   public PaymentType supports() {
@@ -24,20 +24,10 @@ public class CardPaymentStrategy implements PaymentStrategy<PaymentCardCommand, 
 
   @Override
   public PaymentCardResult pay(PaymentCardCommand command) {
-    Payment payment = repository.save(Payment.use(command.cardholderName(),
-        command.amount(),
-        command.planType(),
-        "card"));
+    Payment payment = super.pay(command.cardholderName(),command.amount(),command.planType(),"card");
     String maskingCardNumber = Card.masking(command.cardNumber());
 
-    if (!subscriptionRepository.exists(payment.holderName())) {
-      // 카드로 구독 신청이 완료 상태로 들어간다.
-      subscriptionRepository.save(
-          Subscription.apply(
-              payment.holderName(),
-              payment.planType(),
-              Status.ACTIVE.name()));
-    }
+    super.subscribe(payment.holderName(), PlanType.PREMIUM.name(), Status.ACTIVE.name());
 
     return new PaymentCardResult(maskingCardNumber, payment.holderName(), payment.amount(), payment.planType());
   }

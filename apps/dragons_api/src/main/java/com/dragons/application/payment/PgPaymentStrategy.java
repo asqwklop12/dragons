@@ -5,25 +5,29 @@ import com.dragons.application.payment.dto.PaymentPgResult;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
 import com.dragons.domain.payment.PgPaymentClient;
-import com.dragons.domain.subscription.Subscription;
 import com.dragons.domain.subscription.Subscription.PlanType;
 import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
-public class PgPaymentStrategy implements PaymentStrategy<PaymentPgCommand, PaymentPgResult> {
-  private final PaymentRepository repository;
-  private final SubscriptionRepository subscriptionRepository;
+public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, PaymentPgResult> {
   private final PgPaymentClient pgPaymentClient;
+  private final PaymentRepository repository;
+
+
+  public PgPaymentStrategy(SubscriptionRepository subscriptionRepository, PaymentRepository paymentRepository,
+                           PgPaymentClient pgPaymentClient, PaymentRepository repository) {
+    super(subscriptionRepository, paymentRepository);
+    this.pgPaymentClient = pgPaymentClient;
+    this.repository = repository;
+  }
 
   @Override
   public PaymentType supports() {
@@ -33,13 +37,7 @@ public class PgPaymentStrategy implements PaymentStrategy<PaymentPgCommand, Paym
   @Override
   public PaymentPgResult pay(PaymentPgCommand command) {
     String orderId = UUID.randomUUID().toString();
-    Payment payment = Payment.createOrder(
-        orderId,
-        command.customerName(),
-        command.amount(),
-        command.planType(),
-        "TOSS");
-    repository.save(payment);
+    Payment payment = super.pay(orderId, command.customerName(), command.amount(), command.planType(),"TOSS");
 
     return new PaymentPgResult(
         orderId,
@@ -68,13 +66,7 @@ public class PgPaymentStrategy implements PaymentStrategy<PaymentPgCommand, Paym
     payment.updateKey(paymentKey);
 
     // 구독 처리를 한다.
-    if (!subscriptionRepository.exists(payment.holderName())) {
-      subscriptionRepository.save(
-          Subscription.apply(
-              payment.holderName(),
-              PlanType.PREMIUM.name(),
-              Status.ACTIVE.name()));
-    }
+    super.subscribe(payment.holderName(), PlanType.PREMIUM.name(), Status.ACTIVE.name());
   }
 
   @Override
