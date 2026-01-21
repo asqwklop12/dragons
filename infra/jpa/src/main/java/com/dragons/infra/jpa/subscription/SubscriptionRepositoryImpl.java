@@ -2,6 +2,7 @@ package com.dragons.infra.jpa.subscription;
 
 import com.dragons.domain.subscription.Subscription;
 import com.dragons.domain.subscription.SubscriptionRepository;
+import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
   }
 
   @Override
-  public void updateStatusExpiredSubscription() {
-    subscriptionRepository.updateStatusExpiredSubscription(ZonedDateTime.now());
+  public void updateStatusExpiredSubscription(Clock clock) {
+    subscriptionRepository.updateStatusExpiredSubscription(ZonedDateTime.now(clock));
   }
 }

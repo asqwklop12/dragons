@@ -48,7 +48,9 @@ public class Subscription extends BaseEntity {
     if (status == Status.WAITING) {
       throw new IllegalArgumentException("대기 상태인 구독은 활성화가 불가능합니다.");
     }
-    this.expireDate = ZonedDateTime.now(clock).plusMonths(1);
+    ZonedDateTime now = ZonedDateTime.now(clock);
+    ZonedDateTime base = (expireDate != null && expireDate.isAfter(now)) ? expireDate : now;
+    this.expireDate = base.plusMonths(1);
     this.status = Status.ACTIVE;
   }
 

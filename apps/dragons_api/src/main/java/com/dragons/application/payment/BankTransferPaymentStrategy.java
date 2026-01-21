@@ -6,15 +6,18 @@ import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
 import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
+import java.time.Clock;
 import org.springframework.stereotype.Component;
 
 @Component
 public class BankTransferPaymentStrategy extends
     PaymentStrategy<PaymentBankTransferCommand, PaymentBankTransferResult> {
 
-  public BankTransferPaymentStrategy(SubscriptionRepository subscriptionRepository,
-                                     PaymentRepository paymentRepository) {
-    super(subscriptionRepository, paymentRepository);
+  public BankTransferPaymentStrategy(
+      Clock clock,
+      SubscriptionRepository subscriptionRepository,
+      PaymentRepository paymentRepository) {
+    super(subscriptionRepository, paymentRepository, clock);
   }
 
   @Override

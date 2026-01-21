@@ -1,5 +1,6 @@
 package com.dragons.domain.subscription;
 
+import java.time.Clock;
 import java.util.Optional;
 
 public interface SubscriptionRepository {
@@ -11,5 +12,5 @@ public interface SubscriptionRepository {
 
   Optional<Subscription> findByHolderName(String holderName);
 
-  void updateStatusExpiredSubscription();
+  void updateStatusExpiredSubscription(Clock clock);
 }

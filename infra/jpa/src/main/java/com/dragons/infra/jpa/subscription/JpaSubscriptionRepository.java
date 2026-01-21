@@ -24,7 +24,7 @@ public interface JpaSubscriptionRepository extends JpaRepository<Subscription, L
       Subscription s
       WHERE s.holderName = :holderName
       AND (s.status = 'EXPIRED' OR
-           s.expireDate < :time
+          (s.expireDate < :time AND s.status <> 'WAITING')
           )
       """)
   Optional<Subscription> expireSubscriptionByHolderName(@Param("holderName") String holderName,
