@@ -4,6 +4,7 @@ import com.dragons.domain.subscription.Subscription;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -30,4 +31,13 @@ public interface JpaSubscriptionRepository extends JpaRepository<Subscription, L
                                                         @Param("time") ZonedDateTime time);
 
   Optional<Subscription> findByHolderName(String holderName);
+
+  @Modifying
+  @Query("""
+      UPDATE Subscription s
+      SET s.status = 'EXPIRED'
+      WHERE s.status = 'ACTIVE'
+      AND s.expireDate < :time
+      """)
+  void updateStatusExpiredSubscription(@Param("time") ZonedDateTime time);
 }

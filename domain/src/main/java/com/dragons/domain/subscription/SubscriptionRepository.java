@@ -10,4 +10,6 @@ public interface SubscriptionRepository {
   Optional<Subscription> findExpiredByHolderName(String holderName);
 
   Optional<Subscription> findByHolderName(String holderName);
+
+  void updateStatusExpiredSubscription();
 }

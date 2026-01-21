@@ -33,4 +33,9 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
   public Optional<Subscription> findByHolderName(String holderName) {
     return subscriptionRepository.findByHolderName(holderName);
   }
+
+  @Override
+  public void updateStatusExpiredSubscription() {
+    subscriptionRepository.updateStatusExpiredSubscription(ZonedDateTime.now());
+  }
 }
