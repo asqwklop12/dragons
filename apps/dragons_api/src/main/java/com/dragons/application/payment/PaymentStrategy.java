@@ -50,7 +50,7 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
       throw new CoreException(ErrorType.CONFLICT, "현재 구독중인 회원입니다.");
     }
 
-    Optional<Subscription> expire = subscriptionRepository.expire(name);
+    Optional<Subscription> expire = subscriptionRepository.findExpiredByHolderName(name);
 
     if (expire.isEmpty()) {
       log.info("신규 등록");
@@ -59,7 +59,7 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
     }
 
     Subscription subscription = expire.get();
-    subscription.updateStatus();
+    subscription.renew();
     subscriptionRepository.save(subscription);
   }
 

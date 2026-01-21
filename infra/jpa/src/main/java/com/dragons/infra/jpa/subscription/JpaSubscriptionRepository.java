@@ -22,17 +22,12 @@ public interface JpaSubscriptionRepository extends JpaRepository<Subscription, L
       SELECT s FROM
       Subscription s
       WHERE s.holderName = :holderName
-      AND (s.status = 'EXPIRE' OR
+      AND (s.status = 'EXPIRED' OR
            s.expireDate < :time
           )
       """)
   Optional<Subscription> expireSubscriptionByHolderName(@Param("holderName") String holderName,
                                                         @Param("time") ZonedDateTime time);
 
-  @Query("""
-        SELECT s FROM
-        Subscription s
-        WHERE s.holderName = :holderName
-        """)
   Optional<Subscription> findByHolderName(String holderName);
 }

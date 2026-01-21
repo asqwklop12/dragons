@@ -43,7 +43,7 @@ public class Subscription extends BaseEntity {
     this.expireDate = ZonedDateTime.now().plusMonths(1); // 만료일은 1개월 후로 설정
   }
 
-  public void updateStatus() {
+  public void renew() {
     this.expireDate = ZonedDateTime.now().plusMonths(1);
     this.status = Status.ACTIVE;
   }
@@ -51,6 +51,9 @@ public class Subscription extends BaseEntity {
   public void cancel() {
     if (status == Status.EXPIRED) {
       throw new IllegalArgumentException("만료된 구독은 취소가 불가능합니다.");
+    }
+    if (status == Status.CANCELLED) {
+      throw new IllegalArgumentException("이미 취소된 구독입니다.");
     }
 
     this.status = Status.CANCELLED;

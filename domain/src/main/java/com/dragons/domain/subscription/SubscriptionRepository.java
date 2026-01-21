@@ -7,7 +7,7 @@ public interface SubscriptionRepository {
 
   boolean exists(String holderName);
 
-  Optional<Subscription> expire(String holderName);
+  Optional<Subscription> findExpiredByHolderName(String holderName);
 
   Optional<Subscription> findByHolderName(String holderName);
 }
