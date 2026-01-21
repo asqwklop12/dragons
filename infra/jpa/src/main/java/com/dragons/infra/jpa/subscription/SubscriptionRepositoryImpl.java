@@ -26,6 +26,11 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
   @Override
   public Optional<Subscription> expire(String holderName) {
     ZonedDateTime current = ZonedDateTime.now();
-    return  subscriptionRepository.expireSubscriptionByHolderName(holderName, current);
+    return subscriptionRepository.expireSubscriptionByHolderName(holderName, current);
+  }
+
+  @Override
+  public Optional<Subscription> findByHolderName(String holderName) {
+    return subscriptionRepository.findByHolderName(holderName);
   }
 }

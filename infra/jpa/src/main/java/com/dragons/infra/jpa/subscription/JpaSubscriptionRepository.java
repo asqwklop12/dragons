@@ -28,4 +28,11 @@ public interface JpaSubscriptionRepository extends JpaRepository<Subscription, L
       """)
   Optional<Subscription> expireSubscriptionByHolderName(@Param("holderName") String holderName,
                                                         @Param("time") ZonedDateTime time);
+
+  @Query("""
+        SELECT s FROM
+        Subscription s
+        WHERE s.holderName = :holderName
+        """)
+  Optional<Subscription> findByHolderName(String holderName);
 }

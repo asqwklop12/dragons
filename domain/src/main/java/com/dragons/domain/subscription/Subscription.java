@@ -48,6 +48,14 @@ public class Subscription extends BaseEntity {
     this.status = Status.ACTIVE;
   }
 
+  public void cancel() {
+    if (status == Status.EXPIRED) {
+      throw new IllegalArgumentException("만료된 구독은 취소가 불가능합니다.");
+    }
+
+    this.status = Status.CANCELLED;
+  }
+
   public enum PlanType {
     PREMIUM // 현재는 premium버전만 존재
   }
