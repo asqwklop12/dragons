@@ -44,6 +44,9 @@ public class Subscription extends BaseEntity {
   }
 
   public void renew() {
+    if(status == Status.WAITING) {
+      throw new IllegalArgumentException("대기 상태인 구독은 활성화가 불가능합니다.");
+    }
     this.expireDate = ZonedDateTime.now().plusMonths(1);
     this.status = Status.ACTIVE;
   }
@@ -54,6 +57,10 @@ public class Subscription extends BaseEntity {
     }
     if (status == Status.CANCELLED) {
       throw new IllegalArgumentException("이미 취소된 구독입니다.");
+    }
+
+    if(status == Status.WAITING) {
+      throw new IllegalArgumentException("대기 상태인 구독은 취소가 불가능합니다.");
     }
 
     this.status = Status.CANCELLED;
