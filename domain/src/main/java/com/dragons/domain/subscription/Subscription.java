@@ -34,6 +34,9 @@ public class Subscription extends BaseEntity {
     if (holderName == null || holderName.isBlank()) {
       throw new IllegalArgumentException("holderName은 필수입니다");
     }
+    if (status == null || status.isBlank()) {
+      throw new IllegalArgumentException("status는 필수입니다");
+    }
     return new Subscription(clock, holderName, PlanType.valueOf(planType.toUpperCase()), Status.valueOf(status));
   }
 
