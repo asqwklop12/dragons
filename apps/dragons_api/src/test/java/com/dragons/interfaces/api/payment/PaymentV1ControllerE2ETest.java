@@ -23,8 +23,12 @@ class PaymentV1ControllerE2ETest {
   @Autowired
   private WebApplicationContext context;
 
+  @Autowired
+  private com.dragons.utils.DatabaseCleanUp databaseCleanUp;
+
   @BeforeEach
   void setUp() {
+    databaseCleanUp.truncateAllTables();
     mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
   }
 

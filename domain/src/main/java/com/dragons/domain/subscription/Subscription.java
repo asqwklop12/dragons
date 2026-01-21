@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import java.time.ZonedDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,6 +25,10 @@ public class Subscription extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Status status;
 
+
+  @Column
+  private ZonedDateTime expireDate;
+
   public static Subscription apply(String holderName, String planType, String status) {
     if (holderName == null || holderName.isBlank()) {
       throw new IllegalArgumentException("holderName은 필수입니다");
@@ -35,6 +40,12 @@ public class Subscription extends BaseEntity {
     this.holderName = holderName;
     this.planType = planType;
     this.status = status;
+    this.expireDate = ZonedDateTime.now().plusMonths(1); // 만료일은 1개월 후로 설정
+  }
+
+  public void updateStatus() {
+    this.expireDate = ZonedDateTime.now().plusMonths(1);
+    this.status = Status.ACTIVE;
   }
 
   public enum PlanType {
