@@ -17,7 +17,7 @@ public class SubscriptionExpiredScheduler {
   @Scheduled(cron = "0 0 0 * * *")
   @Transactional
   public void expired() {
-    log.info("구독 상태 만료");
     subscriptionRepository.updateStatusExpiredSubscription();
+    log.info("구독 만료 상태 업데이트 완료");
   }
 }

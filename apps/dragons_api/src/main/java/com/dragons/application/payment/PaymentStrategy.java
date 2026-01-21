@@ -8,6 +8,7 @@ import com.dragons.domain.subscription.Subscription;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
+import java.time.Clock;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class PaymentStrategy<C extends PaymentCommand, R extends PaymentResult> {
   private final SubscriptionRepository subscriptionRepository;
   private final PaymentRepository paymentRepository;
+  private final Clock clock;
 
   public abstract PaymentType supports();
 
@@ -54,12 +56,12 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
 
     if (expire.isEmpty()) {
       log.info("신규 등록");
-      subscriptionRepository.save(Subscription.apply(name, planType, status));
+      subscriptionRepository.save(Subscription.apply(clock, name, planType, status));
       return;
     }
 
     Subscription subscription = expire.get();
-    subscription.renew();
+    subscription.renew(clock);
     subscriptionRepository.save(subscription);
   }
 
@@ -71,7 +73,7 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
   }
 
   public Payment pay(final String orderId, final String name, final Long amount, final String planType,
-      final String paymentType) {
+                     final String paymentType) {
     return paymentRepository.save(Payment.createOrder(
         orderId,
         name,

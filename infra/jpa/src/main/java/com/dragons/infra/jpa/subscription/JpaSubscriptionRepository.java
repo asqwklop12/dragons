@@ -32,7 +32,7 @@ public interface JpaSubscriptionRepository extends JpaRepository<Subscription, L
 
   Optional<Subscription> findByHolderName(String holderName);
 
-  @Modifying
+  @Modifying(clearAutomatically = true)
   @Query("""
       UPDATE Subscription s
       SET s.status = 'EXPIRED'
