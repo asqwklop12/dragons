@@ -2,6 +2,9 @@ package com.dragons.infra.jpa.subscription;
 
 import com.dragons.domain.subscription.Subscription;
 import com.dragons.domain.subscription.SubscriptionRepository;
+import java.time.Clock;
+import java.time.ZonedDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +20,23 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
   @Override
   public boolean exists(String holderName) {
-    return subscriptionRepository.existsSubscriptionByHolderName(holderName);
+    ZonedDateTime current = ZonedDateTime.now();
+    return subscriptionRepository.existsSubscriptionByHolderName(holderName, current);
+  }
+
+  @Override
+  public Optional<Subscription> findExpiredByHolderName(String holderName) {
+    ZonedDateTime current = ZonedDateTime.now();
+    return subscriptionRepository.expireSubscriptionByHolderName(holderName, current);
+  }
+
+  @Override
+  public Optional<Subscription> findByHolderName(String holderName) {
+    return subscriptionRepository.findByHolderName(holderName);
+  }
+
+  @Override
+  public void updateStatusExpiredSubscription(Clock clock) {
+    subscriptionRepository.updateStatusExpiredSubscription(ZonedDateTime.now(clock));
   }
 }

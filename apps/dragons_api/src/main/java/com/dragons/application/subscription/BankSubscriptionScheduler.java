@@ -6,6 +6,7 @@ import com.dragons.domain.subscription.Subscription;
 import com.dragons.domain.subscription.Subscription.PlanType;
 import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
+import java.time.Clock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class BankSubscriptionScheduler {
+  private Clock clock;
   private final BankDepositRepository depositRepository;
   private final SubscriptionRepository subscriptionRepository;
   private static final long MINIMUM_PREMIUM_AMOUNT = 9900L;
@@ -27,7 +29,7 @@ public class BankSubscriptionScheduler {
     for (BankDeposit bankDeposit : bankDeposits) {
 
       // 입금이 덜된경우 무시
-      if(bankDeposit.getAmount() < MINIMUM_PREMIUM_AMOUNT) {
+      if (bankDeposit.getAmount() < MINIMUM_PREMIUM_AMOUNT) {
         continue;
       }
 
@@ -36,7 +38,7 @@ public class BankSubscriptionScheduler {
         continue;
       }
       subscriptionRepository.save(
-          Subscription.apply(bankDeposit.getHolder(), PlanType.PREMIUM.name(), Status.ACTIVE.name()));
+          Subscription.apply(clock, bankDeposit.getHolder(), PlanType.PREMIUM.name(), Status.ACTIVE.name()));
 
       bankDeposit.check();
     }

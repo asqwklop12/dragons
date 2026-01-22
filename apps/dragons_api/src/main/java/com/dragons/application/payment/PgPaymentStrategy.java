@@ -9,6 +9,7 @@ import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
+import java.time.Clock;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,11 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
   private final PgPaymentClient pgPaymentClient;
 
 
-  public PgPaymentStrategy(SubscriptionRepository subscriptionRepository, PaymentRepository paymentRepository,
-                           PgPaymentClient pgPaymentClient) {
-    super(subscriptionRepository, paymentRepository);
+  public PgPaymentStrategy(
+      Clock clock,
+      SubscriptionRepository subscriptionRepository, PaymentRepository paymentRepository,
+      PgPaymentClient pgPaymentClient) {
+    super(subscriptionRepository, paymentRepository, clock);
     this.pgPaymentClient = pgPaymentClient;
   }
 
@@ -34,7 +37,7 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
   @Override
   public PaymentPgResult pay(PaymentPgCommand command) {
     String orderId = UUID.randomUUID().toString();
-    Payment payment = super.pay(orderId, command.customerName(), command.amount(), command.planType(),"TOSS");
+    Payment payment = super.pay(orderId, command.customerName(), command.amount(), command.planType(), "TOSS");
 
     return new PaymentPgResult(
         orderId,
