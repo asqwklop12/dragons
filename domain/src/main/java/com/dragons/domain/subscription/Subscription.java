@@ -47,6 +47,16 @@ public class Subscription extends BaseEntity {
     this.expireDate = ZonedDateTime.now(clock).plusMonths(1); // 만료일은 1개월 후로 설정
   }
 
+  public Subscription(String holderName, PlanType planType, Status status) {
+    this.holderName = holderName;
+    this.planType = planType;
+    this.status = status;
+  }
+
+  public static Subscription none(String holderName) {
+    return new Subscription(holderName, PlanType.NONE, Status.NONE);
+  }
+
   public void renew(final Clock clock) {
     if (status == Status.WAITING) {
       throw new IllegalArgumentException("대기 상태인 구독은 활성화가 불가능합니다.");
@@ -73,11 +83,11 @@ public class Subscription extends BaseEntity {
   }
 
   public enum PlanType {
-    PREMIUM // 현재는 premium버전만 존재
+    NONE, PREMIUM // 현재는 premium버전만 존재
   }
 
   public enum Status {
-    ACTIVE, WAITING, CANCELLED, EXPIRED
+    NONE, ACTIVE, WAITING, CANCELLED, EXPIRED
   }
 
 }
