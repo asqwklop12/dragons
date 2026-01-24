@@ -7,12 +7,18 @@ import com.dragons.application.user.dto.UserRegisterCommand;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
 import com.dragons.interfaces.api.user.dto.UserV1Dto.Login;
+import com.dragons.interfaces.api.user.dto.UserV1Dto.MyInfo.Response;
 import com.dragons.interfaces.api.user.dto.UserV1Dto.Register;
+import com.dragons.support.error.CoreException;
+import com.dragons.support.error.ErrorType;
 import com.dragons.support.login.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,11 +45,24 @@ public class UserV1Controller implements UserV1Spec {
         saved.email()));
   }
 
+  @GetMapping("/my")
+  @Override
+  public ApiResponse<Response> info(HttpServletRequest request) {
+    HttpSession session = request.getSession(false);
+
+    if (session == null) {
+      throw new CoreException(ErrorType.UNAUTHORIZED, "로그인하지 않으셨습니다.");
+    }
+    String userEmail = (String) session.getAttribute("userEmail");
+    ZonedDateTime loginTime = (ZonedDateTime) session.getAttribute("loginTime");
+    return ApiResponse.success(new Response(userEmail, loginTime));
+  }
+
   // 로그인
   @Override
   @PostMapping("/login")
   public ApiResponse<UserV1Dto.Login.Response> login(@RequestBody @Validated UserV1Dto.Login.Request request,
-      HttpServletRequest httpRequest) {
+                                                     HttpServletRequest httpRequest) {
     UserLoginResult result = userService.login(new UserLoginCommand(
         request.email(),
         request.password()));

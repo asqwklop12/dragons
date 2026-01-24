@@ -20,6 +20,12 @@ public interface UserV1Spec {
       @Schema(name = "회원가입 요청", description = "등록할 사용자 계정 정보")
       UserV1Dto.Register.Request request);
 
+  @Operation(
+      summary = "계정 조회",
+      description = "내 계정을 조회합니다."
+  )
+  ApiResponse<UserV1Dto.MyInfo.Response> info(HttpServletRequest request);
+
   // 로그인
   @Operation(
       summary = "로그인",
