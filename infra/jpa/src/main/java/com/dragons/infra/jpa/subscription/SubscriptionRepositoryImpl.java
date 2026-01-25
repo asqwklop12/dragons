@@ -36,6 +36,23 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
   }
 
   @Override
+  public boolean existsByEmail(String email) {
+    ZonedDateTime current = ZonedDateTime.now();
+    return subscriptionRepository.existsSubscriptionByEmail(email, current);
+  }
+
+  @Override
+  public Optional<Subscription> findExpiredByEmail(String email) {
+    ZonedDateTime current = ZonedDateTime.now();
+    return subscriptionRepository.expireSubscriptionByEmail(email, current);
+  }
+
+  @Override
+  public Optional<Subscription> findByEmail(String email) {
+    return subscriptionRepository.findByEmail(email);
+  }
+
+  @Override
   public void updateStatusExpiredSubscription(Clock clock) {
     subscriptionRepository.updateStatusExpiredSubscription(ZonedDateTime.now(clock));
   }

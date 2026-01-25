@@ -17,7 +17,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "subscriptions")
 public class Subscription extends BaseEntity {
+
   @Column(nullable = false, unique = true)
+  private String email;
+
+  @Column(nullable = false)
   private String holderName;
 
   @Enumerated(EnumType.STRING)
@@ -26,35 +30,42 @@ public class Subscription extends BaseEntity {
   @Enumerated(EnumType.STRING)
   private Status status;
 
-
   @Column
   private ZonedDateTime expireDate;
 
-  public static Subscription apply(final Clock clock, String holderName, String planType, String status) {
+  public static Subscription apply(final Clock clock, final String email, final String holderName,
+      final String planType,
+      String status) {
     if (holderName == null || holderName.isBlank()) {
       throw new IllegalArgumentException("holderName은 필수입니다");
+    }
+
+    if (email == null || email.isBlank()) {
+      throw new IllegalArgumentException("email은 필수입니다.");
     }
     if (status == null || status.isBlank()) {
       throw new IllegalArgumentException("status는 필수입니다");
     }
-    return new Subscription(clock, holderName, PlanType.valueOf(planType.toUpperCase()), Status.valueOf(status));
+    return new Subscription(clock, email, holderName, PlanType.valueOf(planType.toUpperCase()), Status.valueOf(status));
   }
 
-  public Subscription(final Clock clock, String holderName, PlanType planType, Status status) {
+  public Subscription(final Clock clock, String email, String holderName, PlanType planType, Status status) {
+    this.email = email;
     this.holderName = holderName;
     this.planType = planType;
     this.status = status;
     this.expireDate = ZonedDateTime.now(clock).plusMonths(1); // 만료일은 1개월 후로 설정
   }
 
-  public Subscription(String holderName, PlanType planType, Status status) {
+  public Subscription(String email, String holderName, PlanType planType, Status status) {
+    this.email = email;
     this.holderName = holderName;
     this.planType = planType;
     this.status = status;
   }
 
-  public static Subscription none(String holderName) {
-    return new Subscription(holderName, PlanType.NONE, Status.NONE);
+  public static Subscription none(String email) {
+    return new Subscription(email, "", PlanType.NONE, Status.NONE);
   }
 
   public void renew(final Clock clock) {

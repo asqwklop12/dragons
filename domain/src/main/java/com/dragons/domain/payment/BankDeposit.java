@@ -14,16 +14,18 @@ import lombok.NoArgsConstructor;
 @Table(name = "bank_deposit")
 public class BankDeposit extends BaseEntity {
   private String holder;
+  private String email;
   private long amount;
   @Enumerated(EnumType.STRING)
   private Confirm confirm;
 
-  public static BankDeposit deposit(String holder, Long amount) {
-    return new BankDeposit(holder, amount);
+  public static BankDeposit deposit(String holder, String email, Long amount) {
+    return new BankDeposit(holder, email, amount);
   }
 
-  private BankDeposit(String holder, Long amount) {
+  private BankDeposit(String holder, String email, Long amount) {
     this.holder = holder;
+    this.email = email;
     this.amount = amount;
     this.confirm = Confirm.WAITING;
   }

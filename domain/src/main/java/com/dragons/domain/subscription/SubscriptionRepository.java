@@ -12,5 +12,11 @@ public interface SubscriptionRepository {
 
   Optional<Subscription> findByHolderName(String holderName);
 
+  boolean existsByEmail(String email);
+
+  Optional<Subscription> findExpiredByEmail(String email);
+
+  Optional<Subscription> findByEmail(String email);
+
   void updateStatusExpiredSubscription(Clock clock);
 }

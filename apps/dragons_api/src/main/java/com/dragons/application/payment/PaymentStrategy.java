@@ -44,19 +44,19 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
 
   // 구독은 하나로 통합
   @Transactional
-  public void subscribe(String name, String planType, String status) {
+  public void subscribe(String name, String email, String planType, String status) {
 
-    boolean exists = subscriptionRepository.exists(name);
+    boolean exists = subscriptionRepository.existsByEmail(email);
 
     if (exists) {
       throw new CoreException(ErrorType.CONFLICT, "현재 구독중인 회원입니다.");
     }
 
-    Optional<Subscription> expire = subscriptionRepository.findExpiredByHolderName(name);
+    Optional<Subscription> expire = subscriptionRepository.findExpiredByEmail(email);
 
     if (expire.isEmpty()) {
       log.info("신규 등록");
-      subscriptionRepository.save(Subscription.apply(clock, name, planType, status));
+      subscriptionRepository.save(Subscription.apply(clock, email, name, planType, status));
       return;
     }
 
@@ -65,18 +65,22 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
     subscriptionRepository.save(subscription);
   }
 
-  public Payment pay(final String name, final Long amount, final String planType, final String paymentType) {
+  public Payment pay(final String name, final String email, final Long amount, final String planType,
+      final String paymentType) {
     return paymentRepository.save(Payment.use(name,
+        email,
         amount,
         planType,
         paymentType));
   }
 
-  public Payment pay(final String orderId, final String name, final Long amount, final String planType,
-                     final String paymentType) {
+  public Payment pay(final String orderId, final String name, final String email, final Long amount,
+      final String planType,
+      final String paymentType) {
     return paymentRepository.save(Payment.createOrder(
         orderId,
         name,
+        email,
         amount,
         planType,
         paymentType));

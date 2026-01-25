@@ -2,15 +2,13 @@ package com.dragons.interfaces.api.subscription;
 
 import com.dragons.application.subscription.SubscriptionService;
 import com.dragons.interfaces.api.ApiResponse;
-import com.dragons.interfaces.api.subscription.dto.SubscriptionV1Dto;
 import com.dragons.interfaces.api.subscription.dto.SubscriptionV1Dto.Get.Response;
-import jakarta.validation.Valid;
+import com.dragons.support.login.LoginUser;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -22,20 +20,22 @@ public class SubscriptionV1Controller implements SubscriptionV1Spec {
 
   @Override
   @GetMapping
-  public ApiResponse<Response> get(@RequestParam String name) {
-    var result = subscriptionService.get(name);
+  public ApiResponse<Response> get(
+      @Parameter(hidden = true) @LoginUser String email
+  ) {
+    var result = subscriptionService.get(email);
     return ApiResponse.success(new Response(
         result.holderName(),
+        result.email(),
         result.planType(),
         result.status(),
-        result.expireDate()
-    ));
+        result.expireDate()));
   }
 
   @Override
   @PostMapping("/cancel")
-  public ApiResponse<Void> cancel(@RequestBody @Valid SubscriptionV1Dto.Cancel.Request request) {
-    subscriptionService.cancel(request.name());
+  public ApiResponse<Void> cancel(@Parameter(hidden = true) @LoginUser String email) {
+    subscriptionService.cancel(email);
     return ApiResponse.success(null);
   }
 }

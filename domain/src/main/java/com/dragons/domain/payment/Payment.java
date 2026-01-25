@@ -24,6 +24,9 @@ public class Payment extends BaseEntity {
   @Column(name = "holder_name", nullable = false)
   private String holderName;
 
+  @Column(name = "email")
+  private String email;
+
   @Column(name = "payment_key")
   private String paymentKey;
 
@@ -33,31 +36,35 @@ public class Payment extends BaseEntity {
   protected Payment() {
   }
 
-  public static Payment use(String holderName, long amount, String planType, String paymentType) {
+  public static Payment use(String holderName, String email, long amount, String planType, String paymentType) {
     Payment payment = new Payment();
     payment.orderId = UUID.randomUUID().toString();
     payment.holderName = holderName;
+    payment.email = email;
     payment.amount = amount;
     payment.planType = planType;
     payment.paymentType = paymentType;
     return payment;
   }
 
-  public static Payment createOrder(String orderId, String holderName, long amount, String planType,
-                                    String paymentType) {
+  public static Payment createOrder(String orderId, String holderName, String email, long amount, String planType,
+      String paymentType) {
     Payment payment = new Payment();
     payment.orderId = orderId;
     payment.holderName = holderName;
+    payment.email = email;
     payment.amount = amount;
     payment.planType = planType;
     payment.paymentType = paymentType;
     return payment;
   }
 
-  public static Payment withId(Long id, String holderName, long amount, String planType, String paymentType) {
+  public static Payment withId(Long id, String holderName, String email, long amount, String planType,
+      String paymentType) {
     Payment payment = new Payment();
     payment.setIdForTest(id);
     payment.holderName = holderName;
+    payment.email = email;
     payment.orderId = UUID.randomUUID().toString();
     payment.amount = amount;
     payment.planType = planType;
@@ -87,6 +94,10 @@ public class Payment extends BaseEntity {
 
   public String holderName() {
     return holderName;
+  }
+
+  public String email() {
+    return email;
   }
 
   private void setIdForTest(Long id) {

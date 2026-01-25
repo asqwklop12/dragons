@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class BankSubscriptionScheduler {
-  private Clock clock;
+  private final Clock clock;
   private final BankDepositRepository depositRepository;
   private final SubscriptionRepository subscriptionRepository;
   private static final long MINIMUM_PREMIUM_AMOUNT = 9900L;
@@ -38,7 +38,8 @@ public class BankSubscriptionScheduler {
         continue;
       }
       subscriptionRepository.save(
-          Subscription.apply(clock, bankDeposit.getHolder(), PlanType.PREMIUM.name(), Status.ACTIVE.name()));
+          Subscription.apply(clock, bankDeposit.getEmail(), bankDeposit.getHolder(), PlanType.PREMIUM.name(),
+              Status.ACTIVE.name()));
 
       bankDeposit.check();
     }

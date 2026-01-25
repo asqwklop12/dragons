@@ -16,24 +16,23 @@ public class SubscriptionService {
   private final SubscriptionRepository subscriptionRepository;
 
   @Transactional
-  public void cancel(String holderName) {
-    Subscription subscription = subscriptionRepository.findByHolderName(holderName)
+  public void cancel(String email) {
+    Subscription subscription = subscriptionRepository.findByEmail(email)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "구독 정보를 찾을 수 없습니다."));
 
     subscription.cancel();
 
   }
 
-  public SubscriptionGetResult get(String name) {
-    Subscription subscription = subscriptionRepository.findByHolderName(name).orElse(
-        Subscription.none(name)
-    );
+  public SubscriptionGetResult get(String email) {
+    Subscription subscription = subscriptionRepository.findByEmail(email).orElse(
+        Subscription.none(email));
 
     return new SubscriptionGetResult(
         subscription.getHolderName(),
+        subscription.getEmail(),
         subscription.getPlanType().name(),
         subscription.getStatus().name(),
-        subscription.getExpireDate()
-    );
+        subscription.getExpireDate());
   }
 }

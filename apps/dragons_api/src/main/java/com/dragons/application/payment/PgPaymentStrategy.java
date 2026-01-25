@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, PaymentPgResult> {
   private final PgPaymentClient pgPaymentClient;
 
-
   public PgPaymentStrategy(
       Clock clock,
       SubscriptionRepository subscriptionRepository, PaymentRepository paymentRepository,
@@ -37,7 +36,8 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
   @Override
   public PaymentPgResult pay(PaymentPgCommand command) {
     String orderId = UUID.randomUUID().toString();
-    Payment payment = super.pay(orderId, command.customerName(), command.amount(), command.planType(), "TOSS");
+    Payment payment = super.pay(orderId, command.customerName(), command.email(), command.amount(), command.planType(),
+        "TOSS");
 
     return new PaymentPgResult(
         orderId,
@@ -66,7 +66,7 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
     payment.updateKey(paymentKey);
 
     // 구독 처리를 한다.
-    super.subscribe(payment.holderName(), payment.planType(), Status.ACTIVE.name());
+    super.subscribe(payment.holderName(), payment.email(), payment.planType(), Status.ACTIVE.name());
   }
 
   @Override

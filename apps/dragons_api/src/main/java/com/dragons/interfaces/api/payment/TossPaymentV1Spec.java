@@ -10,7 +10,7 @@ public interface TossPaymentV1Spec {
 
   @Operation(summary = "토스 결제 요청", description = "토스 결제 주문 생성을 요청합니다.")
   PaymentV1Dto.Toss.Response request(
-      PaymentV1Dto.Toss.Request request);
+      String email, PaymentV1Dto.Toss.Request request);
 
   @Operation(summary = "토스 결제 성공", description = "토스 결제 성공을 처리합니다.")
   ApiResponse<Void> success(String paymentKey, String orderId, Long amount);

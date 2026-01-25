@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface SubscriptionV1Spec {
 
   @Operation(summary = "구독 조회 (본인)", description = "로그인한 사용자의 구독을 조회합니다.")
-  ApiResponse<SubscriptionV1Dto.Get.Response> get(String name);
+  ApiResponse<SubscriptionV1Dto.Get.Response> get(String email);
 
   @Operation(summary = "구독 취소 (본인)", description = "로그인한 사용자의 구독을 취소합니다.")
-  ApiResponse<Void> cancel(SubscriptionV1Dto.Cancel.Request request);
+  ApiResponse<Void> cancel(String email);
 }

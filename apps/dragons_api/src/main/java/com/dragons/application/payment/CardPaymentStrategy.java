@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 public class CardPaymentStrategy extends PaymentStrategy<PaymentCardCommand, PaymentCardResult> {
 
   public CardPaymentStrategy(Clock clock,
-                             SubscriptionRepository subscriptionRepository,
-                             PaymentRepository paymentRepository) {
+      SubscriptionRepository subscriptionRepository,
+      PaymentRepository paymentRepository) {
     super(subscriptionRepository, paymentRepository, clock);
   }
 
@@ -26,10 +26,11 @@ public class CardPaymentStrategy extends PaymentStrategy<PaymentCardCommand, Pay
 
   @Override
   public PaymentCardResult pay(PaymentCardCommand command) {
-    Payment payment = super.pay(command.cardholderName(), command.amount(), command.planType(), "card");
+    Payment payment = super.pay(command.cardholderName(), command.email(), command.amount(), command.planType(),
+        "card");
     String maskingCardNumber = Card.masking(command.cardNumber());
 
-    super.subscribe(payment.holderName(), payment.planType(), Status.ACTIVE.name());
+    super.subscribe(payment.holderName(), payment.email(), payment.planType(), Status.ACTIVE.name());
 
     return new PaymentCardResult(maskingCardNumber, payment.holderName(), payment.amount(), payment.planType());
   }

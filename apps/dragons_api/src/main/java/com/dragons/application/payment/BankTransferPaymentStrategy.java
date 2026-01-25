@@ -27,8 +27,8 @@ public class BankTransferPaymentStrategy extends
 
   @Override
   public PaymentBankTransferResult pay(PaymentBankTransferCommand command) {
-    Payment payment = super.pay(command.depositorName(), command.amount(), command.planType(), "bank");
-    subscribe(payment.holderName(), payment.planType(), Status.WAITING.name());
+    Payment payment = super.pay(command.depositorName(), command.email(), command.amount(), command.planType(), "bank");
+    subscribe(payment.holderName(), payment.email(), payment.planType(), Status.WAITING.name());
 
     return new PaymentBankTransferResult(command.bankCode(), command.accountNumber(),
         payment.holderName(),

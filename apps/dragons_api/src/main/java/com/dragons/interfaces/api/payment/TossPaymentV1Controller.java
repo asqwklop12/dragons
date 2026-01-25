@@ -5,6 +5,8 @@ import com.dragons.application.payment.PaymentType;
 import com.dragons.application.payment.dto.PaymentPgResult;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.payment.dto.PaymentV1Dto;
+import com.dragons.support.login.LoginUser;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,9 +27,10 @@ public class TossPaymentV1Controller implements TossPaymentV1Spec {
   @Override
   @PostMapping
   public PaymentV1Dto.Toss.Response request(
+      @Parameter(hidden = true) @LoginUser String email,
       @RequestBody @Validated PaymentV1Dto.Toss.Request request) {
 
-    var result = (PaymentPgResult) paymentService.request(PaymentType.PG, request.toCommand());
+    var result = (PaymentPgResult) paymentService.request(PaymentType.PG, request.toCommand(email));
 
     String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
         .build().toUriString();
