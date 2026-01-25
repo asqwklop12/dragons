@@ -12,11 +12,11 @@ public interface PaymentV1Spec {
       summary = "카드 결제",
       description = "카드 정보를 이용해 결제를 수행합니다."
   )
-  ApiResponse<PaymentV1Dto.Card.Response> card(PaymentV1Dto.Card.Request request);
+  ApiResponse<PaymentV1Dto.Card.Response> card(String email, PaymentV1Dto.Card.Request request);
 
   @Operation(
       summary = "계좌이체 결제",
       description = "계좌이체 정보를 이용해 결제를 수행합니다."
   )
-  ApiResponse<PaymentV1Dto.Bank.Response> bankTransfer(PaymentV1Dto.Bank.Request request);
+  ApiResponse<PaymentV1Dto.Bank.Response> bankTransfer(String email, PaymentV1Dto.Bank.Request request);
 }

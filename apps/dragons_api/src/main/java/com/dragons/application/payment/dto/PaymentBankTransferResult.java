@@ -4,8 +4,8 @@ public record PaymentBankTransferResult(
     String bankCode,
     String accountNumber,
     String depositorName,
-    int amount,
+    long amount,
     String planType
-) {
+) implements PaymentResult {
 
 }

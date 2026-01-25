@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.dragons.utils.DatabaseCleanUp;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,12 @@ class PaymentV1ControllerE2ETest {
   @Autowired
   private WebApplicationContext context;
 
+  @Autowired
+  private DatabaseCleanUp databaseCleanUp;
+
   @BeforeEach
   void setUp() {
+    databaseCleanUp.truncateAllTables();
     mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
   }
 

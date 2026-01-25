@@ -18,7 +18,9 @@ include(
         ":infra:logging",
         ":infra:redis",
         ":infra:jwt",
+        ":infra:threadpool",
         ":infra:jpa",
         ":infra:social",
-        ":infra:restTemplate"
+        ":infra:restTemplate",
+        ":infra:pg"
 )

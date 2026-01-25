@@ -10,7 +10,7 @@ class PaymentTest {
     @Test
     @DisplayName("결제 생성 성공")
     void use_success() {
-        Payment payment = Payment.use("홍길동", 10000, "premium", "CARD");
+        Payment payment = Payment.use("홍길동", "test@example.com", 10000, "premium", "CARD");
 
         assertThat(payment.holderName()).isEqualTo("홍길동");
         assertThat(payment.amount()).isEqualTo(10000);
@@ -23,7 +23,7 @@ class PaymentTest {
     @Test
     @DisplayName("결제 취소(삭제) 및 복구")
     void delete_restore() {
-        Payment payment = Payment.use("홍길동", 10000, "premium", "CARD");
+        Payment payment = Payment.use("홍길동", "test@example.com", 10000, "premium", "CARD");
 
         payment.delete();
         assertThat(payment.getDeletedAt()).isNotNull();

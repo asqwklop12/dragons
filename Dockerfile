@@ -10,8 +10,8 @@ COPY gradle /workspace/gradle
 
 # Copy module build files
 COPY apps/dragons_api/build.gradle /workspace/apps/dragons_api/build.gradle
-COPY modules /workspace/modules
-COPY supports /workspace/supports
+COPY domain /workspace/domain
+COPY infra /workspace/infra
 
 # Copy sources last
 COPY apps /workspace/apps
