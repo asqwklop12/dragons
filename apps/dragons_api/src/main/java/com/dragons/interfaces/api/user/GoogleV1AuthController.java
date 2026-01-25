@@ -50,7 +50,7 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
 
   private ApiResponse<UserV1Dto.Login.Response> processLogin(UserLoginResult result, HttpServletRequest httpRequest) {
     // 세션 처리
-    helper.createLoginSession(httpRequest, result.email(), result.loginTime(), "GOOGLE");
+    helper.createLoginSession(httpRequest, result.email(), result.name(), result.loginTime(), "GOOGLE");
 
     return ApiResponse.success(new UserV1Dto.Login.Response(
         result.email(),

@@ -68,7 +68,7 @@ public class UserV1Dto {
   @Schema(name = "계정 정보", description = "계정 정보")
   public static class MyInfo {
 
-    public record Response(String email, ZonedDateTime loginTime) {
+    public record Response(String email, String name, ZonedDateTime loginTime) {
     }
   }
 

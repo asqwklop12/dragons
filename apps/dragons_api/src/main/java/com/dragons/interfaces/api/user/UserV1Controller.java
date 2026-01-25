@@ -53,8 +53,9 @@ public class UserV1Controller implements UserV1Spec {
       throw new CoreException(ErrorType.UNAUTHORIZED, "로그인하지 않으셨습니다.");
     }
     String userEmail = (String) session.getAttribute("userEmail");
+    String name = (String) session.getAttribute("userName");
     ZonedDateTime loginTime = (ZonedDateTime) session.getAttribute("loginTime");
-    return ApiResponse.success(new Response(userEmail, loginTime));
+    return ApiResponse.success(new Response(userEmail, name, loginTime));
   }
 
   // 로그인
@@ -66,7 +67,7 @@ public class UserV1Controller implements UserV1Spec {
         request.email(),
         request.password()));
 
-    helper.createLoginSession(httpRequest, result.email(), result.loginTime(), "LOCAL");
+    helper.createLoginSession(httpRequest, result.email(), result.name(), result.loginTime(), "LOCAL");
 
     return ApiResponse.success(new Login.Response(
         result.email(),
