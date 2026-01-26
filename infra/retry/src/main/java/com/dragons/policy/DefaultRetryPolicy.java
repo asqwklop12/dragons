@@ -1,6 +1,9 @@
 package com.dragons.policy;
 
 import com.dragons.properties.RetryProperties;
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 
@@ -18,7 +21,9 @@ public class DefaultRetryPolicy implements RetryPolicy {
   @Override
   public boolean retryable(Throwable e) {
     Throwable t = e;
-    while (t != null) {
+    Set<Throwable> seen = Collections.newSetFromMap(new IdentityHashMap<>());
+    while (t != null && seen.add(t)) {
+
       if (t instanceof ResourceAccessException) {
         return true; // timeout, connection issue
       }
