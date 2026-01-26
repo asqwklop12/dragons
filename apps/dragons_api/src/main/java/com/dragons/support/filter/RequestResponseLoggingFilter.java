@@ -97,6 +97,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
     // api만 로깅을 찍도록 변경한다.
     if(!request.getRequestURI().startsWith("/api")) {
+      filterChain.doFilter(request, response);
       return;
     }
 

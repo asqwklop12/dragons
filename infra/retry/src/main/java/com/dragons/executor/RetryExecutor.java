@@ -19,7 +19,7 @@ public class RetryExecutor {
     while (true) {
       try {
         return action.get();   // ← 여기 다시 실행됨
-      } catch (Throwable e) {
+      } catch (Exception e) {
         if (!retryPolicy.retryable(e)) {
           throw new NonRetryableException(e);
         }

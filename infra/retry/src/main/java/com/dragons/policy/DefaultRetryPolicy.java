@@ -14,22 +14,26 @@ public class DefaultRetryPolicy implements RetryPolicy {
 
   @Override
   public boolean retryable(Throwable e) {
-    if (e instanceof ResourceAccessException) {
-      return true; // timeout, connection issue
-    }
-    if (e instanceof HttpStatusCodeException httpEx) {
-      return httpEx.getStatusCode().is5xxServerError();
+    Throwable t = e;
+    while (t != null) {
+      if (t instanceof ResourceAccessException) {
+        return true; // timeout, connection issue
+      }
+      if (t instanceof HttpStatusCodeException httpEx) {
+        return httpEx.getStatusCode().is5xxServerError();
+      }
+      t = t.getCause();
     }
     return false; // 나머지는 기본적으로 재시도 가치 없음
   }
 
   @Override
   public int maxAttempts() {
-    return property.getMaxAttempts();
+    return property.maxAttempts();
   }
 
   @Override
   public long backoffMillis() {
-    return property.getBackoffMillis();
+    return property.backoffMillis();
   }
 }

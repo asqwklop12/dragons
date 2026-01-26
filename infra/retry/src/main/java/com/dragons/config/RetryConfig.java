@@ -15,7 +15,7 @@ public class RetryConfig {
 
   @Bean
   public RetryPolicy retryPolicy(RetryProperties properties) {
-    return new DefaultRetryPolicy(properties.getPolicies().get("default"));
+    return new DefaultRetryPolicy(properties.policies().get("default"));
   }
 
   @Bean
