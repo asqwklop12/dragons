@@ -2,10 +2,7 @@ package com.dragons.executor;
 
 import com.dragons.exception.NonRetryableException;
 import com.dragons.exception.RetryableException;
-import com.dragons.policy.DefaultRetryPolicy;
 import com.dragons.policy.RetryPolicy;
-import com.dragons.properties.RetryProperties;
-import com.dragons.properties.RetryProperties.RetryProperty;
 import java.util.function.Supplier;
 
 public class RetryExecutor {
