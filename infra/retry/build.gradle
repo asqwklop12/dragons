@@ -2,12 +2,13 @@ plugins {
     id 'java-library'
     id 'org.springframework.boot'
     id 'io.spring.dependency-management'
+    id 'java-test-fixtures'
 }
-description = 'pg'
+
 
 dependencies {
-    implementation project(":domain")
-    implementation project(":infra:restTemplate")
-    implementation project(":infra:retry")
     implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
