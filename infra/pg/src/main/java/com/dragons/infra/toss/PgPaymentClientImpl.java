@@ -5,6 +5,7 @@ import com.dragons.domain.payment.TossPaymentConfirmation;
 import com.dragons.executor.RetryExecutor;
 import java.util.Collections;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -14,17 +15,14 @@ import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class PgPaymentClientImpl implements PgPaymentClient {
 
   private final RestTemplate restTemplate;
   private final PgProperties pgProperties;
 
-  private final RetryExecutor retryExecutor = new RetryExecutor();
+  private final RetryExecutor retryExecutor;
 
-  public PgPaymentClientImpl(RestTemplate restTemplate, PgProperties pgProperties) {
-    this.restTemplate = restTemplate;
-    this.pgProperties = pgProperties;
-  }
 
   @Override
   public TossPaymentConfirmation confirm(String paymentKey, String orderId, long amount) {

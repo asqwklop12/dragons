@@ -1,3 +1,7 @@
+spring:
+  config:
+    import:
+      - retry.yml
 pg:
   toss:
     client-key: ${TOSS_CLIENT_KEY}

@@ -4,20 +4,16 @@ import com.dragons.exception.NonRetryableException;
 import com.dragons.exception.RetryableException;
 import com.dragons.policy.DefaultRetryPolicy;
 import com.dragons.policy.RetryPolicy;
+import com.dragons.properties.RetryProperties;
+import com.dragons.properties.RetryProperties.RetryProperty;
 import java.util.function.Supplier;
 
 public class RetryExecutor {
 
-  private final int maxAttempts = 3;
-  private final long backoffMillis = 100;
   private final RetryPolicy retryPolicy;
 
   public RetryExecutor(RetryPolicy retryPolicy) {
     this.retryPolicy = retryPolicy;
-  }
-
-  public RetryExecutor() {
-    this.retryPolicy = new DefaultRetryPolicy();
   }
 
   public <T> T execute(Supplier<T> action) {
@@ -31,10 +27,10 @@ public class RetryExecutor {
           throw new NonRetryableException(e);
         }
         attempt++;
-        if (attempt >= maxAttempts) {
+        if (attempt >= retryPolicy.maxAttempts()) {
           throw new RetryableException(e);
         }
-        sleep(backoffMillis);
+        sleep(retryPolicy.backoffMillis());
       }
     }
   }

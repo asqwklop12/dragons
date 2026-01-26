@@ -1,0 +1,5 @@
+retry:
+  policies:
+    default:
+      max-attempts: 3
+      backoff-millis: 100
