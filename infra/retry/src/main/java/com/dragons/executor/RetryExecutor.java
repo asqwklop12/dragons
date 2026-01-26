@@ -2,12 +2,23 @@ package com.dragons.executor;
 
 import com.dragons.exception.NonRetryableException;
 import com.dragons.exception.RetryableException;
+import com.dragons.policy.DefaultRetryPolicy;
+import com.dragons.policy.RetryPolicy;
 import java.util.function.Supplier;
 
 public class RetryExecutor {
 
   private final int maxAttempts = 3;
   private final long backoffMillis = 100;
+  private final RetryPolicy retryPolicy;
+
+  public RetryExecutor(RetryPolicy retryPolicy) {
+    this.retryPolicy = retryPolicy;
+  }
+
+  public RetryExecutor() {
+    this.retryPolicy = new DefaultRetryPolicy();
+  }
 
   public <T> T execute(Supplier<T> action) {
     int attempt = 0;
@@ -15,14 +26,15 @@ public class RetryExecutor {
     while (true) {
       try {
         return action.get();   // ← 여기 다시 실행됨
-      } catch (RetryableException e) {
+      } catch (Throwable e) {
+        if (!retryPolicy.retryable(e)) {
+          throw new NonRetryableException(e);
+        }
         attempt++;
         if (attempt >= maxAttempts) {
-          throw e;           // 더 이상 못 버팀
+          throw new RetryableException(e);
         }
         sleep(backoffMillis);
-      } catch (NonRetryableException e) {
-        throw e;               // 즉시 종료
       }
     }
   }
