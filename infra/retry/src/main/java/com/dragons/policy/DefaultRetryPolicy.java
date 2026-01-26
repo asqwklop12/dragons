@@ -9,6 +9,9 @@ public class DefaultRetryPolicy implements RetryPolicy {
   private final RetryProperties.RetryProperty property;
 
   public DefaultRetryPolicy(RetryProperties.RetryProperty property) {
+    if (property == null) {
+      throw new IllegalArgumentException("RetryProperty must not be null");
+    }
     this.property = property;
   }
 
