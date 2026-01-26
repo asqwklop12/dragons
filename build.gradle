@@ -60,7 +60,7 @@ subprojects {
 
         testCompileOnly "org.projectlombok:lombok:${lombokVersion}"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-        implementation 'org.springframework.boot:spring-boot-starter-validation'
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
         constraints {
             implementation "org.bouncycastle:bcprov-jdk18on:1.83"
@@ -97,6 +97,10 @@ subprojects {
 
     // apps 모듈을 제외한 모든 서브프로젝트는 bootJar 비활성화
     plugins.withId('org.springframework.boot') {
+        dependencies {
+            implementation 'org.springframework.boot:spring-boot-starter-validation'
+        }
+        
         if (!project.path.startsWith(':apps:')) {
             tasks.named('bootJar') {
                 enabled = false
