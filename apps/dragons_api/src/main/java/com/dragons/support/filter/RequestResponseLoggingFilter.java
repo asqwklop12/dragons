@@ -95,6 +95,11 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
                                   FilterChain filterChain)
       throws ServletException, IOException {
 
+    // api만 로깅을 찍도록 변경한다.
+    if(!request.getRequestURI().startsWith("/api")) {
+      return;
+    }
+
     if (!loggingEnabled) {
       filterChain.doFilter(request, response);
       return;
