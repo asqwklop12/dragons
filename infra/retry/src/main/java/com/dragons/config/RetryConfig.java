@@ -8,16 +8,19 @@ import com.dragons.properties.RetryProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @EnableConfigurationProperties(RetryProperties.class)
 public class RetryConfig {
 
+  @Primary
   @Bean
   public RetryPolicy retryPolicy(RetryProperties properties) {
     return new DefaultRetryPolicy(properties.policies().get("default"));
   }
 
+  @Primary
   @Bean
   public RetryExecutor retryExecutor(RetryPolicy retryPolicy) {
     return new RetryExecutor(retryPolicy);
