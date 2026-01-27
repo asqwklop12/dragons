@@ -1,14 +1,14 @@
 package com.dragons.policy;
 
 import com.dragons.properties.RetryProperties;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 
-public class DefaultRetryPolicy implements RetryPolicy {
-
+public class SocialLoginRetryPolicy implements RetryPolicy {
   private final RetryProperties.RetryProperty property;
 
-  public DefaultRetryPolicy(RetryProperties.RetryProperty property) {
+  public SocialLoginRetryPolicy(RetryProperties.RetryProperty property) {
     if (property == null) {
       throw new IllegalArgumentException("RetryProperty must not be null");
     }
@@ -24,11 +24,14 @@ public class DefaultRetryPolicy implements RetryPolicy {
         return true; // timeout, connection issue
       }
       if (t instanceof HttpStatusCodeException httpEx) {
+        if (httpEx.getStatusCode() == HttpStatus.TOO_MANY_REQUESTS) {
+          return true;
+        }
         return httpEx.getStatusCode().is5xxServerError();
       }
       t = t.getCause();
     }
-    return false; // 나머지는 기본적으로 재시도 가치 없음
+    return false;
   }
 
   @Override

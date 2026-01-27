@@ -3,3 +3,6 @@ retry:
     default:
       max-attempts: 3
       backoff-millis: 100
+    social-login:
+      max-attempts: 10
+      backoff-millis: 1000

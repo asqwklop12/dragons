@@ -9,6 +9,7 @@ description = 'social'
 dependencies {
     implementation project(":domain")
     implementation project(":infra:restTemplate")
+    implementation project(":infra:retry")
     implementation 'org.springframework.boot:spring-boot-starter'
 }
 
