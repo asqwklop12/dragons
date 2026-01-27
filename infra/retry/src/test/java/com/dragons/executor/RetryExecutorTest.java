@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import com.dragons.exception.NonRetryableException;
 import com.dragons.exception.RetryableException;
@@ -19,7 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 
 @ExtendWith(MockitoExtension.class)
@@ -79,13 +79,13 @@ class RetryExecutorTest {
     when(retryPolicy.retryable(any())).thenReturn(false);
 
     Supplier<String> action = () -> {
-      throw new HttpServerErrorException(HttpStatus.BAD_REQUEST, "Client error");
+      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, "Client error");
     };
 
     // when & then
     assertThatThrownBy(() -> retryExecutor.execute(action))
         .isInstanceOf(NonRetryableException.class)
-        .hasCauseInstanceOf(HttpServerErrorException.class);
+        .hasCauseInstanceOf(HttpClientErrorException.class);
 
     verify(retryPolicy, times(1)).retryable(any());
   }
