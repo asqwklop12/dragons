@@ -1,6 +1,5 @@
 package com.dragons.config;
 
-import com.dragons.constant.Constants;
 import com.dragons.executor.RetryExecutor;
 import com.dragons.policy.DefaultRetryPolicy;
 import com.dragons.policy.RetryPolicy;
@@ -19,7 +18,7 @@ public class RetryConfig {
   @Primary
   @Bean
   public RetryPolicy retryPolicy(RetryProperties properties) {
-    return new DefaultRetryPolicy(properties.policies().get(Constants.DEFAULT));
+    return new DefaultRetryPolicy(properties.policies().get("default"));
   }
 
   @Primary

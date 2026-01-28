@@ -28,10 +28,10 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
   private final RetryExecutor retryExecutor;
 
   public GoogleOAuthClientImpl(RestTemplate restTemplate,
-                               @Qualifier("socialRetryExecutor") RetryExecutor retryExecutor,
-                               @Value("${google.client-id}") String clientId,
-                               @Value("${google.client-secret}") String clientSecret,
-                               @Value("${google.redirect-uri}") String redirectUri) {
+      @Qualifier("socialRetryExecutor") RetryExecutor retryExecutor,
+      @Value("${google.client-id}") String clientId,
+      @Value("${google.client-secret}") String clientSecret,
+      @Value("${google.redirect-uri}") String redirectUri) {
     this.retryExecutor = retryExecutor;
     this.restTemplate = restTemplate;
     this.clientId = clientId;
