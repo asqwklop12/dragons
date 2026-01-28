@@ -3,7 +3,7 @@ retry:
     default:
       max-attempts: 3
       backoff-millis: 100
-      jitter-ratio: 0.0
+      jitter-ratio: 0.1
       max-backoff-millis: 2000
     social-login:
       max-attempts: 10

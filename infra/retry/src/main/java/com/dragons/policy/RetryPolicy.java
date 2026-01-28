@@ -17,8 +17,9 @@ public abstract class RetryPolicy {
   public abstract boolean retryable(Throwable e);
 
   public long nextBackoffMillis(int attempt) {
-    // 1, 2, 4, 8 ...
-    long exponential = property.backoffMillis() * (1L << (attempt - 1));
+
+    int safeShift = Math.min(attempt - 1, 62);
+    long exponential = property.backoffMillis() * (1L << safeShift);
 
     // 상한선 적용
     long capped = Math.min(exponential, property.maxBackoffMillis());
