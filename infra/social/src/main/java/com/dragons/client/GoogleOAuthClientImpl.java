@@ -2,7 +2,9 @@ package com.dragons.client;
 
 import com.dragons.domain.social.GoogleOAuthClient;
 import com.dragons.domain.social.GoogleOAuthResponse;
+import com.dragons.executor.RetryExecutor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -12,9 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,18 +25,19 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
   private final String clientId;
   private final String clientSecret;
   private final String redirectUri;
-
+  private final RetryExecutor retryExecutor;
 
   public GoogleOAuthClientImpl(RestTemplate restTemplate,
-                               @Value("${google.client-id}") String clientId,
-                               @Value("${google.client-secret}") String clientSecret,
-                               @Value("${google.redirect-uri}") String redirectUri) {
+      @Qualifier("socialRetryExecutor") RetryExecutor retryExecutor,
+      @Value("${google.client-id}") String clientId,
+      @Value("${google.client-secret}") String clientSecret,
+      @Value("${google.redirect-uri}") String redirectUri) {
+    this.retryExecutor = retryExecutor;
     this.restTemplate = restTemplate;
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.redirectUri = redirectUri;
   }
-
 
   @Override
   public String getGoogleLoginUrl() {
@@ -57,10 +57,10 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
     log.info("Starting Google OAuth process with authorization code");
 
     // 1. Authorization Code를 Access Token으로 교환
-    String accessToken = exchangeCodeForToken(code);
+    String accessToken = retryExecutor.execute(() -> exchangeCodeForToken(code));
 
     // 2. Access Token으로 사용자 정보 가져오기
-    return fetchUserInfo(accessToken);
+    return retryExecutor.execute(() -> fetchUserInfo(accessToken));
   }
 
   private String exchangeCodeForToken(String code) {
@@ -78,39 +78,22 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
 
     // 파라미터와 헤더를 합친 HttpEntity 생성
     HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
-    try {
-      log.debug("Requesting access token from Google");
+    log.debug("Requesting access token from Google");
 
-      ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(
-          tokenUrl,
-          request,
-          GoogleTokenResponse.class
-      );
+    ResponseEntity<GoogleTokenResponse> response = restTemplate.postForEntity(
+        tokenUrl,
+        request,
+        GoogleTokenResponse.class);
 
-      GoogleTokenResponse tokenResponse = response.getBody();
+    GoogleTokenResponse tokenResponse = response.getBody();
 
-      if (tokenResponse == null || tokenResponse.accessToken() == null) {
-        log.error("Invalid token response from Google: response is null or missing access_token");
-        throw new RuntimeException("Google OAuth 토큰 응답이 유효하지 않습니다");
-      }
-
-      log.info("Successfully obtained access token from Google");
-      return tokenResponse.accessToken();
-
-    } catch (HttpClientErrorException e) {
-      log.error("Client error during token exchange: status={}, body={}",
-          e.getStatusCode(), e.getResponseBodyAsString(), e);
-      throw new RuntimeException("Google 토큰 요청 실패: " + e.getStatusCode(), e);
-
-    } catch (HttpServerErrorException e) {
-      log.error("Server error during token exchange: status={}, body={}",
-          e.getStatusCode(), e.getResponseBodyAsString(), e);
-      throw new RuntimeException("Google 서버 오류: " + e.getStatusCode(), e);
-
-    } catch (ResourceAccessException e) {
-      log.error("Network error during token exchange", e);
-      throw new RuntimeException("Google 서버 연결 실패", e);
+    if (tokenResponse == null || tokenResponse.accessToken() == null) {
+      log.error("Invalid token response from Google: response is null or missing access_token");
+      throw new RuntimeException("Google OAuth 토큰 응답이 유효하지 않습니다");
     }
+
+    log.info("Successfully obtained access token from Google");
+    return tokenResponse.accessToken();
   }
 
   private GoogleOAuthResponse fetchUserInfo(String accessToken) {
@@ -120,48 +103,30 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
     headers.setBearerAuth(accessToken);
     HttpEntity<String> entity = new HttpEntity<>(headers);
 
-    try {
-      log.debug("Fetching user info from Google");
+    log.debug("Fetching user info from Google");
 
-      ResponseEntity<GoogleUserInfoResponse> response = restTemplate.exchange(
-          userInfoUrl,
-          HttpMethod.GET,
-          entity,
-          GoogleUserInfoResponse.class
-      );
+    ResponseEntity<GoogleUserInfoResponse> response = restTemplate.exchange(
+        userInfoUrl,
+        HttpMethod.GET,
+        entity,
+        GoogleUserInfoResponse.class);
 
-      GoogleUserInfoResponse userInfo = response.getBody();
+    GoogleUserInfoResponse userInfo = response.getBody();
 
-      if (userInfo == null) {
-        log.error("User info response from Google is null");
-        throw new RuntimeException("Google 사용자 정보를 가져올 수 없습니다");
-      }
-
-      if (userInfo.email() == null || userInfo.email().isBlank()) {
-        log.error("Email is missing in Google user info response");
-        throw new RuntimeException("Google 계정에서 이메일을 가져올 수 없습니다");
-      }
-
-      log.info("Successfully fetched user info for email: {}", userInfo.email());
-
-      return new GoogleOAuthResponse(
-          userInfo.email(),
-          userInfo.name()
-      );
-
-    } catch (HttpClientErrorException e) {
-      log.error("Client error during user info fetch: status={}, body={}",
-          e.getStatusCode(), e.getResponseBodyAsString(), e);
-      throw new RuntimeException("사용자 정보 요청 실패: " + e.getStatusCode(), e);
-
-    } catch (HttpServerErrorException e) {
-      log.error("Server error during user info fetch: status={}, body={}",
-          e.getStatusCode(), e.getResponseBodyAsString(), e);
-      throw new RuntimeException("Google 서버 오류: " + e.getStatusCode(), e);
-
-    } catch (ResourceAccessException e) {
-      log.error("Network error during user info fetch", e);
-      throw new RuntimeException("Google 서버 연결 실패", e);
+    if (userInfo == null) {
+      log.error("User info response from Google is null");
+      throw new RuntimeException("Google 사용자 정보를 가져올 수 없습니다");
     }
+
+    if (userInfo.email() == null || userInfo.email().isBlank()) {
+      log.error("Email is missing in Google user info response");
+      throw new RuntimeException("Google 계정에서 이메일을 가져올 수 없습니다");
+    }
+
+    log.info("Successfully fetched user info for email: {}", userInfo.email());
+
+    return new GoogleOAuthResponse(
+        userInfo.email(),
+        userInfo.name());
   }
 }
