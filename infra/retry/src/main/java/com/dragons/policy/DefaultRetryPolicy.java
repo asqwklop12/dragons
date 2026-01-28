@@ -4,15 +4,10 @@ import com.dragons.properties.RetryProperties;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 
-public class DefaultRetryPolicy implements RetryPolicy {
-
-  private final RetryProperties.RetryProperty property;
+public class DefaultRetryPolicy extends RetryPolicy {
 
   public DefaultRetryPolicy(RetryProperties.RetryProperty property) {
-    if (property == null) {
-      throw new IllegalArgumentException("RetryProperty must not be null");
-    }
-    this.property = property;
+    super(property);
   }
 
   @Override
@@ -31,13 +26,4 @@ public class DefaultRetryPolicy implements RetryPolicy {
     return false; // 나머지는 기본적으로 재시도 가치 없음
   }
 
-  @Override
-  public int maxAttempts() {
-    return property.maxAttempts();
-  }
-
-  @Override
-  public long backoffMillis() {
-    return property.backoffMillis();
-  }
 }

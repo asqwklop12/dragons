@@ -5,14 +5,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.ResourceAccessException;
 
-public class SocialLoginRetryPolicy implements RetryPolicy {
-  private final RetryProperties.RetryProperty property;
+public class SocialLoginRetryPolicy extends RetryPolicy {
 
   public SocialLoginRetryPolicy(RetryProperties.RetryProperty property) {
-    if (property == null) {
-      throw new IllegalArgumentException("RetryProperty must not be null");
-    }
-    this.property = property;
+    super(property);
   }
 
   @Override
@@ -32,15 +28,5 @@ public class SocialLoginRetryPolicy implements RetryPolicy {
       t = t.getCause();
     }
     return false;
-  }
-
-  @Override
-  public int maxAttempts() {
-    return property.maxAttempts();
-  }
-
-  @Override
-  public long backoffMillis() {
-    return property.backoffMillis();
   }
 }
