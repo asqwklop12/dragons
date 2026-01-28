@@ -8,6 +8,5 @@ public record RetryProperties(Map<String, RetryProperty> policies) {
   public RetryProperties {
     policies = policies != null ? Map.copyOf(policies) : Map.of();
   }
-
-  public record RetryProperty(int maxAttempts, long backoffMillis, double jitterRatio) {}
+  public record RetryProperty(int maxAttempts, long backoffMillis, double jitterRatio, long maxBackoffMillis) {}
 }

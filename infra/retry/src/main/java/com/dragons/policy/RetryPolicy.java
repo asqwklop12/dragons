@@ -16,17 +16,22 @@ public abstract class RetryPolicy {
 
   public abstract boolean retryable(Throwable e);
 
-  public long nextBackoffMillis() {
-    long base = property.backoffMillis();
-    double ratio = property.jitterRatio();
+  public long nextBackoffMillis(int attempt) {
+    // 1, 2, 4, 8 ...
+    long exponential = property.backoffMillis() * (1L << (attempt - 1));
 
-    if (ratio <= 0) {
-      return base;
+    // 상한선 적용
+    long capped = Math.min(exponential, property.maxBackoffMillis());
+
+    // 지터 적용
+    if (property.jitterRatio() <= 0) {
+      return capped;
     }
 
-    long bound = Math.max(1, (long) (base * ratio));
-    long jitter = ThreadLocalRandom.current().nextLong(0, bound + 1);
-    return base + jitter;
+    long jitterBound = (long) (capped * property.jitterRatio());
+    long jitter = ThreadLocalRandom.current().nextLong(0, jitterBound + 1);
+
+    return capped - jitter;
   }
 
 

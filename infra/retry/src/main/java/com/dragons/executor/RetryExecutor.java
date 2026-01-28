@@ -27,7 +27,7 @@ public class RetryExecutor {
         if (attempt >= retryPolicy.maxAttempts()) {
           throw new RetryableException(e);
         }
-        sleep(retryPolicy.nextBackoffMillis());
+        sleep(retryPolicy.nextBackoffMillis(attempt));
       }
     }
   }
