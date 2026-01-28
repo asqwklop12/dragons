@@ -17,7 +17,9 @@ public abstract class RetryPolicy {
   public abstract boolean retryable(Throwable e);
 
   public long nextBackoffMillis(int attempt) {
-
+    if (attempt < 1) {
+      throw new IllegalArgumentException("attempt must be >= 1");
+    }
     int safeShift = Math.min(attempt - 1, 62);
     long exponential = property.backoffMillis() * (1L << safeShift);
 
