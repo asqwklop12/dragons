@@ -144,7 +144,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
       }
       return formatted.toString();
     } catch (Exception e) {
-      return formData;
+      return "\n║   " + formData;
     }
   }
 
