@@ -51,7 +51,9 @@ spring:
   config:
     activate:
       on-profile: local
-  hello: ????
+grpc:
+  server:
+    port: 9090
 server:
   port: 8089
   servlet:

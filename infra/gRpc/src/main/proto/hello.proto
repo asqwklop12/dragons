@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package com.dragons.grpc;
+
+option java_multiple_files = true;
+option java_package = "com.dragons.grpc";
+option java_outer_classname = "HelloProto";
+
+service HelloService {
+  rpc hello (HelloRequest) returns (HelloResponse);
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloResponse {
+  string message = 1;
+}
