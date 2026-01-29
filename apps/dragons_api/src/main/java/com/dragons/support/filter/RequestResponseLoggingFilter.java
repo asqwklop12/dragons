@@ -1,7 +1,8 @@
 package com.dragons.support.filter;
 
 
-import com.dragons.support.util.SensitiveDataMasker;
+
+import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
