@@ -7,9 +7,7 @@ import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.stereotype.Component;
 
-@Component
 public class MdcInterceptor implements ClientHttpRequestInterceptor {
   private static final String REQUEST_ID = "extra_request_id";
   private static final String HEADER_REQUEST_ID = "X-Extra-Request-Id";
@@ -19,7 +17,7 @@ public class MdcInterceptor implements ClientHttpRequestInterceptor {
       throws IOException {
     String requestId = request.getHeaders().getFirst(HEADER_REQUEST_ID);
     if (requestId == null || requestId.isBlank()) {
-      requestId = "E.." + UUID.randomUUID();
+      requestId = "E-" + UUID.randomUUID();
     }
 
     // 1. Request Header에 추가 (외부 호출용)
