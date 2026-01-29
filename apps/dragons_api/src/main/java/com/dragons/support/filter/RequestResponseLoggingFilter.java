@@ -2,6 +2,7 @@ package com.dragons.support.filter;
 
 
 
+import com.dragons.cononstant.LogColor;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -49,7 +50,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private static final String PRETTY_LOG =
       """
-          
+          {}
           ╔══════════════════════════════════════════════════════════════
           ║ 🌐 HTTP Request/Response
           ╠══════════════════════════════════════════════════════════════
@@ -161,6 +162,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
           new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
     }
     log.info(PRETTY_LOG,
+        LogColor.BLUE,
         request.getMethod(),
         request.getRequestURI(),
         response.getStatus(),

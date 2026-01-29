@@ -1,5 +1,6 @@
 package com.dragons.interceptor;
 
+import com.dragons.cononstant.LogColor;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -28,7 +29,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
   private static final int MAX_BODY_SIZE = 1024;
 
   private static final String PRETTY_LOG = """
-
+      {}
       ╔══════════════════════════════════════════════════════════════
       ║ 🌍 OUTBOUND HTTP
       ╠══════════════════════════════════════════════════════════════
@@ -98,6 +99,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
           truncate(maskedResponseBody, MAX_BODY_SIZE));
     } else {
       log.info(PRETTY_LOG,
+          LogColor.PURPLE,
           request.getMethod(),
           request.getURI(),
           status,
