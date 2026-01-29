@@ -16,12 +16,16 @@ public class MdcInterceptor implements ClientHttpRequestInterceptor {
   public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
       throws IOException {
     String requestId = request.getHeaders().getFirst(HEADER_REQUEST_ID);
-    if (requestId == null || requestId.isBlank()) {
+
+    boolean shouldAddHeader = requestId == null || requestId.isBlank();
+    if (shouldAddHeader) {
       requestId = "E-" + UUID.randomUUID();
     }
 
     // 1. Request Header에 추가 (외부 호출용)
-    request.getHeaders().add(HEADER_REQUEST_ID, requestId);
+    if (shouldAddHeader) {
+      request.getHeaders().add(HEADER_REQUEST_ID, requestId);
+    }
 
     // 2. MDC 세팅 (로그용)
     String previous = MDC.get(REQUEST_ID);

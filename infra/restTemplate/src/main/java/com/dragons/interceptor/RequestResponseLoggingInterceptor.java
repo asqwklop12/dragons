@@ -59,8 +59,10 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
       response = execution.execute(request, body);
       return response;
     } finally {
-      long elapsed = System.currentTimeMillis() - start;
-      logRequestResponse(request, body, response, elapsed);
+      if (response != null) {
+        long elapsed = System.currentTimeMillis() - start;
+        logRequestResponse(request, body, response, elapsed);
+      }
     }
   }
 
