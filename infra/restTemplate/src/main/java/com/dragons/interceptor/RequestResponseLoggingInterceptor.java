@@ -127,7 +127,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
       if (data.contains("=") && data.contains("&")) {
         return prettifyFormData(data);
       }
-      return data;
+      return "\n║   " + data;
     }
   }
 
@@ -135,11 +135,12 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
     try {
       String[] pairs = formData.split("&");
       StringBuilder formatted = new StringBuilder();
+      formatted.append("\n");
       for (int i = 0; i < pairs.length; i++) {
         if (i > 0) {
-          formatted.append("\n║   ");
+          formatted.append("\n");
         }
-        formatted.append(pairs[i]);
+        formatted.append("║   ").append(pairs[i]);
       }
       return formatted.toString();
     } catch (Exception e) {
@@ -154,12 +155,12 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
 
     String[] lines = content.split("\n");
     StringBuilder result = new StringBuilder();
-
+    result.append("\n");
     for (int i = 0; i < lines.length; i++) {
       if (i > 0) {
-        result.append("\n║   ");
+        result.append("\n");
       }
-      result.append(lines[i]);
+      result.append("║   ").append(lines[i]);
     }
 
     return result.toString();
