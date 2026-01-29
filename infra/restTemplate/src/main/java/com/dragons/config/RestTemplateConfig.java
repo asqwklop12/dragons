@@ -3,7 +3,6 @@ package com.dragons.config;
 import com.dragons.interceptor.MdcInterceptor;
 import com.dragons.interceptor.RequestResponseLoggingInterceptor;
 import java.time.Duration;
-import java.util.Arrays;
 import org.springframework.boot.restclient.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

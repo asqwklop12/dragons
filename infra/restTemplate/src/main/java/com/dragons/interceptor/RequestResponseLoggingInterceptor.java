@@ -59,10 +59,8 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
       response = execution.execute(request, body);
       return response;
     } finally {
-      if (response != null) {
-        long elapsed = System.currentTimeMillis() - start;
-        logRequestResponse(request, body, response, elapsed);
-      }
+      long elapsed = System.currentTimeMillis() - start;
+      logRequestResponse(request, body, response, elapsed);
     }
   }
 
@@ -72,22 +70,18 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
       ClientHttpResponse response,
       long elapsed) {
 
-    String requestBody = truncate(
-        SensitiveDataMasker.maskSensitiveData(
-            new String(requestBodyBytes, StandardCharsets.UTF_8)),
-        MAX_BODY_SIZE);
+    String maskedRequestBody = SensitiveDataMasker.maskSensitiveData(
+        new String(requestBodyBytes, StandardCharsets.UTF_8));
 
-    String responseBody = "";
+    String maskedResponseBody = "";
     int status = -1;
 
     try {
       if (response != null) {
         status = response.getStatusCode().value();
         byte[] responseBytes = response.getBody().readAllBytes();
-        responseBody = truncate(
-            SensitiveDataMasker.maskSensitiveData(
-                new String(responseBytes, StandardCharsets.UTF_8)),
-            MAX_BODY_SIZE);
+        maskedResponseBody = SensitiveDataMasker.maskSensitiveData(
+            new String(responseBytes, StandardCharsets.UTF_8));
       }
     } catch (Exception e) {
       log.warn("Failed to read response body", e);
@@ -100,8 +94,8 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
           status,
           elapsed,
           MDC.get("extra_request_id"),
-          requestBody,
-          responseBody);
+          truncate(maskedRequestBody, MAX_BODY_SIZE),
+          truncate(maskedResponseBody, MAX_BODY_SIZE));
     } else {
       log.info(PRETTY_LOG,
           request.getMethod(),
@@ -109,8 +103,8 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
           status,
           elapsed,
           MDC.get("extra_request_id"),
-          prettifyJson(requestBody),
-          prettifyJson(responseBody));
+          truncate(prettifyJson(maskedRequestBody), MAX_BODY_SIZE),
+          truncate(prettifyJson(maskedResponseBody), MAX_BODY_SIZE));
     }
   }
 
