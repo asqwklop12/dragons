@@ -1,6 +1,6 @@
 package com.dragons.interceptor;
 
-import com.dragons.cononstant.LogColor;
+import com.dragons.constant.LogColor;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
@@ -47,6 +47,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
       ╠══════════════════════════════════════════════════════════════
       ║   {}
       ╚══════════════════════════════════════════════════════════════
+      {}
       """;
 
   private static final String FLAT_LOG = "🌍 OUTBOUND HTTP Method: {}, URI: {}, Status: {}, Duration: {}ms, Request ID: {}, Request Body: {}, Response Body: {}";
@@ -99,29 +100,71 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
           truncate(maskedResponseBody, MAX_BODY_SIZE));
     } else {
       log.info(PRETTY_LOG,
-          LogColor.PURPLE,
+          LogColor.YELLOW,
           request.getMethod(),
           request.getURI(),
           status,
           elapsed,
           MDC.get("extra_request_id"),
           truncate(prettifyJson(maskedRequestBody), MAX_BODY_SIZE),
-          truncate(prettifyJson(maskedResponseBody), MAX_BODY_SIZE));
+          truncate(prettifyJson(maskedResponseBody), MAX_BODY_SIZE),
+          LogColor.RESET);
     }
   }
 
-  private String prettifyJson(String json) {
-    if (json == null || json.isBlank()) {
+  private String prettifyJson(String data) {
+    if (data == null || data.isBlank()) {
       return "(empty)";
     }
 
+    // JSON 파싱 시도
     try {
-      Object obj = objectMapper.readValue(json, Object.class);
-      return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+      Object obj = objectMapper.readValue(data, Object.class);
+      String prettyJson = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(obj);
+      return addBoxPrefix(prettyJson);
     } catch (JsonProcessingException e) {
-      return json; // JSON 아니면 그대로
+      // JSON이 아닌 경우 URL-encoded 형식인지 확인
+      if (data.contains("=") && data.contains("&")) {
+        return prettifyFormData(data);
+      }
+      return data;
     }
   }
+
+  private String prettifyFormData(String formData) {
+    try {
+      String[] pairs = formData.split("&");
+      StringBuilder formatted = new StringBuilder();
+      for (int i = 0; i < pairs.length; i++) {
+        if (i > 0) {
+          formatted.append("\n║   ");
+        }
+        formatted.append(pairs[i]);
+      }
+      return formatted.toString();
+    } catch (Exception e) {
+      return formData;
+    }
+  }
+
+  private String addBoxPrefix(String content) {
+    if (content == null || content.isBlank()) {
+      return content;
+    }
+
+    String[] lines = content.split("\n");
+    StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < lines.length; i++) {
+      if (i > 0) {
+        result.append("\n║   ");
+      }
+      result.append(lines[i]);
+    }
+
+    return result.toString();
+  }
+
 
   private String truncate(String str, int maxLength) {
     if (str == null || str.length() <= maxLength) {

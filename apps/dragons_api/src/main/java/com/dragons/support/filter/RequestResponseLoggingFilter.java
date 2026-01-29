@@ -1,8 +1,7 @@
 package com.dragons.support.filter;
 
 
-
-import com.dragons.cononstant.LogColor;
+import com.dragons.constant.LogColor;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -68,6 +67,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
           ╠══════════════════════════════════════════════════════════════
           ║   {}
           ╚══════════════════════════════════════════════════════════════
+          {}
           """;
 
   private static final int REQUEST_BUFFER_SIZE = 1024 * 1024; // 1MB
@@ -162,14 +162,15 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
           new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
     }
     log.info(PRETTY_LOG,
-        LogColor.BLUE,
+        LogColor.CYAN,
         request.getMethod(),
         request.getRequestURI(),
         response.getStatus(),
         elapsed,
         MDC.get("request_id"),
         bodyLoggingEnabled ? prettifyJson(requestBody) : "(body logging disabled)",
-        bodyLoggingEnabled ? prettifyJson(responseBody) : "(body logging disabled)");
+        bodyLoggingEnabled ? prettifyJson(responseBody) : "(body logging disabled)",
+        LogColor.RESET);
 
   }
 
