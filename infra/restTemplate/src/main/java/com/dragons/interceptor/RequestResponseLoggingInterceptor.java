@@ -2,6 +2,7 @@ package com.dragons.interceptor;
 
 import com.dragons.constant.LogColor;
 import com.dragons.util.SensitiveDataMasker;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -9,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
@@ -20,10 +20,6 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
 
   public RequestResponseLoggingInterceptor(boolean isProd) {
     this.isProd = isProd;
-  }
-
-  public RequestResponseLoggingInterceptor() {
-    this(false);
   }
 
   private static final int MAX_BODY_SIZE = 1024;
