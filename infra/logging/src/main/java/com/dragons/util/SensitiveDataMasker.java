@@ -1,4 +1,4 @@
-package com.dragons.support.util;
+package com.dragons.util;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,12 +7,15 @@ import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SensitiveDataMasker {
+public final class SensitiveDataMasker {
   private static final ObjectMapper objectMapper = new ObjectMapper();
   private static final Set<String> SENSITIVE_FIELDS = Set.of(
       "password", "email", "cvc", "cardNumber"
   );
   private static final String MASK = "***MASKED***";
+
+  private SensitiveDataMasker() {
+  }
 
   public static String maskSensitiveData(String jsonBody) {
     if (jsonBody == null || jsonBody.isEmpty()) {
@@ -28,6 +31,7 @@ public class SensitiveDataMasker {
       return jsonBody;
     }
   }
+
   private static void maskNode(JsonNode node) {
     if (node.isObject()) {
       ObjectNode objectNode = (ObjectNode) node;
@@ -46,4 +50,6 @@ public class SensitiveDataMasker {
       node.forEach(SensitiveDataMasker::maskNode);
     }
   }
+
+
 }

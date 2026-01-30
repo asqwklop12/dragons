@@ -10,6 +10,7 @@ spring:
       - social.yml
       - payment.yml
       - threadpool.yml
+      - restTemplate.yml
 server:
   servlet:
     session:

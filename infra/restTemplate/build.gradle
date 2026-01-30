@@ -5,5 +5,7 @@ plugins {
 }
 
 dependencies {
+    implementation project(":infra:logging")
+    implementation project(":infra:jackson")
     api 'org.springframework.boot:spring-boot-starter-restclient'
 }

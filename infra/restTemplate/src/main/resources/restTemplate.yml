@@ -1,0 +1,5 @@
+rest-template:
+  policies:
+    default:
+      connect-timeout: 3
+      read-timeout: 100

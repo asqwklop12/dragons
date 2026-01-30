@@ -1,5 +1,10 @@
-description = 'logging'
+plugins {
+    id 'java-library'
+    id 'org.springframework.boot'
+    id 'io.spring.dependency-management'
+}
 
 dependencies {
+    implementation project(":infra:jackson")
     implementation 'net.logstash.logback:logstash-logback-encoder:9.0'
 }
