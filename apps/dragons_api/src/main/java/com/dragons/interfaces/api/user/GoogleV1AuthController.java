@@ -6,6 +6,8 @@ import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
 import com.dragons.support.login.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,8 +46,12 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   // Google 콜백 처리 (GET)
   @Override
   @GetMapping("/callback")
-  public String callback(@RequestParam String code) {
-    return "Google OAuth callback received:" +code;
+  public void callback(HttpServletResponse response, @RequestParam String code) {
+    try {
+      response.sendRedirect("http://localhost:3000/auth/callback?code="+code);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private ApiResponse<UserV1Dto.Login.Response> processLogin(UserLoginResult result, HttpServletRequest httpRequest) {
