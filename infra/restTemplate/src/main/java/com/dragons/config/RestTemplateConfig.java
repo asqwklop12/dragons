@@ -19,15 +19,33 @@ import org.springframework.web.client.RestTemplate;
 @EnableConfigurationProperties(RestTemplateProperties.class)
 public class RestTemplateConfig {
 
-  @Bean
-  public RestTemplate restTemplate(RestTemplateBuilder builder, Environment env, RestTemplateProperties properties) {
+  private RestTemplate createRestTemplate(
+      RestTemplateBuilder builder,
+      Environment env,
+      String policyName,
+      RestTemplateProperties properties) {
+
     boolean isProd = env.acceptsProfiles(Profiles.of("prod"));
-    RestTemplateProperty property = properties.policies().get("default");
+    RestTemplateProperty property = properties.policies().get(policyName);
+
+    if (property == null) {
+      throw new IllegalStateException("Policy not found: " + policyName);
+    }
+
     return builder
         .connectTimeout(Duration.ofSeconds(property.connectTimeout()))
         .readTimeout(Duration.ofSeconds(property.readTimeout()))
         .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
         .additionalInterceptors(new MdcInterceptor(), new RequestResponseLoggingInterceptor(isProd))
         .build();
+  }
+
+
+  @Bean
+  public RestTemplate restTemplate(
+      RestTemplateBuilder builder,
+      Environment env,
+      RestTemplateProperties properties) {
+    return createRestTemplate(builder, env, "default", properties);
   }
 }
