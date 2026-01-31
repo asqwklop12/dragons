@@ -20,6 +20,7 @@ server:
         same-site: lax
       timeout: 30m
   port: 8082
+
 datasource:
   redis:
     enabled: false
@@ -40,6 +41,7 @@ spring:
   hello: ????
 server:
   port: 8083
+  forward-headers-strategy: native
   servlet:
     session:
       cookie:
