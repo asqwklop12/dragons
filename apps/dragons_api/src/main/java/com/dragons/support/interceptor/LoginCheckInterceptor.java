@@ -8,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
@@ -18,11 +17,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
   static final String EMAIL = SessionConstants.SESSION_USER_EMAIL.getValue();
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-      throws CoreException {
-    if (CorsUtils.isPreFlightRequest(request)) {
-      return true;
-    }
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
     HttpSession session = request.getSession(false);
     if (session != null) {
