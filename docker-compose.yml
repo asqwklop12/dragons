@@ -26,8 +26,12 @@ services:
 
     networks:
       - default
+      - nginx_net
 
 networks:
   default:
     name: mysql_default
+    external: true
+  nginx_net:
+    name: docker_default
     external: true
