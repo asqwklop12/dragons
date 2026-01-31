@@ -74,9 +74,9 @@ spring:
 datasource:
   mysql-jpa:
     main:
-      jdbc-url: jdbc:mysql://${DB_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_SCHEMA:dragons}
-      username: ${MYSQL_USER:application}
-      password: ${MYSQL_PWD:application}
+      jdbc-url: jdbc:mysql://host.docker.internal:3306/dragons
+      username: application
+      password: application
 
 ---
 spring.config.activate.on-profile: qa
@@ -94,6 +94,6 @@ spring.config.activate.on-profile: prod
 datasource:
   mysql-jpa:
     main:
-      jdbc-url: jdbc:mysql://${DB_HOST:mysql}:${MYSQL_PORT:3306}/${MYSQL_SCHEMA:dragons}
-      username: ${MYSQL_USER}
-      password: ${MYSQL_PWD}
+      jdbc-url: jdbc:mysql://mysql8:3306/dragons
+      username: admin
+      password: admin
