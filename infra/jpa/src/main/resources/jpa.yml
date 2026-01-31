@@ -74,7 +74,7 @@ spring:
 datasource:
   mysql-jpa:
     main:
-      jdbc-url: jdbc:mysql://localhost:3306/dragons
+      jdbc-url: jdbc:mysql://host.docker.internal:3306/dragons
       username: application
       password: application
 
