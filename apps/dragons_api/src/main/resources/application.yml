@@ -1,4 +1,3 @@
-ui-url: ${UI_URL}
 spring:
   application:
     name: dragons
@@ -20,7 +19,8 @@ server:
         http-only: true
         same-site: lax
       timeout: 30m
-  port: 8083
+  port: 8082
+
 datasource:
   redis:
     enabled: false
@@ -75,5 +75,3 @@ spring:
 logging:
   request-response:
     body-enabled: false  # 프로덕션에서는 바디 로깅 비활성화
-server:
-  forward-headers-strategy: framework
