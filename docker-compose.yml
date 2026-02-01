@@ -21,6 +21,7 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY}
       TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
+      UI_URL: http://localhost:3001
       # Optional JVM tuning
       JAVA_OPTS: "-XX:+UseContainerSupport -Xms256m -Xmx512m"
 
