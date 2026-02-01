@@ -34,6 +34,7 @@ logging:
     body-enabled: true
     max-body-size: 10240  # 10KB
 
+ui-url: ${UI_URL}
 
 ---
 spring:
@@ -41,7 +42,6 @@ spring:
     activate:
       on-profile: dev
   hello: ????
-ui-url: https://localhost
 server:
   port: 8083
   forward-headers-strategy: native
@@ -58,7 +58,6 @@ spring:
     activate:
       on-profile: local
   hello: ????
-ui-url: http://localhost:3000
 server:
   port: 8089
   servlet:
