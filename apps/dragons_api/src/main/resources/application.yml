@@ -33,6 +33,11 @@ logging:
     enabled: true
     body-enabled: true
     max-body-size: 10240  # 10KB
+
+google:
+  client-id: ${GOOGLE_CLIENT_ID}
+  client-secret: ${GOOGLE_CLIENT_SECRET}
+  redirect-uri: ${GOOGLE_REDIRECT}
 ---
 spring:
   config:
