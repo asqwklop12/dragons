@@ -42,6 +42,7 @@ spring:
     activate:
       on-profile: dev
   hello: ????
+ui-url: http://localhost:3001
 server:
   port: 8083
   forward-headers-strategy: native
@@ -58,6 +59,7 @@ spring:
     activate:
       on-profile: local
   hello: ????
+ui-url: http://localhost:3000
 server:
   port: 8089
   servlet:
