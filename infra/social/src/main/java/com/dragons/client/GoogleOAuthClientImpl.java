@@ -46,7 +46,7 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
     String loginUrl = UriComponentsBuilder
         .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
         .queryParam("client_id", clientId)
-        .queryParam("redirect_uri", "http://localhsot:" + port + "/api/auth/google/callback")
+        .queryParam("redirect_uri", "http://localhost:" + port + "/api/auth/google/callback")
         .queryParam("response_type", "code")
         .queryParam("scope", "email profile").build()
         .toUriString();
@@ -72,7 +72,7 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
     params.add("code", code);
     params.add("client_id", clientId);
     params.add("client_secret", clientSecret);
-    params.add("redirect_uri", "http://localhsot:" + port + "/api/auth/google/callback");
+    params.add("redirect_uri", "http://localhost:" + port + "/api/auth/google/callback");
     params.add("grant_type", "authorization_code");
 
     HttpHeaders headers = new HttpHeaders();
