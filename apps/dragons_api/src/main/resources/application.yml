@@ -42,7 +42,7 @@ spring:
     activate:
       on-profile: dev
   hello: ????
-ui-url: http://localhost:3001
+ui-url: https://localhost
 server:
   port: 8083
   forward-headers-strategy: native
