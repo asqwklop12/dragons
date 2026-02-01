@@ -3,9 +3,11 @@ package com.dragons.client;
 import com.dragons.domain.social.GoogleOAuthClient;
 import com.dragons.domain.social.GoogleOAuthResponse;
 import com.dragons.executor.RetryExecutor;
+import java.util.EventListener;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -24,19 +26,19 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
   private final RestTemplate restTemplate;
   private final String clientId;
   private final String clientSecret;
-  private final String redirectUri;
   private final RetryExecutor retryExecutor;
+  private final String port;
 
   public GoogleOAuthClientImpl(RestTemplate restTemplate,
-      @Qualifier("socialRetryExecutor") RetryExecutor retryExecutor,
-      @Value("${google.client-id}") String clientId,
-      @Value("${google.client-secret}") String clientSecret,
-      @Value("${google.redirect-uri}") String redirectUri) {
+                               @Qualifier("socialRetryExecutor") RetryExecutor retryExecutor,
+                               @Value("${google.client-id}") String clientId,
+                               @Value("${google.client-secret}") String clientSecret,
+                               Environment environment) {
     this.retryExecutor = retryExecutor;
     this.restTemplate = restTemplate;
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-    this.redirectUri = redirectUri;
+    this.port = environment.getProperty("server.port");;
   }
 
   @Override
@@ -44,7 +46,7 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
     String loginUrl = UriComponentsBuilder
         .fromUriString("https://accounts.google.com/o/oauth2/v2/auth")
         .queryParam("client_id", clientId)
-        .queryParam("redirect_uri", redirectUri)
+        .queryParam("redirect_uri", "http://localhsot:" + port + "/api/auth/google/callback")
         .queryParam("response_type", "code")
         .queryParam("scope", "email profile").build()
         .toUriString();
@@ -70,7 +72,7 @@ public class GoogleOAuthClientImpl implements GoogleOAuthClient {
     params.add("code", code);
     params.add("client_id", clientId);
     params.add("client_secret", clientSecret);
-    params.add("redirect_uri", redirectUri);
+    params.add("redirect_uri", "http://localhsot:" + port + "/api/auth/google/callback");
     params.add("grant_type", "authorization_code");
 
     HttpHeaders headers = new HttpHeaders();
