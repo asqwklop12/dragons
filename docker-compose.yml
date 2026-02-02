@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: dragons:dev
+    image: dragons:${PROFILE}
     container_name: dragons
     restart: unless-stopped
 
@@ -13,7 +13,7 @@ services:
       - "8083:8083"
 
     environment:
-      SPRING_PROFILES_ACTIVE: dev
+      SPRING_PROFILES_ACTIVE: ${PROFILE}
       SERVER_PORT: 8083
       # Spring relaxed binding: DATASOURCE_REDIS_ENABLED -> datasource.redis.enabled
       DATASOURCE_REDIS_ENABLED: "false"
@@ -23,6 +23,11 @@ services:
       TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY}
       TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
       UI_URL: ${UI_URL}
+      DB_HOST: ${DB_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_SCHEMA: ${MYSQL_SCHEMA}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PWD: ${MYSQL_PWD}
       # Optional JVM tuning
       JAVA_OPTS: "-XX:+UseContainerSupport -Xms256m -Xmx512m"
 
