@@ -1,5 +1,6 @@
 package com.dragons.config;
 
+import com.dragons.constant.Constants;
 import com.dragons.interceptor.MdcInterceptor;
 import com.dragons.interceptor.RequestResponseLoggingInterceptor;
 import com.dragons.properties.RestTemplateProperties;
@@ -25,7 +26,7 @@ public class RestTemplateConfig {
       String policyName,
       RestTemplateProperties properties) {
 
-    boolean isProd = env.acceptsProfiles(Profiles.of("prod"));
+    boolean isProd = env.acceptsProfiles(Profiles.of(Constants.PROFILE_PROD));
     RestTemplateProperty property = properties.policies().get(policyName);
 
     if (property == null) {
@@ -46,6 +47,6 @@ public class RestTemplateConfig {
       RestTemplateBuilder builder,
       Environment env,
       RestTemplateProperties properties) {
-    return createRestTemplate(builder, env, "default", properties);
+    return createRestTemplate(builder, env, Constants.DEFAULT, properties);
   }
 }

@@ -1,5 +1,6 @@
 package com.dragons.support.filter;
 
+import com.dragons.constant.Constants;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,22 +17,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class MdcLoggingFilter extends OncePerRequestFilter {
 
-    private static final String REQUEST_ID = "request_id";
-    private static final String HEADER_REQUEST_ID = "X-Request-Id";
-
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain)
         throws ServletException, IOException {
 
-        String requestId = request.getHeader(HEADER_REQUEST_ID);
+        String requestId = request.getHeader(Constants.HEADER_REQUEST_ID);
         if (requestId == null || requestId.isBlank()) {
             requestId = UUID.randomUUID().toString();
         }
 
-        MDC.put(REQUEST_ID, requestId);
-        response.setHeader(HEADER_REQUEST_ID, requestId);
+        MDC.put(Constants.REQUEST_ID, requestId);
+        response.setHeader(Constants.HEADER_REQUEST_ID, requestId);
         try {
             filterChain.doFilter(request, response);
         } finally {
