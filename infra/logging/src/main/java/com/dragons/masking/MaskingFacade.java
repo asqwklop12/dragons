@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class MaskingFacade {
   private final MaskingPluginRegistry registry;
 
-  public String mask(String rawBody, MaskingContext ctx) {
-    return registry.applyAll(rawBody, ctx);
+  public String mask(String rawBody) {
+    return registry.applyAll(rawBody);
   }
 }

@@ -1,8 +1,6 @@
 package com.dragons.interceptor;
 
 import com.dragons.constant.LogColor;
-import com.dragons.masking.MaskingContext;
-import com.dragons.masking.MaskingContext.ApiCategory;
 import com.dragons.masking.MaskingFacade;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,7 +18,7 @@ import org.springframework.http.client.ClientHttpResponse;
 @Slf4j
 @RequiredArgsConstructor
 public class RequestResponseLoggingInterceptor implements ClientHttpRequestInterceptor {
-  private static final ObjectMapper objectMapper = new ObjectMapper();
+  private final static ObjectMapper objectMapper = new ObjectMapper();
   private final MaskingFacade maskingFacade;
   private final boolean isProd;
 
@@ -73,19 +71,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
 
     String rawBody = new String(requestBodyBytes, StandardCharsets.UTF_8);
 
-    MaskingContext ctx = new MaskingContext(
-        MaskingContext.CallType.EXTERNAL,                 // 확실
-        ApiCategory.PUBLIC,               // 모름
-        MaskingContext.CallerRole.SYSTEM,                // 모름
-        false,                                            // authenticated 모름
-        MaskingContext.SerializationPhase.AFTER,          // 확실 (String 상태)
-        request.getURI().getPath(),                        // 확실
-        request.getHeaders().getContentType() != null
-            ? request.getHeaders().getContentType().toString()
-            : null
-    );
-
-    String maskedRequestBody = maskingFacade.mask(rawBody, ctx);
+    String maskedRequestBody = maskingFacade.mask(rawBody);
 
     String maskedResponseBody = "";
     int status = -1;

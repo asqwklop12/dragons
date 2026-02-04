@@ -1,19 +1,31 @@
 package com.dragons.masking;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Map;
+
 public interface MaskingPlugin {
-  PluginPhase phase();
-  /**
-   * 같은 phase 안에서의 순서. 숫자가 싫으면 enum 단계를 더 쪼개도 됨.
-   */
-  default int order() { return 0; }
+  String apply(String body);
 
-  /**
-   * 적용 가능 여부. context만 보고 판단 (순수 함수처럼)
-   */
-  boolean supports(MaskingContext ctx);
+  default void maskRecursive(JsonNode node, String name, String masking) {
+    if (node.isObject()) {
+      ObjectNode obj = (ObjectNode) node;
+      for (Map.Entry<String, JsonNode> entry : node.properties()) {
 
-  /**
-   * 누적 적용. 앞/뒤 플러그인 존재를 가정하고 "부분 변경"만.
-   */
-  String apply(String body, MaskingContext ctx);
+        String fieldName = entry.getKey();
+        JsonNode value = entry.getValue();
+
+        if (name.equalsIgnoreCase(fieldName) && value.isTextual()) {
+          obj.put(fieldName, masking);
+        } else {
+          maskRecursive(value, name, masking);
+        }
+      }
+
+    } else if (node.isArray()) {
+      for (JsonNode child : node) {
+        maskRecursive(child, name, masking);
+      }
+    }
+  }
 }

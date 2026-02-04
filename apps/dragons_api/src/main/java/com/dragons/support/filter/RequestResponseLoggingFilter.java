@@ -2,10 +2,6 @@ package com.dragons.support.filter;
 
 
 import com.dragons.constant.LogColor;
-import com.dragons.masking.MaskingContext;
-import com.dragons.masking.MaskingContext.ApiCategory;
-import com.dragons.masking.MaskingContext.CallType;
-import com.dragons.masking.MaskingContext.CallerRole;
 import com.dragons.masking.MaskingFacade;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,8 +33,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE + 1) // !MDC보다 우선순위를 낮게 하기 위함
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
-
-  private static final ObjectMapper objectMapper = new ObjectMapper();
+  private final ObjectMapper objectMapper;
   private final MaskingFacade maskingFacade;
 
   @Value("${logging.request-response.enabled:true}")
@@ -169,18 +164,12 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
           new String(responseContent, StandardCharsets.UTF_8);
       
       requestBody = truncate(
-          maskingFacade.mask(
-              rawRequestBody,
-              contextOf(request, request.getContentType())
-          ),
+          maskingFacade.mask(rawRequestBody),
           maxBodySize
       );
 
       responseBody = truncate(
-          maskingFacade.mask(
-              rawResponseBody,
-              contextOf(request, response.getContentType())
-          ),
+          maskingFacade.mask(rawResponseBody),
           maxBodySize
       );
 
@@ -196,20 +185,6 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
         bodyLoggingEnabled ? prettifyJson(responseBody) : "(body logging disabled)",
         LogColor.RESET);
 
-  }
-
-  private MaskingContext contextOf(HttpServletRequest request,
-                                   String contentType) {
-
-    return new MaskingContext(
-        CallType.INTERNAL,          // 이 Filter에서는 모름
-        ApiCategory.PUBLIC,       // 모름
-        CallerRole.USER,        // 모름
-        false,                                    // 인증 여부 모름
-        MaskingContext.SerializationPhase.AFTER,  // 이미 String 상태
-        request.getRequestURI(),                  // 확실
-        contentType                               // request/response 기준
-    );
   }
 
 
