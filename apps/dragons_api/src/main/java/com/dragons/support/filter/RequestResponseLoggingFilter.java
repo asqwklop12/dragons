@@ -2,7 +2,6 @@ package com.dragons.support.filter;
 
 
 import com.dragons.constant.LogColor;
-import com.dragons.masking.MaskingFacade;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,8 +32,8 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 @RequiredArgsConstructor
 @Order(Ordered.HIGHEST_PRECEDENCE + 1) // !MDC보다 우선순위를 낮게 하기 위함
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
-  private final ObjectMapper objectMapper;
-  private final MaskingFacade maskingFacade;
+
+  private static final ObjectMapper objectMapper = new ObjectMapper();
 
   @Value("${logging.request-response.enabled:true}")
   private boolean loggingEnabled;
@@ -157,22 +156,10 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     String responseBody = "";
 
     if (bodyLoggingEnabled) {
-      String rawRequestBody =
-          new String(requestContent, StandardCharsets.UTF_8);
-
-      String rawResponseBody =
-          new String(responseContent, StandardCharsets.UTF_8);
-      
-      requestBody = truncate(
-          maskingFacade.mask(rawRequestBody),
-          maxBodySize
-      );
-
-      responseBody = truncate(
-          maskingFacade.mask(rawResponseBody),
-          maxBodySize
-      );
-
+      requestBody = truncate(SensitiveDataMasker.maskSensitiveData(
+          new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+      responseBody = truncate(SensitiveDataMasker.maskSensitiveData(
+          new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
     }
     log.info(PRETTY_LOG,
         LogColor.CYAN,
