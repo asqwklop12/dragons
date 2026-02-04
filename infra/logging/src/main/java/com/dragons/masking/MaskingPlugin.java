@@ -3,6 +3,8 @@ package com.dragons.masking;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 public interface MaskingPlugin {
   String apply(String body);
@@ -25,6 +27,26 @@ public interface MaskingPlugin {
     } else if (node.isArray()) {
       for (JsonNode child : node) {
         maskRecursive(child, name, masking);
+      }
+    }
+  }
+
+  default void maskNode(JsonNode node, Pattern pattern, String masking) {
+    if (node.isObject()) {
+      ObjectNode obj = (ObjectNode) node;
+
+      for (Entry<String, JsonNode> entry : node.properties()) {
+        JsonNode value = entry.getValue();
+
+        if (value.isTextual()) {
+          String text = value.asText();
+          // 값 내용으로 민감 정보 판단
+          if (pattern.matcher(text).matches()) {
+            obj.put(entry.getKey(), masking);
+          }
+        } else {
+          maskNode(value, pattern, masking);
+        }
       }
     }
   }
