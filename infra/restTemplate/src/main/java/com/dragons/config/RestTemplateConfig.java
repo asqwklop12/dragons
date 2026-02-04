@@ -3,6 +3,7 @@ package com.dragons.config;
 import com.dragons.constant.Constants;
 import com.dragons.interceptor.MdcInterceptor;
 import com.dragons.interceptor.RequestResponseLoggingInterceptor;
+import com.dragons.masking.MaskingFacade;
 import com.dragons.properties.RestTemplateProperties;
 import com.dragons.properties.RestTemplateProperties.RestTemplateProperty;
 import java.time.Duration;
@@ -24,6 +25,7 @@ public class RestTemplateConfig {
       RestTemplateBuilder builder,
       Environment env,
       String policyName,
+      MaskingFacade facade,
       RestTemplateProperties properties) {
 
     boolean isProd = env.acceptsProfiles(Profiles.of(Constants.PROFILE_PROD));
@@ -37,7 +39,7 @@ public class RestTemplateConfig {
         .connectTimeout(Duration.ofSeconds(property.connectTimeout()))
         .readTimeout(Duration.ofSeconds(property.readTimeout()))
         .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
-        .additionalInterceptors(new MdcInterceptor(), new RequestResponseLoggingInterceptor(isProd))
+        .additionalInterceptors(new MdcInterceptor(), new RequestResponseLoggingInterceptor(facade, isProd))
         .build();
   }
 
@@ -46,7 +48,8 @@ public class RestTemplateConfig {
   public RestTemplate restTemplate(
       RestTemplateBuilder builder,
       Environment env,
+      MaskingFacade facade,
       RestTemplateProperties properties) {
-    return createRestTemplate(builder, env, Constants.DEFAULT, properties);
+    return createRestTemplate(builder, env, Constants.DEFAULT, facade, properties);
   }
 }

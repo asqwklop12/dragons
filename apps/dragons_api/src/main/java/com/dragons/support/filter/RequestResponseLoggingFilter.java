@@ -2,6 +2,11 @@ package com.dragons.support.filter;
 
 
 import com.dragons.constant.LogColor;
+import com.dragons.masking.MaskingContext;
+import com.dragons.masking.MaskingContext.ApiCategory;
+import com.dragons.masking.MaskingContext.CallType;
+import com.dragons.masking.MaskingContext.CallerRole;
+import com.dragons.masking.MaskingFacade;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,6 +39,7 @@ import org.springframework.web.util.ContentCachingResponseWrapper;
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
   private static final ObjectMapper objectMapper = new ObjectMapper();
+  private final MaskingFacade maskingFacade;
 
   @Value("${logging.request-response.enabled:true}")
   private boolean loggingEnabled;
@@ -156,10 +162,28 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     String responseBody = "";
 
     if (bodyLoggingEnabled) {
-      requestBody = truncate(SensitiveDataMasker.maskSensitiveData(
-          new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
-      responseBody = truncate(SensitiveDataMasker.maskSensitiveData(
-          new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
+      String rawRequestBody =
+          new String(requestContent, StandardCharsets.UTF_8);
+
+      String rawResponseBody =
+          new String(responseContent, StandardCharsets.UTF_8);
+      
+      requestBody = truncate(
+          maskingFacade.mask(
+              rawRequestBody,
+              contextOf(request, request.getContentType())
+          ),
+          maxBodySize
+      );
+
+      responseBody = truncate(
+          maskingFacade.mask(
+              rawResponseBody,
+              contextOf(request, response.getContentType())
+          ),
+          maxBodySize
+      );
+
     }
     log.info(PRETTY_LOG,
         LogColor.CYAN,
@@ -172,6 +196,20 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
         bodyLoggingEnabled ? prettifyJson(responseBody) : "(body logging disabled)",
         LogColor.RESET);
 
+  }
+
+  private MaskingContext contextOf(HttpServletRequest request,
+                                   String contentType) {
+
+    return new MaskingContext(
+        CallType.INTERNAL,          // 이 Filter에서는 모름
+        ApiCategory.PUBLIC,       // 모름
+        CallerRole.USER,        // 모름
+        false,                                    // 인증 여부 모름
+        MaskingContext.SerializationPhase.AFTER,  // 이미 String 상태
+        request.getRequestURI(),                  // 확실
+        contentType                               // request/response 기준
+    );
   }
 
 
