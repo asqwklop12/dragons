@@ -2,6 +2,7 @@ package com.dragons.support.filter;
 
 
 import com.dragons.constant.LogColor;
+import com.dragons.masking.MaskingFacade;
 import com.dragons.util.SensitiveDataMasker;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -45,6 +46,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   private int maxBodySize;
 
   private final Environment environment;
+  private final MaskingFacade maskingFacade;
 
 
   private static final String PRETTY_LOG =
@@ -156,10 +158,8 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     String responseBody = "";
 
     if (bodyLoggingEnabled) {
-      requestBody = truncate(SensitiveDataMasker.maskSensitiveData(
-          new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
-      responseBody = truncate(SensitiveDataMasker.maskSensitiveData(
-          new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
+      requestBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+      responseBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
     }
     log.info(PRETTY_LOG,
         LogColor.CYAN,
@@ -191,9 +191,9 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     // Body는 조건부로만 로깅 (에러 상태 또는 설정된 경우만)
     if (bodyLoggingEnabled && (response.getStatus() >= 400 || log.isDebugEnabled())) {
       String requestBody = truncate(
-          SensitiveDataMasker.maskSensitiveData(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+          maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
       String responseBody = truncate(
-          SensitiveDataMasker.maskSensitiveData(new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
+          maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
 
       log.info("REQ_BODY={} RES_BODY={}", requestBody, responseBody);
     }
