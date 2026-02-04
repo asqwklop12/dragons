@@ -2,6 +2,7 @@ package com.dragons.masking;
 
 
 import com.dragons.masking.MaskingContext.RequestOrigin;
+import com.dragons.masking.MaskingProperties.MaskingRule;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.regex.Pattern;
@@ -13,20 +14,20 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserEmailMaskingPlugin implements MaskingPlugin {
   private final ObjectMapper objectMapper;
+  private final MaskingProperties properties;
 
-  private static final Pattern EMAIL_PATTERN =
-      Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
 
   @Override
   public boolean supports(MaskingContext ctx) {
-    return ctx.origin() == RequestOrigin.CLIENT;
+    return true;
   }
 
   @Override
   public String apply(String body) {
+    MaskingRule rule = properties.getRules().get("email");
     try {
       JsonNode root = objectMapper.readTree(body);
-      maskNode(root, EMAIL_PATTERN, "***MASKED***");
+      maskNode(root, Pattern.compile(rule.match().pattern()),  rule.mask().value());
       return objectMapper.writeValueAsString(root);
     } catch (Exception e) {
       return body;

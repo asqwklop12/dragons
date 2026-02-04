@@ -1,1 +1,12 @@
-logging.config: classpath:logback/logback-spring.xml
+logging:
+  config: classpath:logback/logback-spring.xml
+
+masking:
+  rules:
+    email:
+      match:
+        type: REGEX
+        pattern: "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
+      mask:
+        type: FIXED
+        value: "***MASKED***"
