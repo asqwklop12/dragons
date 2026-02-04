@@ -2,6 +2,8 @@ package com.dragons.support.filter;
 
 
 import com.dragons.constant.LogColor;
+import com.dragons.masking.MaskingContext;
+import com.dragons.masking.MaskingContext.RequestOrigin;
 import com.dragons.masking.MaskingFacade;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -131,34 +133,40 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
       long elapsed = System.currentTimeMillis() - start;
 
       if (!shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
-        logRequestResponse(wrappedRequest, wrappedResponse, elapsed);
+        MaskingContext context = new MaskingContext(RequestOrigin.SYSTEM, request.getRequestURI());
+        logRequestResponse(context, wrappedRequest, wrappedResponse, elapsed);
       }
       wrappedResponse.copyBodyToResponse();
     }
   }
 
-  private void logRequestResponse(ContentCachingRequestWrapper request,
-                                  ContentCachingResponseWrapper response,
-                                  long elapsed) {
+  private void logRequestResponse(
+      MaskingContext context,
+      ContentCachingRequestWrapper request,
+      ContentCachingResponseWrapper response,
+      long elapsed) {
     if (isProdProfile) {
-      logCompact(request, response, elapsed);
+      logCompact(context, request, response, elapsed);
     } else {
       // 로컬: 가독성 좋은 포맷
-      logPretty(request, response, elapsed);
+      logPretty(context, request, response, elapsed);
     }
 
 
   }
 
-  private void logPretty(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long elapsed) {
+  private void logPretty(MaskingContext context, ContentCachingRequestWrapper request,
+                         ContentCachingResponseWrapper response, long elapsed) {
     byte[] requestContent = request.getContentAsByteArray();
     byte[] responseContent = response.getContentAsByteArray();
     String requestBody = "";
     String responseBody = "";
 
     if (bodyLoggingEnabled) {
-      requestBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
-      responseBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+      requestBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8), context),
+          maxBodySize);
+      responseBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8), context),
+          maxBodySize);
     }
     log.info(PRETTY_LOG,
         LogColor.CYAN,
@@ -174,7 +182,8 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   }
 
 
-  private void logCompact(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long elapsed) {
+  private void logCompact(MaskingContext context, ContentCachingRequestWrapper request,
+                          ContentCachingResponseWrapper response, long elapsed) {
     byte[] requestContent = request.getContentAsByteArray();
     byte[] responseContent = response.getContentAsByteArray();
 
@@ -190,9 +199,9 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     // Body는 조건부로만 로깅 (에러 상태 또는 설정된 경우만)
     if (bodyLoggingEnabled && (response.getStatus() >= 400 || log.isDebugEnabled())) {
       String requestBody = truncate(
-          maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+          maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8), context), maxBodySize);
       String responseBody = truncate(
-          maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+          maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8), context), maxBodySize);
 
       log.info("REQ_BODY={} RES_BODY={}", requestBody, responseBody);
     }

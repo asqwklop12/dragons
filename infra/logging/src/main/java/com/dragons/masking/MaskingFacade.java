@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class MaskingFacade {
   private final MaskingPluginRepository maskingPluginRepository;
 
-  public String mask(String rowBody) {
-    return maskingPluginRepository.applyAll(rowBody);
+  public String mask(String rowBody, MaskingContext ctx) {
+    return maskingPluginRepository.applyAll(rowBody, ctx);
   }
 }

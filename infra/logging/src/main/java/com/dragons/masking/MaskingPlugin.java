@@ -9,6 +9,8 @@ import java.util.regex.Pattern;
 public interface MaskingPlugin {
   String apply(String body);
 
+  boolean supports(MaskingContext ctx);
+
   default void maskRecursive(JsonNode node, String name, String masking) {
     if (node.isObject()) {
       ObjectNode obj = (ObjectNode) node;
