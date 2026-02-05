@@ -16,7 +16,7 @@ services:
       - .env
 
     environment:
-      SPRING_PROFILES_ACTIVE: ${PROFILE:dev}
+      SPRING_PROFILES_ACTIVE: ${PROFILE}
       SERVER_PORT: 8083
       # Spring relaxed binding: DATASOURCE_REDIS_ENABLED -> datasource.redis.enabled
       DATASOURCE_REDIS_ENABLED: "false"
