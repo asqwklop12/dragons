@@ -165,7 +165,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     if (bodyLoggingEnabled) {
       requestBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8), context),
           maxBodySize);
-      responseBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8), context),
+      responseBody = truncate(maskingFacade.mask(new String(responseContent, StandardCharsets.UTF_8), context),
           maxBodySize);
     }
     log.info(PRETTY_LOG,
