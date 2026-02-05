@@ -4,9 +4,14 @@ import com.dragons.application.user.GoogleSocialService;
 import com.dragons.application.user.dto.UserLoginResult;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.user.dto.UserV1Dto;
+import com.dragons.support.error.CoreException;
+import com.dragons.support.error.ErrorType;
 import com.dragons.support.login.SessionHelper;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +28,8 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   private final GoogleSocialService googleSocialService;
   private final SessionHelper helper;
 
+  @Value("${ui-url}")
+  private String uiUrl;
 
   @GetMapping("/url")
   public ApiResponse<String> getGoogleLoginUrl() {
@@ -41,11 +48,15 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
     return processLogin(result, httpRequest);
   }
 
-  // Google 콜백 처리 (GET)
   @Override
   @GetMapping("/callback")
-  public String callback(@RequestParam String code) {
-    return "Google OAuth callback received:" +code;
+  public void callback(HttpServletResponse response, @RequestParam String code) {
+    try {
+      response.sendRedirect(uiUrl + "/auth/callback?code=" + code);
+    } catch (IOException e) {
+      throw new CoreException(ErrorType.CONFLICT);
+
+    }
   }
 
   private ApiResponse<UserV1Dto.Login.Response> processLogin(UserLoginResult result, HttpServletRequest httpRequest) {
