@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,7 +30,6 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
   @Value("${ui-url}")
   private String uiUrl;
 
-
   @GetMapping("/url")
   public ApiResponse<String> getGoogleLoginUrl() {
     String googleLoginUrl = googleSocialService.getGoogleLoginUrl();
@@ -49,7 +47,6 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
     return processLogin(result, httpRequest);
   }
 
-  // Google 콜백 처리 (GET)
   @Override
   @GetMapping("/callback")
   public void callback(HttpServletResponse response, @RequestParam String code) {
@@ -57,6 +54,7 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
       response.sendRedirect(uiUrl + "/auth/callback?code=" + code);
     } catch (IOException e) {
       throw new CoreException(ErrorType.CONFLICT);
+
     }
   }
 
