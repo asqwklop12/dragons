@@ -12,6 +12,7 @@ pluginManagement {
 rootProject.name = 'dragons'
 
 include(
+        ':apps',
         ':apps:dragons_api',
         ':domain',
         ":infra:jackson",
