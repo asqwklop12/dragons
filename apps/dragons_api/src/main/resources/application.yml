@@ -18,7 +18,7 @@ server:
         http-only: true
         same-site: lax
       timeout: 30m
-  port: 8082
+  port: 8083
 datasource:
   redis:
     enabled: false
