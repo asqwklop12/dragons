@@ -1,11 +1,15 @@
 package com.dragons.interceptor;
 
+import com.dragons.constant.Constants;
 import com.dragons.constant.LogColor;
-import com.dragons.util.SensitiveDataMasker;
+import com.dragons.masking.MaskingContext;
+import com.dragons.masking.MaskingContext.RequestOrigin;
+import com.dragons.masking.MaskingFacade;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.http.HttpRequest;
@@ -14,13 +18,11 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 
 @Slf4j
+@RequiredArgsConstructor
 public class RequestResponseLoggingInterceptor implements ClientHttpRequestInterceptor {
   private static final ObjectMapper objectMapper = new ObjectMapper();
+  private final MaskingFacade maskingFacade;
   private final boolean isProd;
-
-  public RequestResponseLoggingInterceptor(boolean isProd) {
-    this.isProd = isProd;
-  }
 
   private static final int MAX_BODY_SIZE = 1024;
 
@@ -58,18 +60,19 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
       return response;
     } finally {
       long elapsed = System.currentTimeMillis() - start;
-      logRequestResponse(request, body, response, elapsed);
+      MaskingContext context = new MaskingContext(RequestOrigin.CLIENT, request.getURI().getPath());
+      logRequestResponse(context, request, body, response, elapsed);
     }
   }
 
   private void logRequestResponse(
+      MaskingContext context,
       HttpRequest request,
       byte[] requestBodyBytes,
       ClientHttpResponse response,
       long elapsed) {
 
-    String maskedRequestBody = SensitiveDataMasker.maskSensitiveData(
-        new String(requestBodyBytes, StandardCharsets.UTF_8));
+    String maskedRequestBody = maskingFacade.mask(new String(requestBodyBytes, StandardCharsets.UTF_8),context);
 
     String maskedResponseBody = "";
     int status = -1;
@@ -78,8 +81,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
       if (response != null) {
         status = response.getStatusCode().value();
         byte[] responseBytes = response.getBody().readAllBytes();
-        maskedResponseBody = SensitiveDataMasker.maskSensitiveData(
-            new String(responseBytes, StandardCharsets.UTF_8));
+        maskedResponseBody = maskingFacade.mask(new String(responseBytes, StandardCharsets.UTF_8),context);
       }
     } catch (Exception e) {
       log.warn("Failed to read response body", e);
@@ -91,7 +93,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
           request.getURI(),
           status,
           elapsed,
-          MDC.get("extra_request_id"),
+          MDC.get(Constants.EXTRA_REQUEST_ID),
           truncate(maskedRequestBody, MAX_BODY_SIZE),
           truncate(maskedResponseBody, MAX_BODY_SIZE));
     } else {
@@ -101,7 +103,7 @@ public class RequestResponseLoggingInterceptor implements ClientHttpRequestInter
           request.getURI(),
           status,
           elapsed,
-          MDC.get("extra_request_id"),
+          MDC.get(Constants.EXTRA_REQUEST_ID),
           truncate(prettifyJson(maskedRequestBody), MAX_BODY_SIZE),
           truncate(prettifyJson(maskedResponseBody), MAX_BODY_SIZE),
           LogColor.RESET);
