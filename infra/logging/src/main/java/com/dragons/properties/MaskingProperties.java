@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record MaskingProperties(Map<String, MaskingRule> rules) {
 
   public MaskingProperties {
-    rules = rules != null ? Map.copyOf(rules) : new HashMap<>();
+    rules = rules != null ? Map.copyOf(rules) : Map.of();
   }
   public record MaskingRule(Match match, Mask mask) {
   }

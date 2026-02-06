@@ -3,6 +3,7 @@ package com.dragons.masking;
 
 import com.dragons.properties.MaskingProperties;
 import com.dragons.properties.MaskingProperties.MaskingRule;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.regex.Pattern;
@@ -28,7 +29,7 @@ public class UserEmailMaskingPlugin implements MaskingPlugin {
       JsonNode root = objectMapper.readTree(body);
       maskNode(root, Pattern.compile(rule.match().pattern()),  rule.mask().value());
       return objectMapper.writeValueAsString(root);
-    } catch (Exception e) {
+    } catch (JsonProcessingException e) {
       return body;
     }
   }
