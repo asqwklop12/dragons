@@ -9,8 +9,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class MaskingEngine {
@@ -26,35 +28,36 @@ public class MaskingEngine {
       JsonNode root = objectMapper.readTree(body);
 
       for (MaskingRule rule : properties.rules().values()) {
-        applyRule(root, rule);
+        Pattern pattern = Pattern.compile(rule.match().pattern());
+        applyRule(root, rule, pattern);
       }
 
       return objectMapper.writeValueAsString(root);
     } catch (JsonProcessingException e) {
+      log.warn("Failed to mask body, returning original. Consider fail-closed strategy.", e);
       return body;
     }
   }
 
-  private void applyRule(JsonNode node, MaskingRule rule) {
+  private void applyRule(JsonNode node, MaskingRule rule, Pattern pattern) {
     if (node.isObject()) {
       ObjectNode obj = (ObjectNode) node;
       for (Entry<String, JsonNode> entry : node.properties()) {
         String fieldName = entry.getKey();
         JsonNode value = entry.getValue();
 
-        if (matches(rule, fieldName, value)) {
+        if (matches(rule, fieldName, value, pattern)) {
           obj.put(fieldName, rule.mask().value());
         } else {
-          applyRule(value, rule);
+          applyRule(value, rule, pattern);
         }
       }
     } else if (node.isArray()) {
-      node.forEach(child -> applyRule(child, rule));
+      node.forEach(child -> applyRule(child, rule, pattern));
     }
   }
 
-  private boolean matches(MaskingRule rule, String fieldName, JsonNode value) {
-    Pattern pattern = Pattern.compile(rule.match().pattern());
+  private boolean matches(MaskingRule rule, String fieldName, JsonNode value, Pattern pattern) {
     return switch (rule.match().type()) {
       case FIELD_REGEX -> pattern.matcher(fieldName).matches();
 
