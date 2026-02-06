@@ -5,7 +5,7 @@ masking:
   rules:
     email:
       match:
-        type: REGEX
+        type: VALUE_REGEX
         pattern: "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
       mask:
         type: FIXED
@@ -13,7 +13,7 @@ masking:
     credential:
       match:
         type: FIELD_REGEX
-        pattern: "(?i).*(|pass|pwd|secret|token|code|key|pin).*"
+        pattern: "(?i).*(pass|pwd|secret|token|code|key|pin).*"
       mask:
         type: FIXED
         value: "**********"

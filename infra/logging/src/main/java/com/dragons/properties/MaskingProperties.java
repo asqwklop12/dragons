@@ -19,12 +19,12 @@ public record MaskingProperties(Map<String, MaskingRule> rules) {
   public record Mask(MaskType type, String value) {
   }
 
-  enum MatchType {
-    REGEX,
+  public enum MatchType {
+    VALUE_REGEX,
     FIELD_REGEX
   }
 
-  enum MaskType {
+  public enum MaskType {
     FIXED,
     PARTIAL,
     HASH
