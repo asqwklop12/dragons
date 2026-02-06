@@ -50,6 +50,10 @@ public interface MaskingPlugin {
           maskNode(value, pattern, masking);
         }
       }
+    } else if (node.isArray()) {
+      for (JsonNode child : node) {
+        maskNode(child, pattern, masking);
+      }
     }
   }
 }
