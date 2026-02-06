@@ -6,18 +6,30 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class MaskingEngine {
   private final ObjectMapper objectMapper;
   private final MaskingProperties properties;
+  private final Map<String, Pattern> compiledPatterns;
+
+  public MaskingEngine(ObjectMapper objectMapper, MaskingProperties properties) {
+    this.objectMapper = objectMapper;
+    this.properties = properties;
+    this.compiledPatterns = properties.rules().entrySet().stream()
+        .collect(Collectors.toMap(
+            Map.Entry::getKey,
+            e -> Pattern.compile(e.getValue().match().pattern())
+        ));
+  }
 
   public String mask(String body) {
     if (body == null || body.isBlank()) {
@@ -27,9 +39,8 @@ public class MaskingEngine {
     try {
       JsonNode root = objectMapper.readTree(body);
 
-      for (MaskingRule rule : properties.rules().values()) {
-        Pattern pattern = Pattern.compile(rule.match().pattern());
-        applyRule(root, rule, pattern);
+      for (var entry : properties.rules().entrySet()) {
+        applyRule(root, entry.getValue(), compiledPatterns.get(entry.getKey()));
       }
 
       return objectMapper.writeValueAsString(root);
