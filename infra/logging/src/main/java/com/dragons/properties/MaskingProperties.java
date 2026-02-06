@@ -21,7 +21,7 @@ public record MaskingProperties(Map<String, MaskingRule> rules) {
 
   enum MatchType {
     REGEX,
-    CONTAINS
+    FIELD_REGEX
   }
 
   enum MaskType {

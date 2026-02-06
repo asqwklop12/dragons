@@ -6,6 +6,7 @@ import com.dragons.properties.MaskingProperties.MaskingRule;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserEmailMaskingPlugin implements MaskingPlugin {
+public class SensitiveMaskingPlugin implements MaskingPlugin {
   private final ObjectMapper objectMapper;
   private final MaskingProperties properties;
 
@@ -24,11 +25,19 @@ public class UserEmailMaskingPlugin implements MaskingPlugin {
 
   @Override
   public String apply(String body) {
-    MaskingRule rule = properties.rules().get("email");
     try {
       JsonNode root = objectMapper.readTree(body);
-      maskNode(root, Pattern.compile(rule.match().pattern()),  rule.mask().value());
+      for (Entry<String, MaskingRule> entry : properties.rules().entrySet()) {
+        MaskingRule rule = entry.getValue();
+        maskNode(
+            root,
+            Pattern.compile(rule.match().pattern()),
+            rule.mask().value()
+        );
+      }
+
       return objectMapper.writeValueAsString(root);
+
     } catch (JsonProcessingException e) {
       return body;
     }
