@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: dragons:${PROFILE}
+    image: dragons:${PROFILE:-dev}
     container_name: dragons
     restart: unless-stopped
 
@@ -16,7 +16,6 @@ services:
       - .env
 
     environment:
-      SPRING_PROFILES_ACTIVE: ${PROFILE}
       SPRING_PROFILES_ACTIVE: ${PROFILE:-dev}
       SERVER_PORT: 8083
       # Spring relaxed binding: DATASOURCE_REDIS_ENABLED -> datasource.redis.enabled
@@ -34,15 +33,8 @@ services:
       MYSQL_PWD: ${MYSQL_PWD}
       # Optional JVM tuning
       JAVA_OPTS: "-XX:+UseContainerSupport -Xms256m -Xmx512m"
-
-    networks:
-      - default
-      - nginx_net
-
+    # Rely on Dockerfile ENTRYPOINT (java -jar /app/app.jar)
 networks:
   default:
-    name: mysql_default
     external: true
-  nginx_net:
-    name: docker_default
-    external: true
+    name: dragons_default
