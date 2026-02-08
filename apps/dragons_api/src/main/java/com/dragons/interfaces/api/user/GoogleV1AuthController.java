@@ -55,7 +55,6 @@ public class GoogleV1AuthController implements GoogleV1AuthSpec {
       response.sendRedirect(uiUrl + "/auth/callback?code=" + code);
     } catch (IOException e) {
       throw new CoreException(ErrorType.CONFLICT);
-
     }
   }
 

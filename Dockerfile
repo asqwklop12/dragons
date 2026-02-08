@@ -12,6 +12,7 @@ COPY gradle /workspace/gradle
 COPY apps/dragons_api/build.gradle /workspace/apps/dragons_api/build.gradle
 COPY domain /workspace/domain
 COPY infra /workspace/infra
+COPY common /workspace/common
 
 # Copy sources last
 COPY apps /workspace/apps

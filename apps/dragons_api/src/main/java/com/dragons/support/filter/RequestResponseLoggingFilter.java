@@ -1,7 +1,10 @@
 package com.dragons.support.filter;
 
 
-import com.dragons.support.util.SensitiveDataMasker;
+import com.dragons.constant.LogColor;
+import com.dragons.masking.MaskingContext;
+import com.dragons.masking.MaskingContext.RequestOrigin;
+import com.dragons.masking.MaskingFacade;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -44,11 +47,12 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
   private int maxBodySize;
 
   private final Environment environment;
+  private final MaskingFacade maskingFacade;
 
 
   private static final String PRETTY_LOG =
       """
-          
+          {}
           ╔══════════════════════════════════════════════════════════════
           ║ 🌐 HTTP Request/Response
           ╠══════════════════════════════════════════════════════════════
@@ -66,6 +70,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
           ╠══════════════════════════════════════════════════════════════
           ║   {}
           ╚══════════════════════════════════════════════════════════════
+          {}
           """;
 
   private static final int REQUEST_BUFFER_SIZE = 1024 * 1024; // 1MB
@@ -95,6 +100,12 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
                                   FilterChain filterChain)
       throws ServletException, IOException {
 
+    // api만 로깅을 찍도록 변경한다.
+    if (!request.getRequestURI().startsWith("/api")) {
+      filterChain.doFilter(request, response);
+      return;
+    }
+
     if (!loggingEnabled) {
       filterChain.doFilter(request, response);
       return;
@@ -122,50 +133,57 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
       long elapsed = System.currentTimeMillis() - start;
 
       if (!shouldSkipBodyLogging(wrappedRequest, wrappedResponse)) {
-        logRequestResponse(wrappedRequest, wrappedResponse, elapsed);
+        MaskingContext context = new MaskingContext(RequestOrigin.SYSTEM, request.getRequestURI());
+        logRequestResponse(context, wrappedRequest, wrappedResponse, elapsed);
       }
       wrappedResponse.copyBodyToResponse();
     }
   }
 
-  private void logRequestResponse(ContentCachingRequestWrapper request,
-                                  ContentCachingResponseWrapper response,
-                                  long elapsed) {
+  private void logRequestResponse(
+      MaskingContext context,
+      ContentCachingRequestWrapper request,
+      ContentCachingResponseWrapper response,
+      long elapsed) {
     if (isProdProfile) {
-      logCompact(request, response, elapsed);
+      logCompact(context, request, response, elapsed);
     } else {
       // 로컬: 가독성 좋은 포맷
-      logPretty(request, response, elapsed);
+      logPretty(context, request, response, elapsed);
     }
 
 
   }
 
-  private void logPretty(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long elapsed) {
+  private void logPretty(MaskingContext context, ContentCachingRequestWrapper request,
+                         ContentCachingResponseWrapper response, long elapsed) {
     byte[] requestContent = request.getContentAsByteArray();
     byte[] responseContent = response.getContentAsByteArray();
     String requestBody = "";
     String responseBody = "";
 
     if (bodyLoggingEnabled) {
-      requestBody = truncate(SensitiveDataMasker.maskSensitiveData(
-          new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
-      responseBody = truncate(SensitiveDataMasker.maskSensitiveData(
-          new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
+      requestBody = truncate(maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8), context),
+          maxBodySize);
+      responseBody = truncate(maskingFacade.mask(new String(responseContent, StandardCharsets.UTF_8), context),
+          maxBodySize);
     }
     log.info(PRETTY_LOG,
+        LogColor.CYAN,
         request.getMethod(),
         request.getRequestURI(),
         response.getStatus(),
         elapsed,
         MDC.get("request_id"),
         bodyLoggingEnabled ? prettifyJson(requestBody) : "(body logging disabled)",
-        bodyLoggingEnabled ? prettifyJson(responseBody) : "(body logging disabled)");
+        bodyLoggingEnabled ? prettifyJson(responseBody) : "(body logging disabled)",
+        LogColor.RESET);
 
   }
 
 
-  private void logCompact(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response, long elapsed) {
+  private void logCompact(MaskingContext context, ContentCachingRequestWrapper request,
+                          ContentCachingResponseWrapper response, long elapsed) {
     byte[] requestContent = request.getContentAsByteArray();
     byte[] responseContent = response.getContentAsByteArray();
 
@@ -181,9 +199,9 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
     // Body는 조건부로만 로깅 (에러 상태 또는 설정된 경우만)
     if (bodyLoggingEnabled && (response.getStatus() >= 400 || log.isDebugEnabled())) {
       String requestBody = truncate(
-          SensitiveDataMasker.maskSensitiveData(new String(requestContent, StandardCharsets.UTF_8)), maxBodySize);
+          maskingFacade.mask(new String(requestContent, StandardCharsets.UTF_8), context), maxBodySize);
       String responseBody = truncate(
-          SensitiveDataMasker.maskSensitiveData(new String(responseContent, StandardCharsets.UTF_8)), maxBodySize);
+          maskingFacade.mask(new String(responseContent, StandardCharsets.UTF_8), context), maxBodySize);
 
       log.info("REQ_BODY={} RES_BODY={}", requestBody, responseBody);
     }

@@ -1,0 +1,12 @@
+retry:
+  policies:
+    default:
+      max-attempts: 3
+      backoff-millis: 100
+      jitter-ratio: 0.1
+      max-backoff-millis: 2000
+    social-login:
+      max-attempts: 10
+      backoff-millis: 1000
+      jitter-ratio: 0.5
+      max-backoff-millis: 3000

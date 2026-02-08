@@ -17,7 +17,8 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
   static final String EMAIL = SessionConstants.SESSION_USER_EMAIL.getValue();
 
   @Override
-  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws CoreException {
+  public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+
     HttpSession session = request.getSession(false);
     if (session != null) {
       if (session.getAttribute(EMAIL) != null) {

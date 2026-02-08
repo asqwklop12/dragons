@@ -23,5 +23,6 @@ include(
         ":infra:jpa",
         ":infra:social",
         ":infra:restTemplate",
-        ":infra:pg"
+        ":infra:pg",
+        ":infra:retry"
 )

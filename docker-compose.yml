@@ -20,10 +20,20 @@ services:
       SERVER_PORT: 8083
       # Spring relaxed binding: DATASOURCE_REDIS_ENABLED -> datasource.redis.enabled
       DATASOURCE_REDIS_ENABLED: "false"
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_REDIRECT: ${GOOGLE_REDIRECT}
+      TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY}
+      TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
+      UI_URL: ${UI_URL}
+      DB_HOST: ${DB_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_SCHEMA: ${MYSQL_SCHEMA}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PWD: ${MYSQL_PWD}
       # Optional JVM tuning
       JAVA_OPTS: "-XX:+UseContainerSupport -Xms256m -Xmx512m"
     # Rely on Dockerfile ENTRYPOINT (java -jar /app/app.jar)
-
 networks:
   default:
     external: true

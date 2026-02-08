@@ -11,6 +11,7 @@ spring:
       - social.yml
       - payment.yml
       - threadpool.yml
+      - restTemplate.yml
 server:
   servlet:
     session:
@@ -32,6 +33,9 @@ logging:
     enabled: true
     body-enabled: true
     max-body-size: 10240  # 10KB
+
+ui-url: ${UI_URL}
+
 ---
 spring:
   config:
@@ -40,6 +44,7 @@ spring:
   hello: ????
 server:
   port: 8083
+  forward-headers-strategy: native
   servlet:
     session:
       cookie:

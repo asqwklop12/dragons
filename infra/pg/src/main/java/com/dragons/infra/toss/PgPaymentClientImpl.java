@@ -2,27 +2,27 @@ package com.dragons.infra.toss;
 
 import com.dragons.domain.payment.PgPaymentClient;
 import com.dragons.domain.payment.TossPaymentConfirmation;
+import com.dragons.executor.RetryExecutor;
 import java.util.Collections;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class PgPaymentClientImpl implements PgPaymentClient {
 
   private final RestTemplate restTemplate;
   private final PgProperties pgProperties;
 
-  public PgPaymentClientImpl(RestTemplate restTemplate, PgProperties pgProperties) {
-    this.restTemplate = restTemplate;
-    this.pgProperties = pgProperties;
-  }
+  private final RetryExecutor retryExecutor;
+
 
   @Override
   public TossPaymentConfirmation confirm(String paymentKey, String orderId, long amount) {
@@ -40,12 +40,7 @@ public class PgPaymentClientImpl implements PgPaymentClient {
 
     HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
-    try {
-      return restTemplate.postForObject(url, entity, TossPaymentConfirmation.class);
-    } catch (RestClientException e) {
-      log.error("Toss 결제 확인 실패: paymentKey={}, orderId={}", paymentKey, orderId, e);
-      throw new RuntimeException("결제 확인 중 오류가 발생했습니다", e);
-    }
-  }
+    return retryExecutor.execute(() -> restTemplate.postForObject(url, entity, TossPaymentConfirmation.class));
 
+  }
 }
