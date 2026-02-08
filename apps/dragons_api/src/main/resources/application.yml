@@ -1,4 +1,3 @@
-ui-url: ${UI_URL}
 spring:
   application:
     name: dragons
