@@ -82,7 +82,7 @@ public class SlowQueryBlockParser {
 
     } catch (Exception e) {
       log.warn("슬로우 쿼리 블록 파싱 실패: {}", e.getMessage(), e);
-      return Optional.empty(); // 파싱 실패는 조용히 무시
+      return Optional.empty();
     }
   }
 
