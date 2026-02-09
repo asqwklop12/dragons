@@ -1,9 +1,6 @@
 package com.dragons.slow_query;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -38,14 +35,14 @@ public class SlowQueryFileReader {
 
       raf.seek(lastOffset);
 
-      try (BufferedReader reader = new BufferedReader(
-          new InputStreamReader(new FileInputStream(raf.getFD()), StandardCharsets.UTF_8))) {
-        String line;
-        while ((line = reader.readLine()) != null) {
-          lines.add(line);
-        }
+      // RandomAccessFile.readLine() 직접 사용 (중첩 스트림 제거!)
+      String line;
+      while ((line = raf.readLine()) != null) {
+        // readLine()은 ISO-8859-1로 읽으므로 UTF-8로 변환
+        lines.add(new String(line.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8));
       }
 
+      // RandomAccessFile이 아직 열려있으므로 정상 동작!
       offsetStore.update(raf.getFilePointer());
     }
 
