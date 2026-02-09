@@ -6,10 +6,12 @@ import com.dragons.slow_query.SlowQueryEventHandler;
 import com.dragons.slow_query.SlowQueryFileReader;
 import com.dragons.slow_query.SlowQueryMonitor;
 import java.nio.file.Path;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 public class SlowQueryMonitoringConfig {
 
@@ -39,8 +41,8 @@ public class SlowQueryMonitoringConfig {
   @Bean
   public SlowQueryEventHandler slowQueryEventHandler() {
     return event -> {
-      System.out.println("슬로쿼리 감지: " + event.queryTime() + "초");
-      System.out.println("SQL: " + event.sql());
+      log.info("슬로쿼리 감지: " + event.queryTime() + "초");
+      log.info("SQL: " + event.sql());
     };
   }
 
