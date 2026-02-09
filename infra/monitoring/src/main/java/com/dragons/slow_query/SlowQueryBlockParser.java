@@ -118,11 +118,14 @@ public class SlowQueryBlockParser {
       throw new IllegalArgumentException("Key not found: " + key);
     }
 
-    String part = line.substring(idx + key.length());
+    String part = line.substring(idx + key.length()).trim();
+    if (part.startsWith(":")) {
+      part = part.substring(1).trim();
+    }
     String[] tokens = part.split("\\s+");
-    if (tokens.length < 2) {
+    if (tokens.length < 1 || tokens[0].isEmpty()) {
       throw new IllegalArgumentException("Value not found for key: " + key);
     }
-    return tokens[1];
+    return tokens[0];
   }
 }
