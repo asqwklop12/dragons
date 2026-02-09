@@ -1,4 +1,4 @@
-package com.dragons.monitoring;
+package com.dragons.slow_query;
 
 import java.time.Instant;
 

@@ -1,0 +1,2 @@
+slow-query:
+  log-path: /Users/yonghun/Desktop/mysql/logs/slow.log

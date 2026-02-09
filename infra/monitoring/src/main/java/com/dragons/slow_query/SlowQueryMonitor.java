@@ -1,4 +1,4 @@
-package com.dragons.monitoring;
+package com.dragons.slow_query;
 
 import java.io.IOException;
 import java.util.List;

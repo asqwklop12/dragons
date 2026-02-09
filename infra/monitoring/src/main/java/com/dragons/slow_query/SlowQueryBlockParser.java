@@ -1,10 +1,15 @@
-package com.dragons.monitoring;
+package com.dragons.slow_query;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class SlowQueryBlockParser {
   public List<SlowQueryEvent> parse(List<String> lines) {
     List<List<String>> blocks = splitBlocks(lines);
@@ -22,19 +27,24 @@ public class SlowQueryBlockParser {
     List<String> current = new ArrayList<>();
 
     for (String line : lines) {
-      if (line.startsWith("# Time") && !current.isEmpty()) {
-        blocks.add(current);
+      if (line.startsWith("# Time")) {
+        if (!current.isEmpty()) {
+          blocks.add(current);
+        }
         current = new ArrayList<>();
+        current.add(line);
+      } else {
+        current.add(line);
       }
-      current.add(line);
+      // current가 null이면 아직 "# Time" 헤더를 만나지 않았으므로 라인을 무시
     }
-
     if (!current.isEmpty()) {
       blocks.add(current);
     }
 
     return blocks;
   }
+
   private Optional<SlowQueryEvent> parseBlock(List<String> block) {
     try {
       Instant time = null;
@@ -45,7 +55,7 @@ public class SlowQueryBlockParser {
 
       for (String line : block) {
         if (line.startsWith("# Time:")) {
-          time = Instant.parse(line.substring(7).trim());
+          time = parseTimestamp(line.substring(7).trim());
         } else if (line.contains("Query_time")) {
           queryTime = extractDouble(line, "Query_time");
           lockTime = extractDouble(line, "Lock_time");
@@ -70,7 +80,23 @@ public class SlowQueryBlockParser {
       );
 
     } catch (Exception e) {
+      log.warn("슬로우 쿼리 블록 파싱 실패: {}", e.getMessage(), e);
       return Optional.empty(); // 파싱 실패는 조용히 무시
+    }
+  }
+
+  private Instant parseTimestamp(String timestamp) {
+    try {
+      return Instant.parse(timestamp);
+    } catch (Exception e) {
+      // MySQL 5.6/5.7 레거시 형식 시도
+      try {
+        DateTimeFormatter legacyFormatter = DateTimeFormatter.ofPattern("yyMMdd HH:mm:ss");
+        LocalDateTime localDateTime = LocalDateTime.parse(timestamp, legacyFormatter);
+        return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
+      } catch (Exception ex) {
+        throw new IllegalArgumentException("Unable to parse timestamp: " + timestamp, ex);
+      }
     }
   }
 
@@ -88,9 +114,15 @@ public class SlowQueryBlockParser {
 
   private String extractValue(String line, String key) {
     int idx = line.indexOf(key);
-    if (idx == -1) return "0";
+    if (idx == -1) {
+      throw new IllegalArgumentException("Key not found: " + key);
+    }
 
     String part = line.substring(idx + key.length());
-    return part.split("\\s+")[1];
+    String[] tokens = part.split("\\s+");
+    if (tokens.length < 2) {
+      throw new IllegalArgumentException("Value not found for key: " + key);
+    }
+    return tokens[1];
   }
 }

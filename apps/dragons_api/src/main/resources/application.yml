@@ -11,6 +11,7 @@ spring:
       - payment.yml
       - threadpool.yml
       - restTemplate.yml
+      - monitoring.yml
 server:
   servlet:
     session:
