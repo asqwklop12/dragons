@@ -1,9 +1,9 @@
 package com.dragons.slow_query;
 
+import com.dragons.constant.Constants;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class SlowQueryBlockParser {
+
   public List<SlowQueryEvent> parse(List<String> lines) {
     List<List<String>> blocks = splitBlocks(lines);
     List<SlowQueryEvent> events = new ArrayList<>();
@@ -91,8 +92,7 @@ public class SlowQueryBlockParser {
     } catch (Exception e) {
       // MySQL 5.6/5.7 레거시 형식 시도
       try {
-        DateTimeFormatter legacyFormatter = DateTimeFormatter.ofPattern("yyMMdd HH:mm:ss");
-        LocalDateTime localDateTime = LocalDateTime.parse(timestamp, legacyFormatter);
+        LocalDateTime localDateTime = LocalDateTime.parse(timestamp, Constants.LEGACY_FORMATTER);
         return localDateTime.atZone(ZoneId.systemDefault()).toInstant();
       } catch (Exception ex) {
         throw new IllegalArgumentException("Unable to parse timestamp: " + timestamp, ex);

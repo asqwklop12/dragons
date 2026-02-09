@@ -41,8 +41,7 @@ public class SlowQueryMonitoringConfig {
   @Bean
   public SlowQueryEventHandler slowQueryEventHandler() {
     return event -> {
-      log.info("슬로쿼리 감지: " + event.queryTime() + "초");
-      log.info("SQL: " + event.sql());
+      log.info("슬로쿼리 감지: queryTime={}초, sql={}", event.queryTime(), event.sql());
     };
   }
 

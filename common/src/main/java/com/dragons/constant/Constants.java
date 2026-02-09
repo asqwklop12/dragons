@@ -1,5 +1,7 @@
 package com.dragons.constant;
 
+import java.time.format.DateTimeFormatter;
+
 public final class Constants {
 
   public static final String PROFILE_PROD = "prod";
@@ -10,5 +12,12 @@ public final class Constants {
 
   public static final String REQUEST_ID = "request_id";
   public static final String HEADER_REQUEST_ID = "X_Request_Id";
-  private Constants() {}
+
+
+  public static final String TIME_DEFAULT_FORMAT = "yyMMdd HH:mm:ss";
+
+  public static final DateTimeFormatter LEGACY_FORMATTER = DateTimeFormatter.ofPattern(Constants.TIME_DEFAULT_FORMAT);
+
+  private Constants() {
+  }
 }
