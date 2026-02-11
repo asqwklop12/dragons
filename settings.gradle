@@ -25,6 +25,5 @@ include(
         ":infra:social",
         ":infra:restTemplate",
         ":infra:pg",
-        ":infra:retry",
-        ":infra:monitoring"
+        ":infra:retry"
 )

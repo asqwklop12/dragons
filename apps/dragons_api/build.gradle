@@ -13,7 +13,6 @@ dependencies {
     implementation project(":infra:logging")
     implementation project(":infra:social")
     implementation project(":infra:threadpool")
-    implementation project(":infra:monitoring")
     
     testImplementation testFixtures(project(":infra:jpa"))
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'

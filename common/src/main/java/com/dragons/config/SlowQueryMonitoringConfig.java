@@ -1,10 +1,10 @@
 package com.dragons.config;
 
-import com.dragons.slow_query.FileOffsetStore;
-import com.dragons.slow_query.SlowQueryBlockParser;
-import com.dragons.slow_query.SlowQueryEventHandler;
-import com.dragons.slow_query.SlowQueryFileReader;
-import com.dragons.slow_query.SlowQueryMonitor;
+import com.dragons.monitoring.slow_query.FileOffsetStore;
+import com.dragons.monitoring.slow_query.SlowQueryBlockParser;
+import com.dragons.monitoring.slow_query.SlowQueryEventHandler;
+import com.dragons.monitoring.slow_query.SlowQueryFileReader;
+import com.dragons.monitoring.slow_query.SlowQueryMonitor;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
