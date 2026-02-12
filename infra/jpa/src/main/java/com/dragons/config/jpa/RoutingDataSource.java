@@ -17,7 +17,7 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
         ? "REPLICA"   // 랜덤 or round robin
         : "PRIMARY";
 
-    log.info("### Selected DB: {}, key: {}", readOnly, key);
+    log.debug("### Selected DB: {}, key: {}", readOnly, key);
 
     return key;
   }

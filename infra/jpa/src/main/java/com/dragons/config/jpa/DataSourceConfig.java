@@ -47,7 +47,7 @@ class DataSourceConfig {
   }
 
   @Bean
-  DataSource routingDataSource(
+  public DataSource routingDataSource(
       @Qualifier("primaryDataSource") DataSource primary,
       @Qualifier("replicaDataSource") DataSource replica) {
 
