@@ -14,7 +14,7 @@ public class RoutingDataSource extends AbstractRoutingDataSource {
     boolean readOnly =
         TransactionSynchronizationManager.isCurrentTransactionReadOnly();
     String key = readOnly
-        ? "REPLICA"   // 랜덤 or round robin
+        ? "REPLICA"
         : "PRIMARY";
 
     log.debug("### Selected DB: {}, key: {}", readOnly, key);

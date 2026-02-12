@@ -16,7 +16,7 @@ import org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy;
 class DataSourceConfig {
 
   @Bean
-  @ConfigurationProperties(prefix = "datasource.mysql-jpa.main")
+  @ConfigurationProperties(prefix = "datasource.mysql-jpa.primary")
   HikariConfig primaryHikariConfig() {
     return new HikariConfig();
   }
@@ -58,8 +58,6 @@ class DataSourceConfig {
     RoutingDataSource routingDataSource = new RoutingDataSource();
     routingDataSource.setTargetDataSources(targetDataSources);
     routingDataSource.setDefaultTargetDataSource(primary);
-
-    routingDataSource.afterPropertiesSet();
 
     return routingDataSource;
   }

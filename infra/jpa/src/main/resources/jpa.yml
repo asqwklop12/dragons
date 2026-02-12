@@ -13,7 +13,7 @@ spring:
 
 datasource:
   mysql-jpa:
-    main:
+    primary:
       driver-class-name: com.mysql.cj.jdbc.Driver
       jdbc-url: jdbc:mysql://localhost:3306/dragons
       username: application
@@ -42,7 +42,7 @@ spring:
 
 datasource:
   mysql-jpa:
-    main:
+    primary:
       jdbc-url: jdbc:mysql://localhost:3306/dragons
       username: application
       password: application
@@ -62,7 +62,7 @@ spring:
 
 datasource:
   mysql-jpa:
-    main:
+    primary:
       jdbc-url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/dragons
       username: ${MYSQL_USER}
       password: ${MYSQL_PWD}
@@ -78,7 +78,7 @@ spring:
 
 datasource:
   mysql-jpa:
-    main:
+    primary:
       jdbc-url: jdbc:mysql://host.docker.internal:3306/dragons
       username: application
       password: application
@@ -92,7 +92,7 @@ spring.config.activate.on-profile: prod
 
 datasource:
   mysql-jpa:
-    main:
+    primary:
       jdbc-url: jdbc:mysql://mysql8:3306/dragons
       username: admin
       password: admin
