@@ -9,11 +9,11 @@ import com.dragons.domain.user.User.AuthProvider;
 import com.dragons.domain.user.UserRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
-import jakarta.transaction.Transactional;
 import java.time.Clock;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +28,7 @@ public class UserService {
     Optional<User> exitsUser = userRepository.findByEmail(command.email());
 
     if(exitsUser.isPresent()) {
-      throw new CoreException(ErrorType.CONFLICT, "이미 가입이 되어이있는 계정입니다.");
+      throw new CoreException(ErrorType.CONFLICT, "이미 가입이 되어있는 계정입니다.");
     }
 
     User saved = userRepository.save(

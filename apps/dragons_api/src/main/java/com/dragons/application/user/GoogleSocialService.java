@@ -30,7 +30,7 @@ public class GoogleSocialService {
     try {
       GoogleOAuthResponse response = googleOAuthClient.getUserInfo(code);
       User user = userRepository.findByEmailAndProvider(response.email(), AuthProvider.GOOGLE.getValue())
-          .orElseGet(() -> userRepository.save(User.register(response.email(), response.name()))); // 없으면 가입
+          .orElseGet(() -> userRepository.save(User.register(response.name(), response.email()))); // 없으면 가입
 
       user.loginUpdateTime(clock);
       return new UserLoginResult(user.email(), user.name(), user.getLoginTime());

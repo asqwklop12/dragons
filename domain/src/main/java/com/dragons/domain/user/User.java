@@ -47,20 +47,20 @@ public class User extends BaseEntity {
     return user;
   }
 
-  public static User register(String email, String name) {
-    validateEmailAndName(email, name);
+  public static User register(String name, String email) {
+    validateEmailAndName(name, email);
     User user = new User();
-    user.email = email;
     user.name = name;
+    user.email = email;
     user.password = null; // OAuth 사용자는 비밀번호 불필요
     user.provider = AuthProvider.GOOGLE;
     user.loginTime = null;
     return user;
   }
 
-  private static void validateEmailAndName(String email, String name) {
-    validateEmail(email);
+  private static void validateEmailAndName(String name, String email) {
     validateName(name);
+    validateEmail(email);
   }
 
   private static void validateEmail(String email) {
