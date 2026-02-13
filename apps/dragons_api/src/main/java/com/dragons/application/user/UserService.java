@@ -12,6 +12,7 @@ import com.dragons.support.error.ErrorType;
 import java.time.Clock;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +25,19 @@ public class UserService {
 
   @Transactional
   public UserRegisterResult register(UserRegisterCommand command) {
+    try {
+      Optional<User> exitsUser = userRepository.findByEmail(command.email());
 
-    Optional<User> exitsUser = userRepository.findByEmail(command.email());
+      if (exitsUser.isPresent()) {
+        throw new CoreException(ErrorType.CONFLICT, "이미 가입이 되어있는 계정입니다.");
+      }
 
-    if(exitsUser.isPresent()) {
+      User saved = userRepository.save(
+          User.register(command.name(), command.email(), passwordHasher.hashPassword(command.password())));
+      return new UserRegisterResult(saved.name(), saved.email());
+    } catch (DataIntegrityViolationException e) {
       throw new CoreException(ErrorType.CONFLICT, "이미 가입이 되어있는 계정입니다.");
     }
-
-    User saved = userRepository.save(
-        User.register(command.name(), command.email(), passwordHasher.hashPassword(command.password())));
-    return new UserRegisterResult(saved.name(), saved.email());
   }
 
   @Transactional
