@@ -12,10 +12,12 @@ import com.dragons.support.error.ErrorType;
 import java.time.Clock;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -36,6 +38,7 @@ public class UserService {
           User.register(command.name(), command.email(), passwordHasher.hashPassword(command.password())));
       return new UserRegisterResult(saved.name(), saved.email());
     } catch (DataIntegrityViolationException e) {
+      log.warn("회원가입 중 데이터 무결성 위반 발생", e);
       throw new CoreException(ErrorType.CONFLICT, "이미 가입이 되어있는 계정입니다.");
     }
   }
