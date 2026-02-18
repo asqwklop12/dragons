@@ -23,6 +23,7 @@ public class BankSubscriptionScheduler {
 
   @Scheduled(cron = "0 30 0 * * *")
   @Transactional
+  //TODO: 변경 예정
   public void subscription() {
     // 입금 확인을 받는다.
     List<BankDeposit> bankDeposits = depositRepository.findAllWaiting();

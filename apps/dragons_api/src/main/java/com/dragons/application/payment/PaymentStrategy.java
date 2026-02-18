@@ -44,6 +44,7 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
 
   // 구독은 하나로 통합
   @Transactional
+  //TODO: 변경 예정
   public void subscribe(String name, String email, String planType, String status) {
 
     boolean exists = subscriptionRepository.existsByEmail(email);

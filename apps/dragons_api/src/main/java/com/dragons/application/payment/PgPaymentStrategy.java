@@ -49,6 +49,7 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
 
   @Override
   @Transactional
+  //TODO: 변경 예정
   public void success(String paymentKey, String orderId, Long amount) {
     Payment payment = getPaymentRepository().findByOrderId(orderId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "Payment not found for orderId: " + orderId));
