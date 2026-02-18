@@ -36,4 +36,9 @@ class UserRepositoryImpl implements UserRepository {
     }
     return jpaUserRepository.findByEmailAndProvider(email, authProvider);
   }
+
+  @Override
+  public Optional<User> findByEmail(String email) {
+    return jpaUserRepository.findByEmail(email);
+  }
 }
