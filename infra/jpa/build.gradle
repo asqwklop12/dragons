@@ -19,6 +19,11 @@ dependencies {
     testImplementation "org.testcontainers:junit-jupiter"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+
+    // shedlock
+    api "net.javacrumbs.shedlock:shedlock-spring:5.13.0"
+    implementation "net.javacrumbs.shedlock:shedlock-provider-jdbc-template:5.13.0"
+
     testFixturesImplementation "org.springframework.boot:spring-boot-starter-data-jpa"
     testFixturesImplementation "org.testcontainers:mysql"
     testFixturesImplementation "org.testcontainers:junit-jupiter"

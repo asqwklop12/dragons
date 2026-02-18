@@ -1,7 +1,9 @@
 package com.dragons.application.subscription;
 
 import com.dragons.domain.subscription.SubscriptionRepository;
+import com.dragons.lock.DistributedLockManager;
 import java.time.Clock;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SubscriptionExpiredScheduler {
   private final Clock clock;
   private final SubscriptionRepository subscriptionRepository;
+  private final DistributedLockManager distributedManager;
 
   @Scheduled(cron = "0 0 0 * * *")
   @Transactional
@@ -22,7 +25,8 @@ public class SubscriptionExpiredScheduler {
       lockAtMostFor = "PT20S",
       lockAtLeastFor = "PT3S")
   public void expired() {
-    subscriptionRepository.updateStatusExpiredSubscription(clock);
+    distributedManager.executeWithLock("lock:subscription-expire", Duration.ofSeconds(30),
+        () -> subscriptionRepository.updateStatusExpiredSubscription(clock));
     log.info("구독 만료 상태 업데이트 완료");
   }
 }
