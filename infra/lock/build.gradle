@@ -8,6 +8,7 @@ plugins {
 
 
 dependencies {
+    implementation project(":domain")
     implementation project(":infra:jpa")
     implementation project(":infra:redis")
     api "net.javacrumbs.shedlock:shedlock-spring:5.13.0"

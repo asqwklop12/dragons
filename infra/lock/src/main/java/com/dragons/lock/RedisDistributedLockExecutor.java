@@ -1,6 +1,8 @@
 package com.dragons.lock;
 
-import java.time.Duration;
+import com.dragons.domain.distribute.DistributedLockExecutor;
+import com.dragons.domain.distribute.LockOptions;
+import com.dragons.domain.distribute.LockType;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -10,12 +12,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RedisDistributedLockManager implements DistributedLockManager {
+class RedisDistributedLockExecutor implements DistributedLockExecutor {
   private final StringRedisTemplate redisTemplate;
+
   @Override
-  public <T> Optional<T> executeWithLock(String key, Duration ttl, Supplier<T> task) {
+  public <T> Optional<T> executeWithLock(String key, LockOptions options, Supplier<T> task) {
     String token = UUID.randomUUID().toString();
-    Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, token, ttl);
+    boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, token, options.lockAtMostFor());
 
     if (!acquired) {
       return Optional.empty();
@@ -30,10 +33,8 @@ public class RedisDistributedLockManager implements DistributedLockManager {
   }
 
   @Override
-  public boolean executeWithLock(String key, Duration ttl, Runnable task) {
-    return executeWithLock(key, ttl, () -> {
-      task.run();
-      return true;
-    }).isPresent();
+  public LockType type() {
+    return LockType.REDIS;
   }
+
 }
