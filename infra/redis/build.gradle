@@ -5,6 +5,9 @@ plugins {
 }
 
 dependencies {
+
+    implementation project(":infra:lock")
+    implementation project(":domain")
     api 'org.springframework.boot:spring-boot-starter-data-redis'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
