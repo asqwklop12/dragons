@@ -19,9 +19,13 @@ public final class Constants {
   public static final DateTimeFormatter LEGACY_FORMATTER = DateTimeFormatter.ofPattern(Constants.TIME_DEFAULT_FORMAT);
 
 
-  public static class LockKey {
+  public static final class LockKey {
     public static final String REDIS_EXPIRED_SUBSCRIPTION = "lock:subscription-expire";
+
+    private LockKey() {
+    }
   }
+
   private Constants() {
   }
 }

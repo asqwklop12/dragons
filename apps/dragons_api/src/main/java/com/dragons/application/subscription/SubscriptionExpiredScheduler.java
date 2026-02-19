@@ -20,7 +20,6 @@ public class SubscriptionExpiredScheduler {
   private final DistributedLockFactory factory;
 
   @Scheduled(cron = "0 0 0 * * *")
-  @Transactional
   public void expired() {
     factory.get(LockType.REDIS).executeWithLock(LockKey.REDIS_EXPIRED_SUBSCRIPTION,
         LockOptions.of(Duration.ofSeconds(30)),

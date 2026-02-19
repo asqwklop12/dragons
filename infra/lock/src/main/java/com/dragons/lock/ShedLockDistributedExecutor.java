@@ -33,7 +33,7 @@ class ShedLockDistributedExecutor implements DistributedLockExecutor {
     }
 
     try {
-      return Optional.of(task.get());
+      return Optional.ofNullable(task.get());
     } finally {
       lock.get().unlock();
     }

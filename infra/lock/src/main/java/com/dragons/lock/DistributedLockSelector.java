@@ -15,10 +15,15 @@ class DistributedLockSelector implements DistributedLockFactory {
 
   public DistributedLockSelector(List<DistributedLockExecutor> executors) {
     this.executors = executors.stream()
-        .collect(Collectors.toMap(DistributedLockExecutor::type, Function.identity()));
+        .collect(Collectors.toUnmodifiableMap(DistributedLockExecutor::type, Function.identity(),
+            (a, b) -> {
+              throw new LockException("Duplicate executor registered for type: " + a.type());
+            }
+        ));
   }
 
 
+  @Override
   public DistributedLockExecutor get(LockType type) {
     DistributedLockExecutor executor = executors.get(type);
     if (executor == null) {

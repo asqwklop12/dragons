@@ -18,9 +18,9 @@ class RedisDistributedLockExecutor implements DistributedLockExecutor {
   @Override
   public <T> Optional<T> executeWithLock(String key, LockOptions options, Supplier<T> task) {
     String token = UUID.randomUUID().toString();
-    boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, token, options.lockAtMostFor());
+    Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, token, options.lockAtMostFor());
 
-    if (!acquired) {
+    if (Boolean.FALSE.equals(acquired)) {
       return Optional.empty();
     }
 
