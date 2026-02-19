@@ -1,4 +1,4 @@
-package com.dragons.lock;
+package com.dragons.domain.lock;
 
 public class LockException extends RuntimeException {
   public LockException(String message) {

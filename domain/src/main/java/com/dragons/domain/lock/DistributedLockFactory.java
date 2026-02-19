@@ -1,4 +1,4 @@
-package com.dragons.domain.distribute;
+package com.dragons.domain.lock;
 
 public interface DistributedLockFactory {
   DistributedLockExecutor get(LockType type);

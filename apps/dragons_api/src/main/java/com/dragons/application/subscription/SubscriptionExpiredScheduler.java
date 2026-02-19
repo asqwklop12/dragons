@@ -1,16 +1,15 @@
 package com.dragons.application.subscription;
 
 import com.dragons.constant.Constants.LockKey;
-import com.dragons.domain.distribute.DistributedLockFactory;
-import com.dragons.domain.distribute.LockOptions;
-import com.dragons.domain.distribute.LockType;
+import com.dragons.domain.lock.DistributedLockFactory;
+import com.dragons.domain.lock.LockOptions;
+import com.dragons.domain.lock.LockType;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import java.time.Clock;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor

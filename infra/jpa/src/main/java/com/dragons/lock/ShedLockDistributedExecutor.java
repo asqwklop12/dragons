@@ -1,8 +1,8 @@
 package com.dragons.lock;
 
-import com.dragons.domain.distribute.DistributedLockExecutor;
-import com.dragons.domain.distribute.LockOptions;
-import com.dragons.domain.distribute.LockType;
+import com.dragons.domain.lock.DistributedLockExecutor;
+import com.dragons.domain.lock.LockOptions;
+import com.dragons.domain.lock.LockType;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.function.Supplier;
