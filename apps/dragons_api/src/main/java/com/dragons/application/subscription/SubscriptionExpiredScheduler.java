@@ -20,7 +20,7 @@ public class SubscriptionExpiredScheduler {
 
   @Scheduled(cron = "0 0 0 * * *")
   public void expired() {
-    factory.get(LockType.REDIS).executeWithLock(LockKey.REDIS_EXPIRED_SUBSCRIPTION,
+    factory.get(LockType.REDIS).executeWithLock(LockKey.LOCK_EXPIRED_SUBSCRIPTION,
         LockOptions.of(Duration.ofSeconds(30)),
         () -> {
           subscriptionRepository.updateStatusExpiredSubscription(clock);

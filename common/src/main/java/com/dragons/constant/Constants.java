@@ -20,7 +20,7 @@ public final class Constants {
 
 
   public static final class LockKey {
-    public static final String REDIS_EXPIRED_SUBSCRIPTION = "lock:subscription-expire";
+    public static final String LOCK_EXPIRED_SUBSCRIPTION = "lock:subscription-expire";
 
     private LockKey() {
     }
