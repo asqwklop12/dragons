@@ -2,8 +2,7 @@ package com.dragons.application.payment;
 
 import com.dragons.application.payment.dto.PaymentPgCommand;
 import com.dragons.application.payment.dto.PaymentPgResult;
-import com.dragons.constant.Constants;
-import com.dragons.constant.Constants.LockKey;
+import com.dragons.constant.Constants.Lock;
 import com.dragons.domain.lock.DistributedLockFactory;
 import com.dragons.domain.lock.LockOptions;
 import com.dragons.domain.lock.LockType;
@@ -70,7 +69,7 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
           "결제 금액 불일치: expected=" + payment.amount() + ", actual=" + amount);
     }
 
-    String lockKey = LockKey.LOCK_PAYMENT_CONFIRM + orderId;
+    String lockKey = Lock.LOCK_PAYMENT_CONFIRM + orderId;
 
     // 승인처리
     Optional<TossPaymentConfirmation> result = distributedLockFactory.get(LockType.REDIS).executeWithLock(

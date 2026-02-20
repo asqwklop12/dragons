@@ -1,6 +1,6 @@
 package com.dragons.application.subscription;
 
-import com.dragons.constant.Constants.LockKey;
+import com.dragons.constant.Constants.Lock;
 import com.dragons.domain.lock.DistributedLockFactory;
 import com.dragons.domain.lock.LockOptions;
 import com.dragons.domain.lock.LockType;
@@ -20,7 +20,7 @@ public class BankSubscriptionScheduler {
   @Transactional
   public void subscription() {
     factory.get(LockType.SHEDLOCK).executeWithLock(
-        LockKey.LOCK_BANK_DEPOSIT,
+        Lock.LOCK_BANK_DEPOSIT,
         LockOptions.of(Duration.ofSeconds(30), Duration.ofSeconds(3)),
         () -> {
           depositService.deposit();

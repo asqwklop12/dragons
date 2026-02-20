@@ -2,7 +2,7 @@ package com.dragons.application.payment;
 
 import com.dragons.application.payment.dto.PaymentCommand;
 import com.dragons.application.payment.dto.PaymentResult;
-import com.dragons.constant.Constants.LockKey;
+import com.dragons.constant.Constants.Lock;
 import com.dragons.domain.lock.DistributedLockFactory;
 import com.dragons.domain.lock.LockOptions;
 import com.dragons.domain.lock.LockType;
@@ -17,7 +17,6 @@ import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -50,7 +49,7 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
 
   // 구독은 하나로 통합
   public void subscribe(String name, String email, String planType, String status) {
-    String lockKey = LockKey.LOCK_SUBSCRIBE + email;
+    String lockKey = Lock.LOCK_SUBSCRIBE + email;
     distributedLockFactory
         .get(LockType.REDIS)
         .executeWithLock(
