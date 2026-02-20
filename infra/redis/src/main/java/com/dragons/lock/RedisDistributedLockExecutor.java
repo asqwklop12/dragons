@@ -9,7 +9,8 @@ import java.util.UUID;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.RedisConnectionFailureException;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class RedisDistributedLockExecutor implements DistributedLockExecutor {
   private final StringRedisTemplate redisTemplate;
-  private final DistributedLockFactory factory;
+  private final ObjectProvider<DistributedLockFactory> factoryProvider;
 
   @Override
   public <T> Optional<T> executeWithLock(String key, LockOptions options, Supplier<T> task) {
@@ -26,7 +27,7 @@ class RedisDistributedLockExecutor implements DistributedLockExecutor {
       String token = UUID.randomUUID().toString();
       Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, token, options.lockAtMostFor());
 
-      if (Boolean.FALSE.equals(acquired)) {
+      if (!Boolean.TRUE.equals(acquired)) {
         return Optional.empty();
       }
 
@@ -37,8 +38,9 @@ class RedisDistributedLockExecutor implements DistributedLockExecutor {
       }
 
       // 레디스가 동작하지 않는 경우 shedlock 이용
-    } catch (RedisConnectionFailureException e) {
+    } catch (RedisSystemException e) {
       log.warn("Redis unavailable, falling back to ShedLock for key: {}", key);
+      DistributedLockFactory factory = factoryProvider.getObject();
       return factory.get(LockType.SHEDLOCK).executeWithLock(key, options, task);
     }
 
