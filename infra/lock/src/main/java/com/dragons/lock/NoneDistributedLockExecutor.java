@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 public class NoneDistributedLockExecutor implements DistributedLockExecutor {
   @Override
   public <T> Optional<T> executeWithLock(String key, LockOptions options, Supplier<T> task) {
-    return Optional.empty();
+     return Optional.ofNullable(task.get());
   }
 
   @Override
