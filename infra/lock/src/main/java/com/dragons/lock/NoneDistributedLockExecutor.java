@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NoneDistributedLockExecutor implements DistributedLockExecutor {
+class NoneDistributedLockExecutor implements DistributedLockExecutor {
   @Override
   public <T> Optional<T> executeWithLock(String key, LockOptions options, Supplier<T> task) {
      return Optional.ofNullable(task.get());
