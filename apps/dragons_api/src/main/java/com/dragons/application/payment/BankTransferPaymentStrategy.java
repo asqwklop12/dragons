@@ -9,6 +9,7 @@ import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import java.time.Clock;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class BankTransferPaymentStrategy extends
@@ -28,6 +29,7 @@ public class BankTransferPaymentStrategy extends
   }
 
   @Override
+  @Transactional
   public PaymentBankTransferResult pay(PaymentBankTransferCommand command) {
     Payment payment = super.pay(command.depositorName(), command.email(), command.amount(), command.planType(), "bank");
     subscribe(payment.holderName(), payment.email(), payment.planType(), Status.WAITING.name());

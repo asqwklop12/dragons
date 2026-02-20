@@ -10,6 +10,7 @@ import com.dragons.domain.subscription.Subscription.Status;
 import com.dragons.domain.subscription.SubscriptionRepository;
 import java.time.Clock;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class CardPaymentStrategy extends PaymentStrategy<PaymentCardCommand, PaymentCardResult> {
@@ -27,6 +28,7 @@ public class CardPaymentStrategy extends PaymentStrategy<PaymentCardCommand, Pay
   }
 
   @Override
+  @Transactional
   public PaymentCardResult pay(PaymentCardCommand command) {
     Payment payment = super.pay(command.cardholderName(), command.email(), command.amount(), command.planType(),
         "card");
