@@ -21,6 +21,9 @@ public final class Constants {
 
   public static final class LockKey {
     public static final String LOCK_EXPIRED_SUBSCRIPTION = "lock:subscription-expire";
+    public static final String LOCK_BANK_DEPOSIT = "lock:bank-deposit";
+    public static final String LOCK_PAYMENT_CONFIRM = "lock:payment-confirm:";
+    public static final String LOCK_SUBSCRIBE = "lock:subscribe:";
 
     private LockKey() {
     }

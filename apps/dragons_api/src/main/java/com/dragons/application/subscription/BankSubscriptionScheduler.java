@@ -1,13 +1,10 @@
 package com.dragons.application.subscription;
 
-import com.dragons.domain.payment.BankDeposit;
-import com.dragons.domain.payment.BankDepositRepository;
-import com.dragons.domain.subscription.Subscription;
-import com.dragons.domain.subscription.Subscription.PlanType;
-import com.dragons.domain.subscription.Subscription.Status;
-import com.dragons.domain.subscription.SubscriptionRepository;
-import java.time.Clock;
-import java.util.List;
+import com.dragons.constant.Constants.LockKey;
+import com.dragons.domain.lock.DistributedLockFactory;
+import com.dragons.domain.lock.LockOptions;
+import com.dragons.domain.lock.LockType;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,33 +13,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class BankSubscriptionScheduler {
-  private final Clock clock;
-  private final BankDepositRepository depositRepository;
-  private final SubscriptionRepository subscriptionRepository;
-  private static final long MINIMUM_PREMIUM_AMOUNT = 9900L;
+  private final BankDepositService depositService;
+  private final DistributedLockFactory factory;
 
   @Scheduled(cron = "0 30 0 * * *")
   @Transactional
-  //TODO: 변경 예정
   public void subscription() {
-    // 입금 확인을 받는다.
-    List<BankDeposit> bankDeposits = depositRepository.findAllWaiting();
-    for (BankDeposit bankDeposit : bankDeposits) {
-
-      // 입금이 덜된경우 무시
-      if (bankDeposit.getAmount() < MINIMUM_PREMIUM_AMOUNT) {
-        continue;
-      }
-
-      // 이미 저장이 되있으면 넘어간다.
-      if (subscriptionRepository.exists(bankDeposit.getHolder())) {
-        continue;
-      }
-      subscriptionRepository.save(
-          Subscription.apply(clock, bankDeposit.getEmail(), bankDeposit.getHolder(), PlanType.PREMIUM.name(),
-              Status.ACTIVE.name()));
-
-      bankDeposit.check();
-    }
+    factory.get(LockType.SHEDLOCK).executeWithLock(
+        LockKey.LOCK_BANK_DEPOSIT,
+        LockOptions.of(Duration.ofSeconds(30), Duration.ofSeconds(3)),
+        () -> {
+          depositService.deposit();
+          return null;
+        }
+    );
   }
 }

@@ -2,6 +2,7 @@ package com.dragons.application.payment;
 
 import com.dragons.application.payment.dto.PaymentCardCommand;
 import com.dragons.application.payment.dto.PaymentCardResult;
+import com.dragons.domain.lock.DistributedLockFactory;
 import com.dragons.domain.payment.Card;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
@@ -14,9 +15,10 @@ import org.springframework.stereotype.Component;
 public class CardPaymentStrategy extends PaymentStrategy<PaymentCardCommand, PaymentCardResult> {
 
   public CardPaymentStrategy(Clock clock,
-      SubscriptionRepository subscriptionRepository,
-      PaymentRepository paymentRepository) {
-    super(subscriptionRepository, paymentRepository, clock);
+                             SubscriptionRepository subscriptionRepository,
+                             DistributedLockFactory distributedLockFactory,
+                             PaymentRepository paymentRepository) {
+    super(subscriptionRepository, paymentRepository, distributedLockFactory, clock);
   }
 
   @Override

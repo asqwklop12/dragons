@@ -2,6 +2,7 @@ package com.dragons.application.payment;
 
 import com.dragons.application.payment.dto.PaymentBankTransferCommand;
 import com.dragons.application.payment.dto.PaymentBankTransferResult;
+import com.dragons.domain.lock.DistributedLockFactory;
 import com.dragons.domain.payment.Payment;
 import com.dragons.domain.payment.PaymentRepository;
 import com.dragons.domain.subscription.Subscription.Status;
@@ -16,8 +17,9 @@ public class BankTransferPaymentStrategy extends
   public BankTransferPaymentStrategy(
       Clock clock,
       SubscriptionRepository subscriptionRepository,
+      DistributedLockFactory distributedLockFactory,
       PaymentRepository paymentRepository) {
-    super(subscriptionRepository, paymentRepository, clock);
+    super(subscriptionRepository, paymentRepository, distributedLockFactory, clock);
   }
 
   @Override
