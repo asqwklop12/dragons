@@ -33,7 +33,7 @@ class RedisDistributedLockExecutor implements DistributedLockExecutor {
       log.warn("Redis unavailable, falling back to ShedLock for key: {}", key);
       DistributedLockFactory factory = factoryProvider.getIfAvailable();
       if (factory == null) {
-        throw new LockException("Redis unavailable, falling back to ShedLock for key: " + key);
+        throw new LockException("Redis unavailable, falling back to ShedLock for key: " + key, e);
       }
       return factory.get(LockType.SHEDLOCK).executeWithLock(key, options, task);
     }
@@ -45,18 +45,18 @@ class RedisDistributedLockExecutor implements DistributedLockExecutor {
     try {
       return Optional.ofNullable(task.get());
     } finally {
-      redisTemplate.delete(key);
       try {
+        redisTemplate.delete(key);
       } catch (Exception e) {
         // 태스크가 이미 완료된 후이므로 재실행하지 않고 TTL 만료에 위임
         log.warn("Failed to release Redis lock for key: {}, will expire by TTL", key);
       }
     }
-}
+  }
 
-@Override
-public LockType type() {
-  return LockType.REDIS;
-}
+  @Override
+  public LockType type() {
+    return LockType.REDIS;
+  }
 
 }
