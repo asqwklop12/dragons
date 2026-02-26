@@ -1,40 +1,51 @@
-version: "3.8"
+x-common-env: &common-env
+  SPRING_PROFILES_ACTIVE: ${PROFILE:-dev}
+  SERVER_PORT: 8083
+  DATASOURCE_REDIS_ENABLED: "false"
+  GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+  GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+  GOOGLE_REDIRECT: ${GOOGLE_REDIRECT}
+  TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY}
+  TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
+  UI_URL: ${UI_URL}
+  DB_HOST: ${DB_HOST}
+  MYSQL_PORT: ${MYSQL_PORT}
+  MYSQL_SCHEMA: ${MYSQL_SCHEMA}
+  MYSQL_USER: ${MYSQL_USER}
+  MYSQL_PWD: ${MYSQL_PWD}
+  SLOW_LOG_PATH: ${SLOW_LOG_PATH}
+  JAVA_OPTS: "-XX:+UseContainerSupport -Xms256m -Xmx512m"
+
 
 services:
-  dragons-api:
+  dragons-api1:
     build:
       context: .
       dockerfile: Dockerfile
     image: dragons:${PROFILE:-dev}
-    container_name: dragons
+    container_name: dragons1
     restart: unless-stopped
-
     ports:
       - "8083:8083"
-
     env_file:
       - .env
-
     environment:
-      SPRING_PROFILES_ACTIVE: ${PROFILE:-dev}
-      SERVER_PORT: 8083
-      # Spring relaxed binding: DATASOURCE_REDIS_ENABLED -> datasource.redis.enabled
-      DATASOURCE_REDIS_ENABLED: "false"
-      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
-      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
-      GOOGLE_REDIRECT: ${GOOGLE_REDIRECT}
-      TOSS_CLIENT_KEY: ${TOSS_CLIENT_KEY}
-      TOSS_SECRET_KEY: ${TOSS_SECRET_KEY}
-      UI_URL: ${UI_URL}
-      DB_HOST: ${DB_HOST}
-      MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_SCHEMA: ${MYSQL_SCHEMA}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PWD: ${MYSQL_PWD}
-      SLOW_LOG_PATH: ${SLOW_LOG_PATH}
-      # Optional JVM tuning
-      JAVA_OPTS: "-XX:+UseContainerSupport -Xms256m -Xmx512m"
-    # Rely on Dockerfile ENTRYPOINT (java -jar /app/app.jar)
+      <<: *common-env
+
+  dragons-api2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dragons:${PROFILE:-dev}
+    container_name: dragons2
+    restart: unless-stopped
+    ports:
+      - "8084:8083"
+    env_file:
+      - .env
+    environment:
+      <<: *common-env
+
 networks:
   default:
     external: true
