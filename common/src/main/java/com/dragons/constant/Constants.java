@@ -18,6 +18,25 @@ public final class Constants {
 
   public static final DateTimeFormatter LEGACY_FORMATTER = DateTimeFormatter.ofPattern(Constants.TIME_DEFAULT_FORMAT);
 
+
+  public static final class Lock {
+    public static final String LOCK_EXPIRED_SUBSCRIPTION = "lock:subscription-expire";
+    public static final String LOCK_BANK_DEPOSIT = "lock:bank-deposit";
+    public static final String LOCK_PAYMENT_CONFIRM = "lock:payment-confirm:";
+    public static final String LOCK_SUBSCRIBE = "lock:subscribe:";
+
+
+    public static final String LOCK_SCRIPT = """
+        if redis.call('get', KEYS[1]) == ARGV[1] then
+            return redis.call('del', KEYS[1])
+        else
+            return 0
+        end
+        """;
+    private Lock() {
+    }
+  }
+
   private Constants() {
   }
 }

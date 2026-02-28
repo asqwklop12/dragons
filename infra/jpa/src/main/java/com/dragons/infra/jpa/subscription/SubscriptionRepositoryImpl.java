@@ -6,8 +6,11 @@ import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 class SubscriptionRepositoryImpl implements SubscriptionRepository {
@@ -53,7 +56,9 @@ class SubscriptionRepositoryImpl implements SubscriptionRepository {
   }
 
   @Override
+  @Transactional
   public void updateStatusExpiredSubscription(Clock clock) {
     subscriptionRepository.updateStatusExpiredSubscription(ZonedDateTime.now(clock));
+    log.info("구독 만료 상태 업데이트 완료");
   }
 }
