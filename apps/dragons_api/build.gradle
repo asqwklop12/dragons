@@ -13,9 +13,7 @@ dependencies {
     implementation project(":infra:logging")
     implementation project(":infra:social")
     implementation project(":infra:threadpool")
-
     implementation project(":infra:lock")
-    
     testImplementation testFixtures(project(":infra:jpa"))
     implementation 'org.springframework.boot:spring-boot-starter-webmvc'
 
@@ -29,5 +27,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-webmvc'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

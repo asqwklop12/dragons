@@ -49,6 +49,7 @@ public class PostService {
   }
 
   // 목록 조회
+  @Transactional(readOnly = true)
   public PostSearchResult search(PostSearchCondition condition) {
     Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
     if (condition.sort() != null && !condition.sort().isBlank()) {
@@ -79,6 +80,7 @@ public class PostService {
   }
 
   // 조회
+  @Transactional(readOnly = true)
   public PostGetResult get(PostGetCommand command) {
     Long postId = command.postId();
     Post post = postRepository.findByIdAndDeletedAtIsNull(postId).orElseThrow(
