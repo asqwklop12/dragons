@@ -1,7 +1,7 @@
 # ==========================
 # 1) Build stage
 # ==========================
-FROM --platform=linux/amd64 eclipse-temurin:21-jdk AS builder
+FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /workspace
 
 # Copy Gradle wrapper and settings first (better layer caching)
@@ -23,7 +23,7 @@ RUN chmod +x ./gradlew && ./gradlew :apps:dragons_api:bootJar -x test --no-daemo
 # ==========================
 # 2) Runtime stage
 # ==========================
-FROM --platform=linux/amd64 eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jre
 WORKDIR /app
 
 # Copy the Spring Boot fat jar from builder

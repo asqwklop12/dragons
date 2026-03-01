@@ -4,11 +4,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Table;
-import jakarta.transaction.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class DatabaseCleanUp implements InitializingBean {

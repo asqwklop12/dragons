@@ -22,13 +22,18 @@ public class GoogleSocialService {
   private final GoogleOAuthClient googleOAuthClient;
   private final Clock clock;
 
+  @Transactional
   public UserLoginResult loginWithGoogle(String code) {
     if (code == null || code.isBlank()) {
       throw new CoreException(ErrorType.BAD_REQUEST, "인증 코드가 필요합니다");
     }
     try {
       GoogleOAuthResponse response = googleOAuthClient.getUserInfo(code);
-      return createOrUpdateUser(response);
+      User user = userRepository.findByEmailAndProvider(response.email(), AuthProvider.GOOGLE.getValue())
+          .orElseGet(() -> userRepository.save(User.register(response.name(), response.email()))); // 없으면 가입
+
+      user.loginUpdateTime(clock);
+      return new UserLoginResult(user.email(), user.name(), user.getLoginTime());
     } catch (CoreException e) {
       throw e; // 이미 처리된 예외는 재throw
     } catch (Exception e) {
@@ -38,14 +43,6 @@ public class GoogleSocialService {
     }
   }
 
-  @Transactional
-  public UserLoginResult createOrUpdateUser(GoogleOAuthResponse response) {
-    User user = userRepository.findByEmailAndProvider(response.email(), AuthProvider.GOOGLE.getValue())
-        .orElseGet(() -> userRepository.save(User.register(response.email(), response.name()))); // 없으면 가입
-
-    user.loginUpdateTime(clock);
-    return new UserLoginResult(user.email(), user.name(), user.getLoginTime());
-  }
 
   public String getGoogleLoginUrl() {
     return googleOAuthClient.getGoogleLoginUrl();
