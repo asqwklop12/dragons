@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import lombok.Getter;
 
 @Getter
@@ -29,13 +30,13 @@ public class IssuedCoupon extends BaseEntity {
   private IssuedCouponStatus status;
 
   @Column(nullable = false)
-  private LocalDateTime issuedAt;
+  private ZonedDateTime issuedAt;
 
   @Column(nullable = false)
-  private LocalDateTime expiredAt;
+  private ZonedDateTime expiredAt;
 
   @Column
-  private LocalDateTime usedAt;
+  private ZonedDateTime usedAt;
 
   protected IssuedCoupon() {
   }

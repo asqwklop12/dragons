@@ -7,6 +7,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import lombok.Getter;
 
 @Getter
@@ -47,10 +48,10 @@ public class Coupon extends BaseEntity {
   private Integer validDays;
 
   @Column(nullable = false)
-  private LocalDateTime startDate;
+  private ZonedDateTime startDate;
 
   @Column(nullable = false)
-  private LocalDateTime endDate;
+  private ZonedDateTime endDate;
 
   protected Coupon() {
   }
