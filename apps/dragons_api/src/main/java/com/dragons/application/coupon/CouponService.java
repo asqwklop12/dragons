@@ -89,7 +89,7 @@ public class CouponService {
             issuedCoupon.getStatus(),
             issuedCoupon.getIssuedAt().toOffsetDateTime(),
             issuedCoupon.getExpiredAt().toOffsetDateTime(),
-            issuedCoupon.getUsedAt().toOffsetDateTime()))
+            issuedCoupon.getUsedAt() == null ? null : issuedCoupon.getUsedAt().toOffsetDateTime()))
         .toList();
     return new CouponUserCouponsResult(coupons);
   }
