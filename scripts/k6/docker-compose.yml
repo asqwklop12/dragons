@@ -1,0 +1,36 @@
+services:
+  k6-concurrent:
+    image: grafana/k6:1.2.3
+    environment:
+      BASE_URL: ${K6_BASE_URL:-http://dragons1:8083}
+      COUPON_ID: ${K6_COUPON_ID:-1}
+      REQUEST_COUNT: ${K6_REQUEST_COUNT:-200}
+      USER_ID: ${K6_USER_ID:-1}
+      USER_ID_BASE: ${K6_USER_ID_BASE:-1}
+      MAX_DURATION: ${K6_MAX_DURATION:-30s}
+      MODE: concurrent
+    volumes:
+      - ./:/scripts:ro
+    command: ["run", "/scripts/coupon-issue-load-test.js"]
+    networks:
+      - dragons_default
+
+  k6-duplicate:
+    image: grafana/k6:1.2.3
+    environment:
+      BASE_URL: ${K6_BASE_URL:-http://dragons1:8083}
+      COUPON_ID: ${K6_COUPON_ID:-1}
+      REQUEST_COUNT: ${K6_DUPLICATE_REQUEST_COUNT:-10}
+      USER_ID: ${K6_USER_ID:-1}
+      USER_ID_BASE: ${K6_USER_ID_BASE:-1}
+      MAX_DURATION: ${K6_MAX_DURATION:-30s}
+      MODE: duplicate
+    volumes:
+      - ./:/scripts:ro
+    command: ["run", "/scripts/coupon-issue-load-test.js"]
+    networks:
+      - dragons_default
+
+networks:
+  dragons_default:
+    external: true
