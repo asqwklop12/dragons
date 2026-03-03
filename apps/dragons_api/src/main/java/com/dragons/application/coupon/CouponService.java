@@ -43,8 +43,8 @@ public class CouponService {
             coupon.getMinOrderAmount(),
             coupon.getMaxDiscountAmount(),
             coupon.getRemainingQuantity(),
-            toLocalDateTime(coupon.getStartDate()),
-            toLocalDateTime(coupon.getEndDate())))
+            coupon.getStartDate().toOffsetDateTime(),
+            coupon.getEndDate().toOffsetDateTime()))
         .toList();
 
     return new CouponAvailableResult(coupons);
@@ -60,7 +60,7 @@ public class CouponService {
       throw new CoreException(ErrorType.BAD_REQUEST, "발급 가능한 쿠폰이 아닙니다.");
     }
 
-    coupon.issue();
+    coupon.issue(ZonedDateTime.now(clock));
     IssuedCoupon issuedCoupon = issuedCouponRepository.store(IssuedCoupon.issue(coupon, command.userId(), now));
 
     return new CouponIssueResult(
@@ -123,8 +123,9 @@ public class CouponService {
     }
 
     Coupon coupon = issuedCoupon.getCoupon();
+    int orderAmount = validateOrderAmount(command.orderAmount());
     validateMinimumOrderAmount(coupon, command.orderAmount());
-    int discountAmount = calculateDiscountAmount(coupon, command.orderAmount());
+    int discountAmount = calculateDiscountAmount(coupon, orderAmount);
 
     issuedCoupon.use(now);
 
@@ -136,14 +137,21 @@ public class CouponService {
         toLocalDateTime(issuedCoupon.getUsedAt()));
   }
 
-  private void validateMinimumOrderAmount(Coupon coupon, Integer orderAmount) {
+  private int validateOrderAmount(Integer orderAmount) {
+    if (orderAmount == null || orderAmount <= 0) {
+      throw new CoreException(ErrorType.BAD_REQUEST, "주문 금액이 올바르지 않습니다.");
+    }
+    return orderAmount;
+  }
+
+  private void validateMinimumOrderAmount(Coupon coupon, int orderAmount) {
     Integer minOrderAmount = coupon.getMinOrderAmount();
     if (minOrderAmount != null && orderAmount < minOrderAmount) {
       throw new CoreException(ErrorType.BAD_REQUEST, "최소 주문 금액을 충족하지 못했습니다.");
     }
   }
 
-  private int calculateDiscountAmount(Coupon coupon, Integer orderAmount) {
+  private int calculateDiscountAmount(Coupon coupon, int orderAmount) {
     int discountAmount = 0;
     if (coupon.getCouponType() == CouponType.FIXED_AMOUNT) {
       discountAmount = Math.min(coupon.getDiscountValue(), orderAmount);

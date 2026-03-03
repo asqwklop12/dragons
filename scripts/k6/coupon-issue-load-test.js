@@ -2,11 +2,25 @@ import http from 'k6/http';
 import { Counter, Gauge } from 'k6/metrics';
 
 const MODE = (__ENV.MODE || 'concurrent').toLowerCase();
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
-const COUPON_ID = Number(__ENV.COUPON_ID || 1);
-const REQUEST_COUNT = Number(__ENV.REQUEST_COUNT || (MODE === 'duplicate' ? 10 : 200));
-const DUPLICATE_USER_ID = Number(__ENV.USER_ID || 1);
-const USER_ID_BASE = Number(__ENV.USER_ID_BASE || 1);
+if (!['concurrent', 'duplicate'].includes(MODE)) {
+    throw new Error(`Invalid MODE: ${MODE}`);
+  }
+
+    const BASE_URL = __ENV.BASE_URL || 'http://localhost:8080';
+
+    function readPositiveIntEnv(name, fallback) {
+        const raw = __ENV[name];
+        const value = raw === undefined ? fallback : Number(raw);
+        if (!Number.isInteger(value) || value < 1) {
+            throw new Error(`Invalid ${name}: ${raw}`);
+          }
+        return value;
+      }
+
+const COUPON_ID = readPositiveIntEnv('COUPON_ID', 1);
+const REQUEST_COUNT = readPositiveIntEnv('REQUEST_COUNT', MODE === 'duplicate' ? 10 : 200);
+const DUPLICATE_USER_ID = readPositiveIntEnv('USER_ID', 1);
+const USER_ID_BASE = readPositiveIntEnv('USER_ID_BASE', 1);
 
 const issueSuccessCounter = new Counter('issue_success');
 const issueFailureCounter = new Counter('issue_failure');

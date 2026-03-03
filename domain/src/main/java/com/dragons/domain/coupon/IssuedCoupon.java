@@ -60,6 +60,12 @@ public class IssuedCoupon extends BaseEntity {
     if (status != IssuedCouponStatus.ISSUED) {
       throw new IllegalStateException("이미 사용되었거나 사용할 수 없는 쿠폰입니다.");
     }
+    if (usedAt.isBefore(issuedAt)) {
+      throw new IllegalStateException("발급 시각 이전에는 쿠폰을 사용할 수 없습니다.");
+    }
+    if (usedAt.isAfter(expiredAt)) {
+      throw new IllegalStateException("만료된 쿠폰은 사용할 수 없습니다.");
+    }
     this.status = IssuedCouponStatus.USED;
     this.usedAt = usedAt;
   }

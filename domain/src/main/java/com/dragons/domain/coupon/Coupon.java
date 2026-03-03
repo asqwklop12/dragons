@@ -66,11 +66,10 @@ public class Coupon extends BaseEntity {
     return Math.max(totalQuantity - issuedQuantity, 0);
   }
 
-  public void issue() {
-    if (getRemainingQuantity() <= 0) {
-      throw new IllegalStateException("쿠폰 발급 수량이 모두 소진되었습니다.");
+  public void issue(ZonedDateTime now) {
+    if (!isIssuableAt(now)) {
+      throw new IllegalStateException("현재 발급 가능한 쿠폰이 아닙니다.");
     }
-
     this.issuedQuantity += 1;
     if (getRemainingQuantity() == 0) {
       this.status = CouponStatus.EXHAUSTED;

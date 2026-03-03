@@ -1,7 +1,7 @@
 package com.dragons.application.coupon.dto;
 
 import com.dragons.domain.coupon.CouponType;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public record CouponAvailableResult(List<CouponItem> coupons) {
@@ -15,8 +15,8 @@ public record CouponAvailableResult(List<CouponItem> coupons) {
       Integer minOrderAmount,
       Integer maxDiscountAmount,
       Integer remainingQuantity,
-      LocalDateTime startDate,
-      LocalDateTime endDate
+      OffsetDateTime startDate,
+      OffsetDateTime endDate
   ) {
   }
 }

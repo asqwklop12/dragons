@@ -2,6 +2,7 @@ package com.dragons.infra.jpa.coupon;
 
 import com.dragons.domain.coupon.Coupon;
 import com.dragons.domain.coupon.CouponRepository;
+import com.dragons.domain.coupon.CouponStatus;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +21,7 @@ class CouponRepositoryImpl implements CouponRepository {
 
   @Override
   public List<Coupon> readIssuableCoupons(ZonedDateTime now) {
-    return jpaCouponRepository.findAllIssuable(now);
+    return jpaCouponRepository.findAllIssuable(now, CouponStatus.ACTIVE);
   }
 
   @Override

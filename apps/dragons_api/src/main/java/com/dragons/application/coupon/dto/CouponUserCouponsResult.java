@@ -5,6 +5,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public record CouponUserCouponsResult(List<CouponItem> coupons) {
+  public CouponUserCouponsResult {
+    coupons = coupons == null ? List.of() : List.copyOf(coupons);
+  }
   public record CouponItem(
       Long issuedCouponId,
       Long couponId,
