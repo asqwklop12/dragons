@@ -60,7 +60,7 @@ public class CouponService {
       throw new CoreException(ErrorType.BAD_REQUEST, "발급 가능한 쿠폰이 아닙니다.");
     }
 
-    coupon.issue(ZonedDateTime.now(clock));
+    coupon.issue(now);
     IssuedCoupon issuedCoupon = issuedCouponRepository.store(IssuedCoupon.issue(coupon, command.userId(), now));
 
     return new CouponIssueResult(
@@ -87,9 +87,9 @@ public class CouponService {
             issuedCoupon.getCoupon().getId(),
             issuedCoupon.getCoupon().getName(),
             issuedCoupon.getStatus(),
-            toLocalDateTime(issuedCoupon.getIssuedAt()),
-            toLocalDateTime(issuedCoupon.getExpiredAt()),
-            toLocalDateTime(issuedCoupon.getUsedAt())))
+            issuedCoupon.getIssuedAt().toOffsetDateTime(),
+            issuedCoupon.getExpiredAt().toOffsetDateTime(),
+            issuedCoupon.getUsedAt().toOffsetDateTime()))
         .toList();
     return new CouponUserCouponsResult(coupons);
   }
@@ -105,9 +105,9 @@ public class CouponService {
             issuedCoupon.getCoupon().getId(),
             issuedCoupon.getCoupon().getName(),
             issuedCoupon.getStatus(),
-            toLocalDateTime(issuedCoupon.getIssuedAt()),
-            toLocalDateTime(issuedCoupon.getExpiredAt()),
-            toLocalDateTime(issuedCoupon.getUsedAt())))
+            issuedCoupon.getIssuedAt().toOffsetDateTime(),
+            issuedCoupon.getExpiredAt().toOffsetDateTime(),
+            issuedCoupon.getUsedAt().toOffsetDateTime()))
         .toList();
     return new CouponUserCouponsResult(coupons);
   }
@@ -124,7 +124,7 @@ public class CouponService {
 
     Coupon coupon = issuedCoupon.getCoupon();
     int orderAmount = validateOrderAmount(command.orderAmount());
-    validateMinimumOrderAmount(coupon, command.orderAmount());
+    validateMinimumOrderAmount(coupon, orderAmount);
     int discountAmount = calculateDiscountAmount(coupon, orderAmount);
 
     issuedCoupon.use(now);

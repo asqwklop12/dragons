@@ -99,7 +99,7 @@ export default function () {
   );
 
   let issued = false;
-  if (response.status === 200) {
+  if (response.status >= 200 && response.status < 300) {
     try {
       const body = response.json();
       issued = body?.meta?.result === 'SUCCESS';
