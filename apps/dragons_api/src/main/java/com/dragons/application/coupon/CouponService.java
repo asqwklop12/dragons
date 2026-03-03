@@ -1,6 +1,8 @@
 package com.dragons.application.coupon;
 
 import com.dragons.application.coupon.dto.CouponAvailableResult;
+import com.dragons.application.coupon.dto.CouponCreateCommand;
+import com.dragons.application.coupon.dto.CouponCreateResult;
 import com.dragons.application.coupon.dto.CouponIssueCommand;
 import com.dragons.application.coupon.dto.CouponIssueResult;
 import com.dragons.application.coupon.dto.CouponStockResult;
@@ -12,6 +14,8 @@ import com.dragons.domain.coupon.CouponRepository;
 import com.dragons.domain.coupon.CouponType;
 import com.dragons.domain.coupon.IssuedCoupon;
 import com.dragons.domain.coupon.IssuedCouponRepository;
+import com.dragons.domain.user.User;
+import com.dragons.domain.user.UserRepository;
 import com.dragons.support.error.CoreException;
 import com.dragons.support.error.ErrorType;
 import java.time.Clock;
@@ -27,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CouponService {
   private final CouponRepository couponRepository;
   private final IssuedCouponRepository issuedCouponRepository;
+  private final UserRepository userRepository;
   private final Clock clock;
 
   @Transactional(readOnly = true)
@@ -48,6 +53,37 @@ public class CouponService {
         .toList();
 
     return new CouponAvailableResult(coupons);
+  }
+
+  @Transactional
+  public CouponCreateResult createCoupon(CouponCreateCommand command) {
+    Coupon coupon = couponRepository.store(Coupon.create(
+        command.name(),
+        command.description(),
+        command.couponType(),
+        command.status(),
+        command.discountValue(),
+        command.minOrderAmount(),
+        command.maxDiscountAmount(),
+        command.totalQuantity(),
+        command.validDays(),
+        command.startDate().atZoneSameInstant(clock.getZone()),
+        command.endDate().atZoneSameInstant(clock.getZone())));
+
+    return new CouponCreateResult(
+        coupon.getId(),
+        coupon.getName(),
+        coupon.getDescription(),
+        coupon.getCouponType(),
+        coupon.getStatus(),
+        coupon.getDiscountValue(),
+        coupon.getMinOrderAmount(),
+        coupon.getMaxDiscountAmount(),
+        coupon.getTotalQuantity(),
+        coupon.getIssuedQuantity(),
+        coupon.getValidDays(),
+        coupon.getStartDate().toOffsetDateTime(),
+        coupon.getEndDate().toOffsetDateTime());
   }
 
   @Transactional
@@ -80,7 +116,8 @@ public class CouponService {
   }
 
   @Transactional(readOnly = true)
-  public CouponUserCouponsResult getUserCoupons(Long userId) {
+  public CouponUserCouponsResult getUserCoupons(String email) {
+    Long userId = readUserIdByEmail(email);
     List<CouponUserCouponsResult.CouponItem> coupons = issuedCouponRepository.readUserCoupons(userId).stream()
         .map(issuedCoupon -> new CouponUserCouponsResult.CouponItem(
             issuedCoupon.getId(),
@@ -95,7 +132,8 @@ public class CouponService {
   }
 
   @Transactional(readOnly = true)
-  public CouponUserCouponsResult getUsableCoupons(Long userId) {
+  public CouponUserCouponsResult getUsableCoupons(String email) {
+    Long userId = readUserIdByEmail(email);
     ZonedDateTime now = ZonedDateTime.now(clock);
     List<CouponUserCouponsResult.CouponItem> coupons = issuedCouponRepository.readUsableUserCoupons(userId, now)
         .stream()
@@ -107,15 +145,16 @@ public class CouponService {
             issuedCoupon.getStatus(),
             issuedCoupon.getIssuedAt().toOffsetDateTime(),
             issuedCoupon.getExpiredAt().toOffsetDateTime(),
-            issuedCoupon.getUsedAt().toOffsetDateTime()))
+            issuedCoupon.getUsedAt() == null ? null : issuedCoupon.getUsedAt().toOffsetDateTime()))
         .toList();
     return new CouponUserCouponsResult(coupons);
   }
 
   @Transactional
-  public CouponUseResult useCoupon(CouponUseCommand command) {
+  public CouponUseResult useCoupon(String email, CouponUseCommand command) {
+    Long userId = readUserIdByEmail(email);
     ZonedDateTime now = ZonedDateTime.now(clock);
-    IssuedCoupon issuedCoupon = issuedCouponRepository.readOwnedCoupon(command.issuedCouponId(), command.userId())
+    IssuedCoupon issuedCoupon = issuedCouponRepository.readOwnedCoupon(command.issuedCouponId(), userId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "사용 가능한 쿠폰이 존재하지 않습니다."));
 
     if (!issuedCoupon.isUsableAt(now)) {
@@ -135,6 +174,12 @@ public class CouponService {
         discountAmount,
         issuedCoupon.getStatus(),
         toLocalDateTime(issuedCoupon.getUsedAt()));
+  }
+
+  private Long readUserIdByEmail(String email) {
+    User user = userRepository.findByEmail(email)
+        .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."));
+    return user.getId();
   }
 
   private int validateOrderAmount(Integer orderAmount) {

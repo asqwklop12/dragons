@@ -2,16 +2,12 @@ package com.dragons.application.coupon.dto;
 
 public record CouponUseCommand(
     Long issuedCouponId,
-    Long userId,
     Long orderId,
     Integer orderAmount
 ) {
   public CouponUseCommand {
     if (issuedCouponId == null || issuedCouponId <= 0) {
       throw new IllegalArgumentException("issuedCouponId must be positive");
-    }
-    if (userId == null || userId <= 0) {
-      throw new IllegalArgumentException("userId must be positive");
     }
     if (orderId == null || orderId <= 0) {
       throw new IllegalArgumentException("orderId must be positive");

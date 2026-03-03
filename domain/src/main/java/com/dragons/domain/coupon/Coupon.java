@@ -55,6 +55,35 @@ public class Coupon extends BaseEntity {
   protected Coupon() {
   }
 
+  public static Coupon create(
+      String name,
+      String description,
+      CouponType couponType,
+      CouponStatus status,
+      Integer discountValue,
+      Integer minOrderAmount,
+      Integer maxDiscountAmount,
+      Integer totalQuantity,
+      Integer validDays,
+      ZonedDateTime startDate,
+      ZonedDateTime endDate
+  ) {
+    Coupon coupon = new Coupon();
+    coupon.name = name;
+    coupon.description = description;
+    coupon.couponType = couponType;
+    coupon.status = status;
+    coupon.discountValue = discountValue;
+    coupon.minOrderAmount = minOrderAmount;
+    coupon.maxDiscountAmount = maxDiscountAmount;
+    coupon.totalQuantity = totalQuantity;
+    coupon.issuedQuantity = 0;
+    coupon.validDays = validDays;
+    coupon.startDate = startDate;
+    coupon.endDate = endDate;
+    return coupon;
+  }
+
   public boolean isIssuableAt(ZonedDateTime now) {
     return status == CouponStatus.ACTIVE
         && (startDate.isBefore(now) || startDate.isEqual(now))

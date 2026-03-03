@@ -1,11 +1,15 @@
 package com.dragons.interfaces.api.coupon;
 
 import com.dragons.application.coupon.CouponService;
+import com.dragons.application.coupon.dto.CouponCreateCommand;
 import com.dragons.application.coupon.dto.CouponIssueCommand;
 import com.dragons.application.coupon.dto.CouponUseCommand;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.coupon.dto.CouponV1Dto;
+import com.dragons.support.login.LoginUser;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
+import java.time.OffsetDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,9 +21,43 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/coupons")
-public class CouponV1Controller {
+public class CouponV1Controller implements CouponV1Spec {
   private final CouponService couponService;
 
+  @Override
+  @PostMapping
+  public ApiResponse<CouponV1Dto.Create.Response> createCoupon(
+      @RequestBody @Valid CouponV1Dto.Create.Request request
+  ) {
+    var result = couponService.createCoupon(new CouponCreateCommand(
+        request.name(),
+        request.description(),
+        request.couponType(),
+        request.status(),
+        request.discountValue(),
+        request.minOrderAmount(),
+        request.maxDiscountAmount(),
+        request.totalQuantity(),
+        request.validDays(),
+        request.startDate(),
+        request.endDate()));
+    return ApiResponse.success(new CouponV1Dto.Create.Response(
+        result.couponId(),
+        result.name(),
+        result.description(),
+        result.couponType(),
+        result.status(),
+        result.discountValue(),
+        result.minOrderAmount(),
+        result.maxDiscountAmount(),
+        result.totalQuantity(),
+        result.issuedQuantity(),
+        result.validDays(),
+        result.startDate(),
+        result.endDate()));
+  }
+
+  @Override
   @GetMapping("/available")
   public ApiResponse<CouponV1Dto.Available.Response> getAvailableCoupons() {
     var result = couponService.getAvailableCoupons();
@@ -34,11 +72,12 @@ public class CouponV1Controller {
                 coupon.minOrderAmount(),
                 coupon.maxDiscountAmount(),
                 coupon.remainingQuantity(),
-                coupon.startDate(),
-                coupon.endDate()))
+                coupon.startDate().toLocalDateTime(),
+                coupon.endDate().toLocalDateTime()))
             .toList()));
   }
 
+  @Override
   @PostMapping("/{couponId}/issue")
   public ApiResponse<CouponV1Dto.Issue.Response> issueCoupon(
       @PathVariable Long couponId,
@@ -54,15 +93,19 @@ public class CouponV1Controller {
         result.expiredAt()));
   }
 
+  @Override
   @GetMapping("/{couponId}/stock")
   public ApiResponse<CouponV1Dto.Stock.Response> getStock(@PathVariable Long couponId) {
     var result = couponService.getStock(couponId);
     return ApiResponse.success(new CouponV1Dto.Stock.Response(result.couponId(), result.remainingQuantity()));
   }
 
-  @GetMapping("/users/{userId}")
-  public ApiResponse<CouponV1Dto.UserCoupon.Response> getUserCoupons(@PathVariable Long userId) {
-    var result = couponService.getUserCoupons(userId);
+  @Override
+  @GetMapping("/users/me")
+  public ApiResponse<CouponV1Dto.UserCoupon.Response> getUserCoupons(
+      @Parameter(hidden = true) @LoginUser String email
+  ) {
+    var result = couponService.getUserCoupons(email);
     return ApiResponse.success(new CouponV1Dto.UserCoupon.Response(
         result.coupons().stream()
             .map(coupon -> new CouponV1Dto.UserCoupon.Item(
@@ -70,15 +113,18 @@ public class CouponV1Controller {
                 coupon.couponId(),
                 coupon.couponName(),
                 coupon.status(),
-                coupon.issuedAt(),
-                coupon.expiredAt(),
-                coupon.usedAt()))
+                toLocalDateTime(coupon.issuedAt()),
+                toLocalDateTime(coupon.expiredAt()),
+                toLocalDateTime(coupon.usedAt())))
             .toList()));
   }
 
-  @GetMapping("/users/{userId}/usable")
-  public ApiResponse<CouponV1Dto.UserCoupon.Response> getUsableCoupons(@PathVariable Long userId) {
-    var result = couponService.getUsableCoupons(userId);
+  @Override
+  @GetMapping("/users/me/usable")
+  public ApiResponse<CouponV1Dto.UserCoupon.Response> getUsableCoupons(
+      @Parameter(hidden = true) @LoginUser String email
+  ) {
+    var result = couponService.getUsableCoupons(email);
     return ApiResponse.success(new CouponV1Dto.UserCoupon.Response(
         result.coupons().stream()
             .map(coupon -> new CouponV1Dto.UserCoupon.Item(
@@ -86,20 +132,21 @@ public class CouponV1Controller {
                 coupon.couponId(),
                 coupon.couponName(),
                 coupon.status(),
-                coupon.issuedAt(),
-                coupon.expiredAt(),
-                coupon.usedAt()))
+                toLocalDateTime(coupon.issuedAt()),
+                toLocalDateTime(coupon.expiredAt()),
+                toLocalDateTime(coupon.usedAt())))
             .toList()));
   }
 
+  @Override
   @PostMapping("/{issuedCouponId}/use")
   public ApiResponse<CouponV1Dto.Use.Response> useCoupon(
+      @Parameter(hidden = true) @LoginUser String email,
       @PathVariable Long issuedCouponId,
       @RequestBody @Valid CouponV1Dto.Use.Request request
   ) {
-    var result = couponService.useCoupon(new CouponUseCommand(
+    var result = couponService.useCoupon(email, new CouponUseCommand(
         issuedCouponId,
-        request.userId(),
         request.orderId(),
         request.orderAmount()));
     return ApiResponse.success(new CouponV1Dto.Use.Response(
@@ -108,5 +155,12 @@ public class CouponV1Controller {
         result.discountAmount(),
         result.status(),
         result.usedAt()));
+  }
+
+  private static java.time.LocalDateTime toLocalDateTime(OffsetDateTime dateTime) {
+    if (dateTime == null) {
+      return null;
+    }
+    return dateTime.toLocalDateTime();
   }
 }
