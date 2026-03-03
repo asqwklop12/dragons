@@ -39,4 +39,28 @@ public class IssuedCoupon extends BaseEntity {
 
   protected IssuedCoupon() {
   }
+
+  public static IssuedCoupon issue(Coupon coupon, Long userId, ZonedDateTime issuedAt) {
+    IssuedCoupon issuedCoupon = new IssuedCoupon();
+    issuedCoupon.coupon = coupon;
+    issuedCoupon.userId = userId;
+    issuedCoupon.status = IssuedCouponStatus.ISSUED;
+    issuedCoupon.issuedAt = issuedAt;
+    issuedCoupon.expiredAt = issuedAt.plusDays(coupon.getValidDays());
+    issuedCoupon.usedAt = null;
+    return issuedCoupon;
+  }
+
+  public boolean isUsableAt(ZonedDateTime now) {
+    return status == IssuedCouponStatus.ISSUED
+        && (expiredAt.isAfter(now) || expiredAt.isEqual(now));
+  }
+
+  public void use(ZonedDateTime usedAt) {
+    if (status != IssuedCouponStatus.ISSUED) {
+      throw new IllegalStateException("이미 사용되었거나 사용할 수 없는 쿠폰입니다.");
+    }
+    this.status = IssuedCouponStatus.USED;
+    this.usedAt = usedAt;
+  }
 }

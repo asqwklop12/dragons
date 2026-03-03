@@ -1,11 +1,12 @@
 package com.dragons.interfaces.api.coupon;
 
-import com.dragons.domain.coupon.IssuedCouponStatus;
+import com.dragons.application.coupon.CouponService;
+import com.dragons.application.coupon.dto.CouponIssueCommand;
+import com.dragons.application.coupon.dto.CouponUseCommand;
 import com.dragons.interfaces.api.ApiResponse;
 import com.dragons.interfaces.api.coupon.dto.CouponV1Dto;
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,13 +15,28 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/coupons")
 public class CouponV1Controller {
+  private final CouponService couponService;
 
   @GetMapping("/available")
   public ApiResponse<CouponV1Dto.Available.Response> getAvailableCoupons() {
-    // TODO: 서비스 연결 전 기본 스켈레톤 응답
-    return ApiResponse.success(new CouponV1Dto.Available.Response(List.of()));
+    var result = couponService.getAvailableCoupons();
+    return ApiResponse.success(new CouponV1Dto.Available.Response(
+        result.coupons().stream()
+            .map(coupon -> new CouponV1Dto.Available.Coupon(
+                coupon.couponId(),
+                coupon.name(),
+                coupon.description(),
+                coupon.couponType(),
+                coupon.discountValue(),
+                coupon.minOrderAmount(),
+                coupon.maxDiscountAmount(),
+                coupon.remainingQuantity(),
+                coupon.startDate(),
+                coupon.endDate()))
+            .toList()));
   }
 
   @PostMapping("/{couponId}/issue")
@@ -28,33 +44,52 @@ public class CouponV1Controller {
       @PathVariable Long couponId,
       @RequestBody @Valid CouponV1Dto.Issue.Request request
   ) {
-    // TODO: 서비스 연결 전 기본 스켈레톤 응답
-    LocalDateTime now = LocalDateTime.now();
+    var result = couponService.issueCoupon(new CouponIssueCommand(couponId, request.userId()));
     return ApiResponse.success(new CouponV1Dto.Issue.Response(
-        null,
-        couponId,
-        request.userId(),
-        IssuedCouponStatus.ISSUED,
-        now,
-        now.plusDays(7)));
+        result.issuedCouponId(),
+        result.couponId(),
+        result.userId(),
+        result.status(),
+        result.issuedAt(),
+        result.expiredAt()));
   }
 
   @GetMapping("/{couponId}/stock")
   public ApiResponse<CouponV1Dto.Stock.Response> getStock(@PathVariable Long couponId) {
-    // TODO: 서비스 연결 전 기본 스켈레톤 응답
-    return ApiResponse.success(new CouponV1Dto.Stock.Response(couponId, 0));
+    var result = couponService.getStock(couponId);
+    return ApiResponse.success(new CouponV1Dto.Stock.Response(result.couponId(), result.remainingQuantity()));
   }
 
   @GetMapping("/users/{userId}")
   public ApiResponse<CouponV1Dto.UserCoupon.Response> getUserCoupons(@PathVariable Long userId) {
-    // TODO: 서비스 연결 전 기본 스켈레톤 응답
-    return ApiResponse.success(new CouponV1Dto.UserCoupon.Response(List.of()));
+    var result = couponService.getUserCoupons(userId);
+    return ApiResponse.success(new CouponV1Dto.UserCoupon.Response(
+        result.coupons().stream()
+            .map(coupon -> new CouponV1Dto.UserCoupon.Item(
+                coupon.issuedCouponId(),
+                coupon.couponId(),
+                coupon.couponName(),
+                coupon.status(),
+                coupon.issuedAt(),
+                coupon.expiredAt(),
+                coupon.usedAt()))
+            .toList()));
   }
 
   @GetMapping("/users/{userId}/usable")
   public ApiResponse<CouponV1Dto.UserCoupon.Response> getUsableCoupons(@PathVariable Long userId) {
-    // TODO: 서비스 연결 전 기본 스켈레톤 응답
-    return ApiResponse.success(new CouponV1Dto.UserCoupon.Response(List.of()));
+    var result = couponService.getUsableCoupons(userId);
+    return ApiResponse.success(new CouponV1Dto.UserCoupon.Response(
+        result.coupons().stream()
+            .map(coupon -> new CouponV1Dto.UserCoupon.Item(
+                coupon.issuedCouponId(),
+                coupon.couponId(),
+                coupon.couponName(),
+                coupon.status(),
+                coupon.issuedAt(),
+                coupon.expiredAt(),
+                coupon.usedAt()))
+            .toList()));
   }
 
   @PostMapping("/{issuedCouponId}/use")
@@ -62,12 +97,16 @@ public class CouponV1Controller {
       @PathVariable Long issuedCouponId,
       @RequestBody @Valid CouponV1Dto.Use.Request request
   ) {
-    // TODO: 서비스 연결 전 기본 스켈레톤 응답
-    return ApiResponse.success(new CouponV1Dto.Use.Response(
+    var result = couponService.useCoupon(new CouponUseCommand(
         issuedCouponId,
+        request.userId(),
         request.orderId(),
-        0,
-        IssuedCouponStatus.USED,
-        LocalDateTime.now()));
+        request.orderAmount()));
+    return ApiResponse.success(new CouponV1Dto.Use.Response(
+        result.issuedCouponId(),
+        result.orderId(),
+        result.discountAmount(),
+        result.status(),
+        result.usedAt()));
   }
 }

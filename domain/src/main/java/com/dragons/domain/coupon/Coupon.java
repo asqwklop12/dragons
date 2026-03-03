@@ -54,4 +54,26 @@ public class Coupon extends BaseEntity {
 
   protected Coupon() {
   }
+
+  public boolean isIssuableAt(ZonedDateTime now) {
+    return status == CouponStatus.ACTIVE
+        && (startDate.isBefore(now) || startDate.isEqual(now))
+        && (endDate.isAfter(now) || endDate.isEqual(now))
+        && getRemainingQuantity() > 0;
+  }
+
+  public int getRemainingQuantity() {
+    return Math.max(totalQuantity - issuedQuantity, 0);
+  }
+
+  public void issue() {
+    if (getRemainingQuantity() <= 0) {
+      throw new IllegalStateException("쿠폰 발급 수량이 모두 소진되었습니다.");
+    }
+
+    this.issuedQuantity += 1;
+    if (getRemainingQuantity() == 0) {
+      this.status = CouponStatus.EXHAUSTED;
+    }
+  }
 }
