@@ -157,7 +157,8 @@ public class CouponService {
       discountAmount = Math.min(coupon.getDiscountValue(), orderAmount);
     }
     if (coupon.getCouponType() == CouponType.PERCENTAGE) {
-      discountAmount = orderAmount * coupon.getDiscountValue() / 100;
+      long rawDiscount = ((long) orderAmount * (long) coupon.getDiscountValue()) / 100L;
+      discountAmount = (int) Math.min(rawDiscount, orderAmount);
     }
 
     Integer maxDiscountAmount = coupon.getMaxDiscountAmount();
