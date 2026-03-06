@@ -1,5 +1,8 @@
 package com.dragons.config.jpa;
 
+
+import com.dragons.monitoring.app_db_latency.AppDbLatencyDataSource;
+import com.dragons.monitoring.app_db_latency.AppDbLatencyMonitor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.HashMap;
@@ -42,8 +45,11 @@ class DataSourceConfig {
   @Bean
   @Primary
   public DataSource dataSource(
-      @Qualifier("routingDataSource") DataSource routing) {
-    return new LazyConnectionDataSourceProxy(routing);
+      @Qualifier("routingDataSource") DataSource routing,
+      AppDbLatencyMonitor appDbLatencyMonitor
+  ) {
+    DataSource lazyProxy = new LazyConnectionDataSourceProxy(routing);
+    return new AppDbLatencyDataSource(lazyProxy, appDbLatencyMonitor);
   }
 
   @Bean

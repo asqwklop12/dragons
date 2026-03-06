@@ -1,2 +1,7 @@
 slow-query:
   log-path:  ${SLOW_LOG_PATH}/slow.log
+
+app-db-latency:
+  monitor:
+    enabled: true
+    slow-threshold-ms: 300
