@@ -43,7 +43,8 @@ public class AppDbLatencyDataSource extends DelegatingDataSource {
 
   private PreparedStatement wrapPreparedStatement(PreparedStatement target, String sql) {
     return (PreparedStatement) Proxy.newProxyInstance(
-        PreparedStatement.class.getClassLoader(), target.getClass().getInterfaces(),
+        target.getClass().getClassLoader(),
+        new Class<?>[]{PreparedStatement.class},
         (proxy, method, args) -> {
           if (!method.getName().startsWith("execute")) {
             return invoke(target, method, args);

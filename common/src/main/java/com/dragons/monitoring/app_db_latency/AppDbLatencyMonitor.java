@@ -25,7 +25,7 @@ public class AppDbLatencyMonitor {
       return;
     }
 
-    String normalizedSql = parser.normalize(rawSql);
+    String normalizedSql = parser.toFingerprint(rawSql);
     double queryTimeSeconds = elapsedMillis / 1000.0;
 
     handler.handle(new AppDbLatencyEvent(
