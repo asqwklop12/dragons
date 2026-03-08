@@ -1,7 +1,6 @@
 package com.dragons.config.jpa;
 
 
-import com.dragons.monitoring.app_db_latency.AppDbLatencyDataSource;
 import com.dragons.monitoring.app_db_latency.AppDbLatencyMonitor;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
