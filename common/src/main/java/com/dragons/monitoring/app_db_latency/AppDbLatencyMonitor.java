@@ -38,7 +38,7 @@ public class AppDbLatencyMonitor {
           normalizedSql
       ));
     } catch (RuntimeException e) {
-      log.warn("앱 DB 지연 모니터링 수집 실패", e);
+      log.warn("앱 DB 지연 모니터링 수집 실패 - exceptionType={}", e.getClass().getSimpleName());
     }
 
   }
