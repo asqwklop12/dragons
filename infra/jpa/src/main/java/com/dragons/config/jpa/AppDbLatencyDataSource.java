@@ -15,8 +15,6 @@ import org.springframework.jdbc.datasource.DelegatingDataSource;
 
 public class AppDbLatencyDataSource extends DelegatingDataSource {
 
-  private static final String UNKNOWN_TRACE_ID = "N/A";
-  private static final String PREPARE_METHODS = "prepareStatement";
   private final AppDbLatencyMonitor monitor;
 
   public AppDbLatencyDataSource(DataSource targetDataSource, AppDbLatencyMonitor monitor) {
@@ -33,7 +31,7 @@ public class AppDbLatencyDataSource extends DelegatingDataSource {
         new Class[]{Connection.class},
         (proxy, method, args) -> {
           Object result = invoke(conn, method, args);
-          if (PREPARE_METHODS.equals(method.getName()) && result instanceof PreparedStatement ps) {
+          if (result instanceof PreparedStatement ps) {
             return wrapPreparedStatement(ps, (String) args[0]);
           }
           return result;
@@ -43,8 +41,8 @@ public class AppDbLatencyDataSource extends DelegatingDataSource {
 
   private PreparedStatement wrapPreparedStatement(PreparedStatement target, String sql) {
     return (PreparedStatement) Proxy.newProxyInstance(
-        target.getClass().getClassLoader(),
-        new Class<?>[]{PreparedStatement.class},
+        PreparedStatement.class.getClassLoader(),
+        new Class[]{PreparedStatement.class},
         (proxy, method, args) -> {
           if (!method.getName().startsWith("execute")) {
             return invoke(target, method, args);
@@ -71,7 +69,7 @@ public class AppDbLatencyDataSource extends DelegatingDataSource {
 
   private String resolveTraceId() {
     String traceId = MDC.get(Constants.REQUEST_ID);
-    return (traceId == null || traceId.isBlank()) ? UNKNOWN_TRACE_ID : traceId;
+    return (traceId == null || traceId.isBlank()) ? null : traceId;
   }
 
   private long toElapsedMillis(long startedNanos) {
