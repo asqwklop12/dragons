@@ -46,3 +46,6 @@ out/
 
 ### omx
 .omx/
+.codex/
+.agents/
+AGENTS.md
