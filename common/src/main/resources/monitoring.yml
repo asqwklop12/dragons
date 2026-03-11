@@ -5,3 +5,9 @@ app-db-latency:
   monitor:
     enabled: true
     slow-threshold-ms: 300
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus

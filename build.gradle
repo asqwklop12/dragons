@@ -55,6 +55,7 @@ subprojects {
 
     // Apply Lombok to all submodules for both main and test sources
     dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-actuator'
         compileOnly "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
