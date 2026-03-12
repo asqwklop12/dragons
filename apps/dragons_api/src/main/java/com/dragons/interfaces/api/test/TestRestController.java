@@ -19,8 +19,9 @@ public class TestRestController {
   private final DistributedLockFactory factory;
 
   @GetMapping
-  public void test() {
-    factory.get(LockType.REDIS).executeWithLock("test:key",
-        LockOptions.of(Duration.of(20, ChronoUnit.SECONDS)), () -> null);
+  public String test() {
+    return factory.get(LockType.REDIS).executeWithLock("test:key",
+            LockOptions.of(Duration.of(20, ChronoUnit.SECONDS)), () -> "lock acquired")
+        .orElse("lock conflict");
   }
 }
