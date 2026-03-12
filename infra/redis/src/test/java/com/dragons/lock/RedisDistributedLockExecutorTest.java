@@ -14,15 +14,19 @@ import com.dragons.domain.lock.DistributedLockFactory;
 import com.dragons.domain.lock.LockOptions;
 import com.dragons.monitoring.lock.DistributedLockMetricRecorder;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 
 class RedisDistributedLockExecutorTest {
 
   @Test
+  @DisplayName("Redis 락 획득에 성공하면 메트릭을 기록한다")
   void shouldRecordMetricEventsWhenLockAcquired() {
     StringRedisTemplate redisTemplate = mock(StringRedisTemplate.class);
     @SuppressWarnings("unchecked")
@@ -33,6 +37,14 @@ class RedisDistributedLockExecutorTest {
 
     when(redisTemplate.opsForValue()).thenReturn(valueOperations);
     when(valueOperations.setIfAbsent(any(), any(), any(Duration.class))).thenReturn(true);
+    when(
+        redisTemplate.execute(
+            any(DefaultRedisScript.class),
+            eq(Collections.singletonList("lock:payment-confirm:order-1")),
+            any()
+        )
+    )
+        .thenReturn(1L);
 
     RedisDistributedLockExecutor executor =
         new RedisDistributedLockExecutor(redisTemplate, factoryProvider, metricRecorder);
