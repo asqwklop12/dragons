@@ -20,7 +20,7 @@ public class TestRestController {
 
   @GetMapping
   public String test() {
-    return factory.get(LockType.REDIS).executeWithLock("test:key",
+    return factory.get(LockType.REDIS).executeWithLock("lock:payment-confirm:test",
             LockOptions.of(Duration.of(20, ChronoUnit.SECONDS)), () -> "lock acquired")
         .orElse("lock conflict");
   }
