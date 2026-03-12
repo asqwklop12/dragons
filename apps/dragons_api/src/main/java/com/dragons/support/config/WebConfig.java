@@ -21,6 +21,7 @@ public class WebConfig implements WebMvcConfigurer {
         .order(1) // 제일 먼저 실행되도록 설정
         .addPathPatterns("/**") // 모든 경로를 일단 막음
         .excludePathPatterns(
+            "/test/**",
             "/api/auth/**",
             "/api/auth/google/**",
             "/error", // 에러 응답 경로

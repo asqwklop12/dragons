@@ -46,6 +46,20 @@ services:
     environment:
       <<: *common-env
 
+  dragons-api3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dragons:${PROFILE:-dev}
+    container_name: dragons3
+    restart: unless-stopped
+    ports:
+      - "8085:8083"
+    env_file:
+      - .env
+    environment:
+      <<: *common-env
+
 networks:
   default:
     external: true
