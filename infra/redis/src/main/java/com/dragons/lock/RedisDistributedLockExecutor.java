@@ -84,12 +84,18 @@ class RedisDistributedLockExecutor implements DistributedLockExecutor {
       throw e;
     } finally {
       try {
-        redisTemplate.execute(
+        Long released =  redisTemplate.execute(
             new DefaultRedisScript<>(Lock.LOCK_SCRIPT, Long.class),
             Collections.singletonList(key),
             token
         );
+
+        if (Long.valueOf(1L).equals(released)) {
         metricRecorder.recordReleaseSuccess(DistributedLock.LOCK_TYPE_REDIS, key);
+        } else {
+          metricRecorder.recordReleaseFailure(DistributedLock.LOCK_TYPE_REDIS, key);
+          log.warn("Failed to release Redis lock for key: {}, will expire by TTL", key);
+        }
       } catch (Exception e) {
         // 태스크가 이미 완료된 후이므로 재실행하지 않고 TTL 만료에 위임
         metricRecorder.recordReleaseFailure(DistributedLock.LOCK_TYPE_REDIS, key);
