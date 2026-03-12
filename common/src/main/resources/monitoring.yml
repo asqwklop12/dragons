@@ -7,6 +7,8 @@ app-db-latency:
     slow-threshold-ms: 300
 
 management:
+  server:
+    port: 9797   # 내부 전용 포트 (인프라에서 외부 차단)
   endpoints:
     web:
       exposure:
