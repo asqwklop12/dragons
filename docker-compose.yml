@@ -2,6 +2,8 @@ x-common-env: &common-env
   SPRING_PROFILES_ACTIVE: ${PROFILE:-dev}
   SERVER_PORT: 8083
   DATASOURCE_REDIS_ENABLED: "false"
+  SPRING_DATA_REDIS_HOST: redis
+  SPRING_DATA_REDIS_PORT: 6379
   GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
   GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
   GOOGLE_REDIRECT: ${GOOGLE_REDIRECT}
@@ -18,6 +20,13 @@ x-common-env: &common-env
 
 
 services:
+  redis:
+    image: redis:7.2-alpine
+    container_name: dragons-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
   dragons-api1:
     build:
       context: .
@@ -27,10 +36,13 @@ services:
     restart: unless-stopped
     ports:
       - "8083:8083"
+      - "9797:9797"
     env_file:
       - .env
     environment:
       <<: *common-env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   dragons-api2:
     build:
@@ -41,10 +53,30 @@ services:
     restart: unless-stopped
     ports:
       - "8084:8083"
+      - "9798:9797"
     env_file:
       - .env
     environment:
       <<: *common-env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  dragons-api3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dragons:${PROFILE:-dev}
+    container_name: dragons3
+    restart: unless-stopped
+    ports:
+      - "8085:8083"
+      - "9799:9797"
+    env_file:
+      - .env
+    environment:
+      <<: *common-env
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 networks:
   default:
