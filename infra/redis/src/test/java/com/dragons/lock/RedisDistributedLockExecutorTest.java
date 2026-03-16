@@ -58,7 +58,7 @@ class RedisDistributedLockExecutorTest {
   }
 
   @Test
-  void shouldReturnEmptyWhenLockAcquireFails() {
+  void shouldReturnFalseWhenRunWithLockAcquireFails() {
     StringRedisTemplate redisTemplate = mock(StringRedisTemplate.class);
     @SuppressWarnings("unchecked")
     ValueOperations<String, String> valueOperations = mock(ValueOperations.class);
@@ -69,16 +69,13 @@ class RedisDistributedLockExecutorTest {
 
     RedisDistributedLockExecutor executor = new RedisDistributedLockExecutor(redisTemplate);
 
-    Optional<String> result = executor.executeWithLock(
+    boolean acquired = executor.runWithLock(
         "lock:subscribe:test@example.com",
         LockOptions.of(Duration.ofSeconds(5)),
-        () -> {
-          taskRunCount.incrementAndGet();
-          return "should-not-run";
-        }
+        taskRunCount::incrementAndGet
     );
 
-    assertThat(result).isEmpty();
+    assertThat(acquired).isFalse();
     assertThat(taskRunCount).hasValue(0);
     verify(redisTemplate, never()).execute(any(DefaultRedisScript.class), any(), any());
   }

@@ -50,20 +50,20 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
   // 구독은 하나로 통합
   public void subscribe(String name, String email, String planType, String status) {
     String lockKey = Lock.LOCK_SUBSCRIBE + email;
-    distributedLockFactory
+    boolean acquired = distributedLockFactory
         .get(LockType.REDIS)
-        .executeWithLock(
+        .runWithLock(
             lockKey,
             LockOptions.of(Duration.ofSeconds(5)),  // DB 조회/저장 시간 고려
-            () -> {
-              subscribeInternal(name, email, planType, status);
-              return null;  // Void 작업이므로 null 반환
-            }
-        )
-        .orElseThrow(() -> new CoreException(
-            ErrorType.CONFLICT,
-            "다른 요청이 처리 중입니다. 잠시 후 다시 시도해주세요."
-        ));
+            () -> subscribeInternal(name, email, planType, status)
+        );
+
+    if (!acquired) {
+      throw new CoreException(
+          ErrorType.CONFLICT,
+          "다른 요청이 처리 중입니다. 잠시 후 다시 시도해주세요."
+      );
+    }
   }
 
   private void subscribeInternal(String name, String email, String planType, String status) {

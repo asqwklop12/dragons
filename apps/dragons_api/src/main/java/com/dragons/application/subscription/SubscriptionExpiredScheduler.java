@@ -20,11 +20,10 @@ public class SubscriptionExpiredScheduler {
 
   @Scheduled(cron = "0 0 0 * * *")
   public void expired() {
-    factory.get(LockType.SHEDLOCK).executeWithLock(Lock.LOCK_EXPIRED_SUBSCRIPTION,
+    factory.get(LockType.SHEDLOCK).runWithLock(
+        Lock.LOCK_EXPIRED_SUBSCRIPTION,
         LockOptions.of(Duration.ofSeconds(30), Duration.ofSeconds(3)),
-        () -> {
-          subscriptionRepository.updateStatusExpiredSubscription(clock);
-          return null;
-        });
+        () -> subscriptionRepository.updateStatusExpiredSubscription(clock)
+    );
   }
 }

@@ -6,7 +6,6 @@ import com.dragons.domain.lock.LockOptions;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -33,7 +32,7 @@ class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSu
   @ParameterizedTest(name = "[{index}] workers={0}, taskDurationMs={1}")
   @MethodSource("concurrencyScenarios")
   @DisplayName("동시에 같은 Redis 락을 잡으려 하면 하나의 작업만 실행된다")
-  void executeWithLock_concurrency(
+  void runWithLock_concurrency(
       int workerCount,
       long taskDurationMillis
   ) throws Exception {
@@ -41,21 +40,20 @@ class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSu
     AtomicInteger taskRunCount = new AtomicInteger();
     LockOptions options = LockOptions.of(Duration.ofSeconds(5));
 
-    List<Optional<String>> results = runSimultaneously(
+    List<Boolean> results = runSimultaneously(
         workerCount,
-        () -> executor.executeWithLock(
+        () -> executor.runWithLock(
             key,
             options,
             () -> {
               taskRunCount.incrementAndGet();
               sleep(taskDurationMillis);
-              return "locked";
             }
         )
     );
 
     long acquiredCount = results.stream()
-        .filter(Optional::isPresent)
+        .filter(Boolean::booleanValue)
         .count();
     long conflictCount = results.size() - acquiredCount;
 
@@ -75,16 +73,16 @@ class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSu
     );
   }
 
-  private List<Optional<String>> runSimultaneously(
+  private List<Boolean> runSimultaneously(
       int workerCount,
-      Callable<Optional<String>> task
+      Callable<Boolean> task
   ) throws Exception {
     ExecutorService executorService = Executors.newFixedThreadPool(workerCount);
     CountDownLatch ready = new CountDownLatch(workerCount);
     CountDownLatch start = new CountDownLatch(1);
 
     try {
-      List<Future<Optional<String>>> futures = new ArrayList<>();
+      List<Future<Boolean>> futures = new ArrayList<>();
 
       for (int index = 0; index < workerCount; index++) {
         futures.add(executorService.submit(() -> {
@@ -97,8 +95,8 @@ class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSu
       assertThat(ready.await(5, TimeUnit.SECONDS)).isTrue();
       start.countDown();
 
-      List<Optional<String>> results = new ArrayList<>();
-      for (Future<Optional<String>> future : futures) {
+      List<Boolean> results = new ArrayList<>();
+      for (Future<Boolean> future : futures) {
         results.add(future.get(10, TimeUnit.SECONDS));
       }
       return results;
