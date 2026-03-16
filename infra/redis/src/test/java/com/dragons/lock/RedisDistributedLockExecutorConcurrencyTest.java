@@ -1,17 +1,8 @@
 package com.dragons.lock;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
-import com.dragons.constant.Constants.Metric.DistributedLock;
-import com.dragons.domain.lock.DistributedLockFactory;
 import com.dragons.domain.lock.LockOptions;
-import com.dragons.monitoring.lock.DistributedLockMetricRecorder;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,19 +20,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.ObjectProvider;
 
 class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSupport {
 
-  private DistributedLockMetricRecorder metricRecorder;
   private RedisDistributedLockExecutor executor;
 
   @BeforeEach
   void setUp() {
-    @SuppressWarnings("unchecked")
-    ObjectProvider<DistributedLockFactory> factoryProvider = mock(ObjectProvider.class);
-    metricRecorder = mock(DistributedLockMetricRecorder.class);
-    executor = new RedisDistributedLockExecutor(redisTemplate, factoryProvider, metricRecorder);
+    executor = new RedisDistributedLockExecutor(redisTemplate);
   }
 
   @ParameterizedTest(name = "[{index}] workers={0}, taskDurationMs={1}")
@@ -51,12 +37,10 @@ class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSu
       int workerCount,
       long taskDurationMillis
   ) throws Exception {
-    // given
     String key = nextLockKey("lock:payment-confirm");
     AtomicInteger taskRunCount = new AtomicInteger();
     LockOptions options = LockOptions.of(Duration.ofSeconds(5));
 
-    // when
     List<Optional<String>> results = runSimultaneously(
         workerCount,
         () -> executor.executeWithLock(
@@ -70,7 +54,6 @@ class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSu
         )
     );
 
-    // then
     long acquiredCount = results.stream()
         .filter(Optional::isPresent)
         .count();
@@ -80,27 +63,6 @@ class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSu
     assertThat(conflictCount).isEqualTo(workerCount - 1L);
     assertThat(taskRunCount.get()).isEqualTo(1);
     assertThat(redisTemplate.hasKey(key)).isFalse();
-
-    verify(metricRecorder, times(1)).recordAcquireSuccess(
-        eq(DistributedLock.LOCK_TYPE_REDIS),
-        eq(key),
-        any(Duration.class)
-    );
-    verify(metricRecorder, times(workerCount - 1)).recordAcquireConflict(
-        eq(DistributedLock.LOCK_TYPE_REDIS),
-        eq(key),
-        any(Duration.class)
-    );
-    verify(metricRecorder, times(1)).recordTaskSuccess(
-        eq(DistributedLock.LOCK_TYPE_REDIS),
-        eq(key),
-        any(Duration.class)
-    );
-    verify(metricRecorder, times(1)).recordReleaseSuccess(
-        DistributedLock.LOCK_TYPE_REDIS,
-        key
-    );
-    verify(metricRecorder, never()).recordTaskFailure(any(), any(), any());
   }
 
   private static Stream<Arguments> concurrencyScenarios() {

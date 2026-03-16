@@ -37,39 +37,6 @@ public final class Constants {
     }
   }
 
-  public static final class Metric {
-
-    public static final class DistributedLock {
-      public static final String ACQUIRE = "dragons.distributed.lock.acquire";
-      public static final String ACQUIRE_TIME = "dragons.distributed.lock.acquire.time";
-      public static final String TASK = "dragons.distributed.lock.task";
-      public static final String RELEASE = "dragons.distributed.lock.release";
-
-      public static final String TAG_LOCK_TYPE = "lock_type";
-      public static final String TAG_LOCK_NAME = "lock_name";
-      public static final String TAG_OUTCOME = "outcome";
-
-      public static final String LOCK_TYPE_REDIS = "redis";
-
-      public static final String LOCK_NAME_PAYMENT_CONFIRM = "payment_confirm";
-      public static final String LOCK_NAME_SUBSCRIBE = "subscribe";
-      public static final String LOCK_NAME_BANK_DEPOSIT = "bank_deposit";
-      public static final String LOCK_NAME_EXPIRED_SUBSCRIPTION = "expired_subscription";
-      public static final String LOCK_NAME_UNKNOWN = "unknown";
-
-      public static final String OUTCOME_SUCCESS = "success";
-      public static final String OUTCOME_FAILURE = "failure";
-      public static final String OUTCOME_CONFLICT = "conflict";
-      public static final String OUTCOME_FALLBACK = "fallback";
-
-      private DistributedLock() {
-      }
-    }
-
-    private Metric() {
-    }
-  }
-
   private Constants() {
   }
 }
