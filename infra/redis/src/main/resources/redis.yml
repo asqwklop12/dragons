@@ -27,6 +27,16 @@ datasource:
 ---
 spring.config.activate.on-profile: dev
 
+datasource:
+  redis:
+    master:
+      host: host.docker.internal
+      port: 6379
+      timeout: 3000                 # 명령 실행 제한 시간
+    replicas:
+      - host: host.docker.internal
+        port: 6380
+
 ---
 spring.config.activate.on-profile: qa
 
