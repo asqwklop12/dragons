@@ -14,7 +14,7 @@ import org.testcontainers.utility.DockerImageName;
 abstract class RedisIntegrationTestSupport {
 
   private static final DockerImageName REDIS_IMAGE = DockerImageName.parse("redis:7.2-alpine");
-  private static final GenericContainer<?> REDIS_CONTAINER =
+  protected static final GenericContainer<?> REDIS_CONTAINER =
       new GenericContainer<>(REDIS_IMAGE).withExposedPorts(6379);
 
   static {

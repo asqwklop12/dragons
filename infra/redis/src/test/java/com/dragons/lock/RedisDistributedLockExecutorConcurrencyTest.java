@@ -3,6 +3,7 @@ package com.dragons.lock;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.dragons.domain.lock.LockOptions;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +24,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSupport {
 
   private RedisDistributedLockExecutor executor;
+  private SimpleMeterRegistry meterRegistry;
 
   @BeforeEach
   void setUp() {
-    executor = new RedisDistributedLockExecutor(redisTemplate);
+    meterRegistry = new SimpleMeterRegistry();
+    executor = new RedisDistributedLockExecutor(redisTemplate, meterRegistry);
   }
 
   @ParameterizedTest(name = "[{index}] workers={0}, taskDurationMs={1}")
@@ -61,6 +64,12 @@ class RedisDistributedLockExecutorConcurrencyTest extends RedisIntegrationTestSu
     assertThat(conflictCount).isEqualTo(workerCount - 1L);
     assertThat(taskRunCount.get()).isEqualTo(1);
     assertThat(redisTemplate.hasKey(key)).isFalse();
+
+    // 메트릭 검증
+    double attempts = meterRegistry.counter("redis.lock.acquire.attempts").count();
+    double failures = meterRegistry.counter("redis.lock.acquire.failures").count();
+    assertThat(attempts).isEqualTo(workerCount);
+    assertThat(failures).isEqualTo(workerCount - 1);
   }
 
   private static Stream<Arguments> concurrencyScenarios() {
