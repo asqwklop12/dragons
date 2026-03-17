@@ -14,7 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-@Profile({"!local"})
+@Profile({"!dev"})
 @Slf4j
 @Component
 @RequiredArgsConstructor

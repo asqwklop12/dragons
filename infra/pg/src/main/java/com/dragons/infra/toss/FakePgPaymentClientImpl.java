@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile({"local"})
+@Profile({"dev"})
 public class FakePgPaymentClientImpl implements PgPaymentClient {
   @Override
   public TossPaymentConfirmation confirm(String paymentKey, String orderId, long amount) {

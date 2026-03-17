@@ -27,7 +27,7 @@ public class TossPaymentV1Controller implements TossPaymentV1Spec {
   @Override
   @PostMapping
   public PaymentV1Dto.Toss.Response request(
-      @Parameter @LoginUser String email,
+      @Parameter(hidden = true) @LoginUser String email,
       @RequestBody @Validated PaymentV1Dto.Toss.Request request) {
 
     var result = (PaymentPgResult) paymentService.request(PaymentType.PG, request.toCommand(email));

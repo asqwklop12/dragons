@@ -23,9 +23,6 @@ datasource:
       host: localhost
       port: 6379
       timeout: 3000                 # 명령 실행 제한 시간
-    replicas:
-      - host: localhost
-        port: 6380
 
 ---
 spring.config.activate.on-profile: dev
