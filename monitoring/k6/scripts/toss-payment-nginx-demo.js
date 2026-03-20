@@ -277,6 +277,7 @@ export default function () {
     }
 
     unexpectedCount += 1;
+    recordUnexpectedResponse(response, orderId, paymentKey);
   }
 
   confirmSuccessCount.add(successCount);

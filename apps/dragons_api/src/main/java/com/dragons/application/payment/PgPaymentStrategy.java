@@ -105,7 +105,7 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
     try {
       // 결제 완료 처리
       payment.updateKey(paymentKey);
-      paymentRepository.save(payment);
+      paymentRepository.saveAndFlush(payment);
     } catch (DataIntegrityViolationException e) {
       throw new CoreException(ErrorType.CONFLICT, "이미 처리된 PaymentKey입니다.");
     }
