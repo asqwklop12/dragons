@@ -32,7 +32,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
       }
     }
 
-    if (environment.matchesProfiles("local", "dev")) {
+    if (environment.matchesProfiles( "dev")) {
       String devEmail = request.getHeader(DEV_EMAIL_HEADER);
       if (StringUtils.hasText(devEmail)) {
         String email = devEmail.trim();

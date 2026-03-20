@@ -9,9 +9,11 @@ const ORDER_NAME = __ENV.ORDER_NAME || '구독';
 const PLAN_TYPE = __ENV.PLAN_TYPE || 'premium';
 const EMAIL_DOMAIN = __ENV.EMAIL_DOMAIN || 'k6.local';
 const CONFIRM_BATCH_SIZE = Math.max(1, Number(__ENV.CONFIRM_BATCH_SIZE || 3));
-const MAX_VUS = Math.max(1, Number(__ENV.MAX_VUS || 90));
+const TEST_PROFILE = __ENV.TEST_PROFILE || 'baseline_30m';
+const MAX_VUS = Math.max(1, Number(__ENV.MAX_VUS || 1000));
 const THINK_TIME_MIN = Number(__ENV.THINK_TIME_MIN || 0.2);
 const THINK_TIME_MAX = Number(__ENV.THINK_TIME_MAX || 1.0);
+const UNEXPECTED_SAMPLE_LIMIT = Math.max(0, Number(__ENV.UNEXPECTED_SAMPLE_LIMIT || 10));
 
 const createExpected = http.expectedStatuses(200);
 const confirmExpected = http.expectedStatuses(200, 409);
@@ -21,7 +23,14 @@ const confirmBatchHasSuccessRate = new Rate('confirm_batch_has_success_rate');
 const confirmUnexpectedRate = new Rate('confirm_unexpected_rate');
 const confirmSuccessCount = new Counter('confirm_success_count');
 const confirmConflictCount = new Counter('confirm_conflict_count');
+const confirmOther4xxCount = new Counter('confirm_other_4xx_count');
+const confirm5xxCount = new Counter('confirm_5xx_count');
+const confirmOtherStatusCount = new Counter('confirm_other_status_count');
+const confirmUnexpectedCount = new Counter('confirm_unexpected_count');
+const confirmDuration = new Trend('confirm_duration', true);
+const confirmUnexpectedDuration = new Trend('confirm_unexpected_duration', true);
 const paymentFlowDuration = new Trend('payment_flow_duration', true);
+let unexpectedSamplesLogged = 0;
 
 function stageTarget(ratio) {
   return Math.max(1, Math.round(MAX_VUS * ratio));
@@ -32,14 +41,72 @@ function buildStages() {
     return JSON.parse(__ENV.STAGES_JSON);
   }
 
-  return [
-    { duration: '5m', target: stageTarget(1 / 3) },
-    { duration: '5m', target: stageTarget(2 / 3) },
-    { duration: '5m', target: stageTarget(1.0) },
-    { duration: '5m', target: stageTarget(1.0) },
-    { duration: '5m', target: stageTarget(0.5) },
-    { duration: '5m', target: 0 },
+  if (TEST_PROFILE === 'baseline_30m') {
+    return [
+      { duration: '5m', target: stageTarget(1 / 3) },
+      { duration: '5m', target: stageTarget(2 / 3) },
+      { duration: '5m', target: stageTarget(1.0) },
+      { duration: '5m', target: stageTarget(1.0) },
+      { duration: '5m', target: stageTarget(0.5) },
+      { duration: '5m', target: 0 },
+    ];
+  }
+
+  if (TEST_PROFILE === 'quick_10m') {
+    return [
+      { duration: '2m', target: stageTarget(0.4) },
+      { duration: '6m', target: stageTarget(0.7) },
+      { duration: '2m', target: 0 },
+    ];
+  }
+
+  if (TEST_PROFILE === 'spike_3h') {
+    const spikeRatios = [0.6, 0.75, 1.0, 0.7, 0.9, 1.0];
+    const baselineRatios = [0.15, 0.18, 0.2, 0.18, 0.22, 0.2];
+    const stages = spikeRatios.flatMap((spikeRatio, index) => {
+      const baselineRatio = baselineRatios[index];
+
+      return [
+        { duration: '15m', target: stageTarget(baselineRatio) },
+        { duration: '1m', target: stageTarget(spikeRatio) },
+        { duration: '4m', target: stageTarget(spikeRatio) },
+        { duration: '10m', target: stageTarget(baselineRatio) },
+      ];
+    });
+
+    stages[stages.length - 1].target = 0;
+    return stages;
+  }
+
+  const fallbackStages = [
+    { duration: '15m', target: stageTarget(0.15) },
+    { duration: '1m', target: stageTarget(0.6) },
+    { duration: '4m', target: stageTarget(0.6) },
+    { duration: '10m', target: stageTarget(0.15) },
+    { duration: '15m', target: stageTarget(0.18) },
+    { duration: '1m', target: stageTarget(0.75) },
+    { duration: '4m', target: stageTarget(0.75) },
+    { duration: '10m', target: stageTarget(0.18) },
+    { duration: '15m', target: stageTarget(0.2) },
+    { duration: '1m', target: stageTarget(1.0) },
+    { duration: '4m', target: stageTarget(1.0) },
+    { duration: '10m', target: stageTarget(0.2) },
+    { duration: '15m', target: stageTarget(0.18) },
+    { duration: '1m', target: stageTarget(0.7) },
+    { duration: '4m', target: stageTarget(0.7) },
+    { duration: '10m', target: stageTarget(0.18) },
+    { duration: '15m', target: stageTarget(0.22) },
+    { duration: '1m', target: stageTarget(0.9) },
+    { duration: '4m', target: stageTarget(0.9) },
+    { duration: '10m', target: stageTarget(0.22) },
+    { duration: '15m', target: stageTarget(0.2) },
+    { duration: '1m', target: stageTarget(1.0) },
+    { duration: '4m', target: stageTarget(1.0) },
+    { duration: '10m', target: stageTarget(0.2) },
   ];
+
+  fallbackStages[fallbackStages.length - 1].target = 0;
+  return fallbackStages;
 }
 
 export const options = {
@@ -97,6 +164,37 @@ function unwrapPayload(payload) {
 function buildConfirmUrl(successUrl, paymentKey, orderId, amount) {
   const base = successUrl || `${BASE_URL}/api/payments/toss/success`;
   return `${base}?paymentKey=${encodeURIComponent(paymentKey)}&orderId=${encodeURIComponent(orderId)}&amount=${amount}`;
+}
+
+function toShortBody(response) {
+  if (!response || typeof response.body !== 'string') {
+    return '';
+  }
+
+  return response.body.replace(/\s+/g, ' ').slice(0, 300);
+}
+
+function recordUnexpectedResponse(response, orderId, paymentKey) {
+  confirmUnexpectedCount.add(1);
+  confirmUnexpectedDuration.add(response.timings.duration);
+
+  if (response.status >= 400 && response.status < 500) {
+    confirmOther4xxCount.add(1);
+  } else if (response.status >= 500 && response.status < 600) {
+    confirm5xxCount.add(1);
+  } else {
+    confirmOtherStatusCount.add(1);
+  }
+
+  if (unexpectedSamplesLogged >= UNEXPECTED_SAMPLE_LIMIT) {
+    return;
+  }
+
+  unexpectedSamplesLogged += 1;
+  console.error(
+    `[confirm-unexpected] status=${response.status} vu=${exec.vu.idInTest} iter=${exec.scenario.iterationInTest} ` +
+      `orderId=${orderId} paymentKey=${paymentKey} duration_ms=${response.timings.duration} body=${toShortBody(response)}`
+  );
 }
 
 export default function () {
@@ -166,6 +264,8 @@ export default function () {
   let unexpectedCount = 0;
 
   for (const response of confirmResponses) {
+    confirmDuration.add(response.timings.duration);
+
     if (response.status === 200) {
       successCount += 1;
       continue;

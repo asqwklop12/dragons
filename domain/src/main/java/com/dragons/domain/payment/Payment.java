@@ -4,12 +4,16 @@ import com.dragons.domain.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name = "payments")
+@Table(name = "payments",
+    uniqueConstraints = {
+        @UniqueConstraint(name = "uk_payment_payment_key", columnNames = "payment_key")
+    })
 public class Payment extends BaseEntity {
 
   @Column(name = "payment_type", nullable = false)
@@ -48,7 +52,7 @@ public class Payment extends BaseEntity {
   }
 
   public static Payment createOrder(String orderId, String holderName, String email, long amount, String planType,
-      String paymentType) {
+                                    String paymentType) {
     Payment payment = new Payment();
     payment.orderId = orderId;
     payment.holderName = holderName;
@@ -60,7 +64,7 @@ public class Payment extends BaseEntity {
   }
 
   public static Payment withId(Long id, String holderName, String email, long amount, String planType,
-      String paymentType) {
+                               String paymentType) {
     Payment payment = new Payment();
     payment.setIdForTest(id);
     payment.holderName = holderName;

@@ -17,6 +17,7 @@ import java.time.Duration;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -75,15 +76,20 @@ public abstract class PaymentStrategy<C extends PaymentCommand, R extends Paymen
 
     Optional<Subscription> expire = subscriptionRepository.findExpiredByEmail(email);
 
-    if (expire.isEmpty()) {
-      log.info("신규 등록");
-      subscriptionRepository.save(Subscription.apply(clock, email, name, planType, status));
-      return;
-    }
+    try {
+      if (expire.isEmpty()) {
+        log.info("신규 등록");
+        subscriptionRepository.save(Subscription.apply(clock, email, name, planType, status));
+        return;
+      }
 
-    Subscription subscription = expire.get();
-    subscription.renew(clock);
-    subscriptionRepository.save(subscription);
+      Subscription subscription = expire.get();
+      subscription.renew(clock);
+      subscriptionRepository.save(subscription);
+    } catch (DataIntegrityViolationException e) {
+      log.warn("구독 저장 충돌이 발생했습니다. email={}", email, e);
+      throw new CoreException(ErrorType.CONFLICT, "현재 구독중인 회원입니다.");
+    }
   }
 
   public Payment pay(final String name, final String email, final Long amount, final String planType,

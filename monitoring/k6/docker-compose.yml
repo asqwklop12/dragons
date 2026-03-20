@@ -4,7 +4,8 @@ services:
     working_dir: /work
     environment:
       BASE_URL: ${BASE_URL:-https://host.docker.internal}
-      MAX_VUS: ${MAX_VUS:-90}
+      TEST_PROFILE: ${TEST_PROFILE:-baseline_30m}
+      MAX_VUS: ${MAX_VUS:-1000}
       CONFIRM_BATCH_SIZE: ${CONFIRM_BATCH_SIZE:-3}
       AMOUNT: ${AMOUNT:-9900}
       ORDER_NAME: ${ORDER_NAME:-구독}

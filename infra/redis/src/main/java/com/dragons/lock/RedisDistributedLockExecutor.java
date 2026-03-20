@@ -2,6 +2,7 @@ package com.dragons.lock;
 
 import com.dragons.constant.Constants.Lock;
 import com.dragons.domain.lock.DistributedLockExecutor;
+import com.dragons.domain.lock.LockException;
 import com.dragons.domain.lock.LockOptions;
 import com.dragons.domain.lock.LockType;
 import io.micrometer.core.instrument.Counter;
@@ -54,9 +55,14 @@ class RedisDistributedLockExecutor implements DistributedLockExecutor {
     String token = UUID.randomUUID().toString();
     acquireAttempts.increment();
 
-    Boolean acquired = redisTemplate.opsForValue().setIfAbsent(key, token, options.lockAtMostFor());
+    final boolean acquired;
+    try {
+      acquired = redisTemplate.opsForValue().setIfAbsent(key, token, options.lockAtMostFor());
+    } catch (Exception exception) {
+      throw new LockException("Failed to acquire Redis lock for key: " + key, exception);
+    }
 
-    if (!Boolean.TRUE.equals(acquired)) {
+    if (!acquired) {
       acquireFailures.increment();
       return Optional.empty();
     }
