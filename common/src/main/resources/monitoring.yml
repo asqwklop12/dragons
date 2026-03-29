@@ -5,3 +5,17 @@ app-db-latency:
   monitor:
     enabled: true
     slow-threshold-ms: 300
+
+management:
+  server:
+    port: 9797   # 내부 전용 포트 (인프라에서 외부 차단)
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    distribution:
+      percentiles-histogram:
+        redis.lock.execution.duration: true
+      slo:
+        redis.lock.execution.duration: 1ms,5ms,10ms,25ms,50ms,100ms,250ms,500ms,1s,3s,5s

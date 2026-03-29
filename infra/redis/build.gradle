@@ -6,7 +6,10 @@ plugins {
 
 dependencies {
 
+    implementation project(":common")
     implementation project(":domain")
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.testcontainers:testcontainers'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }

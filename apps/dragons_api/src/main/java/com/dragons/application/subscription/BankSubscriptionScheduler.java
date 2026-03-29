@@ -19,13 +19,10 @@ public class BankSubscriptionScheduler {
   @Scheduled(cron = "0 30 0 * * *")
   @Transactional
   public void subscription() {
-    factory.get(LockType.SHEDLOCK).executeWithLock(
+    factory.get(LockType.SHEDLOCK).runWithLock(
         Lock.LOCK_BANK_DEPOSIT,
         LockOptions.of(Duration.ofSeconds(30), Duration.ofSeconds(3)),
-        () -> {
-          depositService.deposit();
-          return null;
-        }
+        depositService::deposit
     );
   }
 }

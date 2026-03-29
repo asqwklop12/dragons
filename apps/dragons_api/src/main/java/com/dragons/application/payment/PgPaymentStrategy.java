@@ -4,6 +4,7 @@ import com.dragons.application.payment.dto.PaymentPgCommand;
 import com.dragons.application.payment.dto.PaymentPgResult;
 import com.dragons.constant.Constants.Lock;
 import com.dragons.domain.lock.DistributedLockFactory;
+import com.dragons.domain.lock.LockException;
 import com.dragons.domain.lock.LockOptions;
 import com.dragons.domain.lock.LockType;
 import com.dragons.domain.payment.Payment;
@@ -19,6 +20,7 @@ import java.time.Duration;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, PaymentPgResult> {
   private final PgPaymentClient pgPaymentClient;
+  private final PaymentRepository paymentRepository;
   private final DistributedLockFactory distributedLockFactory;
 
   public PgPaymentStrategy(
@@ -34,6 +37,7 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
       DistributedLockFactory distributedLockFactory,
       PgPaymentClient pgPaymentClient) {
     super(subscriptionRepository, paymentRepository, distributedLockFactory, clock);
+    this.paymentRepository = paymentRepository;
     this.pgPaymentClient = pgPaymentClient;
     this.distributedLockFactory = distributedLockFactory;
   }
@@ -63,6 +67,15 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
     Payment payment = getPaymentRepository().findByOrderId(orderId)
         .orElseThrow(() -> new CoreException(ErrorType.NOT_FOUND, "Payment not found for orderId: " + orderId));
 
+    if (payment.paymentKey() != null) {
+      if (payment.paymentKey().equals(paymentKey)) {
+        log.info("이미 동일한 paymentKey로 처리된 결제입니다. orderId={}", orderId);
+        return;
+      }
+
+      throw new CoreException(ErrorType.CONFLICT, "이미 처리된 결제입니다.");
+    }
+
     // 금액 검증
     if (payment.amount() != amount) {
       throw new CoreException(ErrorType.BAD_REQUEST,
@@ -72,19 +85,30 @@ public class PgPaymentStrategy extends PaymentStrategy<PaymentPgCommand, Payment
     String lockKey = Lock.LOCK_PAYMENT_CONFIRM + orderId;
 
     // 승인처리
-    Optional<TossPaymentConfirmation> result = distributedLockFactory.get(LockType.REDIS).executeWithLock(
-        lockKey,
-        LockOptions.of(Duration.ofSeconds(10)),
-        () -> pgPaymentClient.confirm(paymentKey, orderId, amount)
-    );
+    Optional<TossPaymentConfirmation> result;
+    try {
+      result = distributedLockFactory.get(LockType.REDIS).executeWithLock(
+          lockKey,
+          LockOptions.of(Duration.ofSeconds(10)),
+          () -> pgPaymentClient.confirm(paymentKey, orderId, amount)
+      );
+    } catch (LockException e) {
+      log.error("분산락 처리 중 오류가 발생했습니다. orderId={}, lockKey={}", orderId, lockKey, e);
+      throw new CoreException(ErrorType.LOCK_ERROR, "분산락 처리 중 오류가 발생했습니다.");
+    }
 
     // 분산락을
     if (result.isEmpty()) {
       throw new CoreException(ErrorType.CONFLICT, "이미 처리중인 결제입니다.");
     }
 
-    // 결제 완료 처리
-    payment.updateKey(paymentKey);
+    try {
+      // 결제 완료 처리
+      payment.updateKey(paymentKey);
+      paymentRepository.saveAndFlush(payment);
+    } catch (DataIntegrityViolationException e) {
+      throw new CoreException(ErrorType.CONFLICT, "이미 처리된 PaymentKey입니다.");
+    }
 
     // 구독 처리를 한다.
     super.subscribe(payment.holderName(), payment.email(), payment.planType(), Status.ACTIVE.name());

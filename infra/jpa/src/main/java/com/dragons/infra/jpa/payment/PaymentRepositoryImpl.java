@@ -17,6 +17,11 @@ class PaymentRepositoryImpl implements PaymentRepository {
     }
 
     @Override
+    public Payment saveAndFlush(Payment payment) {
+        return jpaPaymentRepository.saveAndFlush(payment);
+    }
+
+    @Override
     public Optional<Payment> findByOrderId(String orderId) {
         return jpaPaymentRepository.findByOrderId(orderId);
     }

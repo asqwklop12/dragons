@@ -1,0 +1,21 @@
+services:
+  k6:
+    image: grafana/k6:0.49.0
+    working_dir: /work
+    environment:
+      BASE_URL: ${BASE_URL:-https://host.docker.internal}
+      TEST_PROFILE: ${TEST_PROFILE:-baseline_30m}
+      MAX_VUS: ${MAX_VUS:-1000}
+      CONFIRM_BATCH_SIZE: ${CONFIRM_BATCH_SIZE:-3}
+      AMOUNT: ${AMOUNT:-9900}
+      ORDER_NAME: ${ORDER_NAME:-구독}
+      PLAN_TYPE: ${PLAN_TYPE:-premium}
+      EMAIL_DOMAIN: ${EMAIL_DOMAIN:-k6.local}
+      THINK_TIME_MIN: ${THINK_TIME_MIN:-0.2}
+      THINK_TIME_MAX: ${THINK_TIME_MAX:-1.0}
+      STAGES_JSON: ${STAGES_JSON:-}
+    volumes:
+      - ./scripts:/work/scripts:ro
+    command: ["run", "/work/scripts/toss-payment-nginx-demo.js"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
