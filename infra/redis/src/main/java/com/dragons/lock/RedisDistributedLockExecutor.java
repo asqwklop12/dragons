@@ -29,21 +29,6 @@ class RedisDistributedLockExecutor implements DistributedLockExecutor {
   @Override
   public <T> Optional<T> executeWithLock(String key, LockOptions options, Supplier<T> task) {
     String token = UUID.randomUUID().toString();
-    Boolean acquired;
-    try {
-      acquired = redisTemplate.opsForValue().setIfAbsent(key, token, options.lockAtMostFor());
-    } catch (RedisSystemException | QueryTimeoutException e) {
-      log.warn("Redis unavailable, falling back to ShedLock for key: {}", key);
-      DistributedLockFactory factory = factoryProvider.getIfAvailable();
-      if (factory == null) {
-        throw new LockException("Redis unavailable, falling back to ShedLock for key: " + key, e);
-      }
-      return factory.get(LockType.SHEDLOCK).executeWithLock(key, options, task);
-    }
-
-    if (!Boolean.TRUE.equals(acquired)) {
-      return Optional.empty();
-    }
 
     try {
       return Optional.ofNullable(task.get());
