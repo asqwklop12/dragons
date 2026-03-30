@@ -43,6 +43,8 @@ out/
 
 ###env
 .env
-
 ### omx
 .omx/
+.codex
+.agents
+.omx
