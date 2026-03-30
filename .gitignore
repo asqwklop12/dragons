@@ -43,3 +43,6 @@ out/
 
 ###env
 .env
+.codex
+.agents
+.omx
